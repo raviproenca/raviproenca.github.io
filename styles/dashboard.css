@@ -1,0 +1,390 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: "Roboto", sans-serif;
+  background: linear-gradient(to top left, #2aa9b5 35%, #c4faff);
+  display: grid;
+  grid-template-areas:
+    "nav header"
+    "nav main";
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+header {
+  width: 100%;
+  height: clamp(5rem, 10vw, 6.5rem);
+  grid-area: header;
+  background: linear-gradient(to right, #004147, #009ead);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 clamp(1rem, 4vw, 3rem) 0 clamp(1.2rem, 8vw, 6rem);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.25);
+  line-height: 20px;
+}
+
+header h1 {
+  color: white;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 4.44vw, 4rem);
+  white-space: nowrap;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+}
+
+header #header-user {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  height: clamp(2.4rem, 6.8vw, 4rem);
+  width: clamp(2.4rem, 6.8vw, 4rem);
+  background-color: #ffffff;
+  box-shadow: 4px 2px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+header #header-user span {
+  font-size: clamp(1.6rem, 4.4vw, 2.5rem);
+}
+
+header #header-user:hover {
+  transform: scale(1.05);
+}
+
+nav {
+  grid-area: nav;
+  height: 100%;
+  width: clamp(12rem, 17.91vw, 16.125rem);
+  background-color: #004147;
+  box-shadow: 6px 0px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+nav img {
+  max-height: clamp(4rem, 8vw, 7rem);
+  max-width: clamp(4rem, 8vw, 7rem);
+  width: 100%;
+  object-fit: contain;
+  margin-top: clamp(0.5rem, 2vh, 1rem);
+}
+
+nav ul {
+  margin-top: 1.95rem;
+  list-style: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 4vw, 3rem);
+}
+
+nav li {
+  width: 100%;
+  height: clamp(3.5rem, 8vw, 5rem);
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.25);
+}
+
+nav .nav-item {
+  text-decoration: none;
+  height: 100%;
+  font-weight: 600;
+  font-size: clamp(1rem, 1.39vw, 1.25rem);
+  text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+  opacity: 80%;
+  color: #ffffff;
+  padding-left: clamp(0.8rem, 2vw, 1.5rem);
+  display: flex;
+  align-items: center;
+  gap: clamp(0.4rem, 1vw, 0.7rem);
+  transition: 0.2s ease;
+  will-change: transform;
+}
+
+nav .nav-item:hover {
+  transform: scale(1.05);
+  opacity: 100%;
+}
+
+nav .nav-item.active {
+  background: linear-gradient(to left, #004147, #007984);
+  opacity: 100%;
+  font-weight: 800;
+  cursor: default;
+}
+
+nav .nav-item.active:hover {
+  transform: none;
+}
+
+nav .nav-item span {
+  font-size: clamp(1.7rem, 2.5vw, 2.3rem);
+}
+
+main {
+  grid-area: main;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+section {
+  width: clamp(5rem, 71vw, 80rem);
+  font-weight: 600;
+  font-size: clamp(1rem, 1.5vw, 1.4rem);
+  color: white;
+  height: 100%;
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  display: grid;
+  grid-template-areas:
+    "livros locatarios"
+    "chart chart";
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: clamp(1rem, 3vw, 3rem);
+}
+
+section #livros-data {
+  grid-area: livros;
+  font-size: clamp(0.8rem, 1.25vw, 2rem);
+  display: grid;
+  grid-template-areas:
+    "mais-alugado mais-alugado"
+    "dentro-prazo fora-prazo";
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: clamp(1rem, 3vw, 3rem);
+}
+
+#livro-mais-alugado {
+  grid-area: mais-alugado;
+  background: linear-gradient(to top left, #004147, #16696d);
+  border-radius: 10px;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: space-between;
+}
+
+#mais-alugado-titles {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  gap: clamp(1rem, 5vw, 4rem);
+  padding-right: 1.2rem;
+}
+
+#mais-alugado-titles p {
+  opacity: 80%;
+}
+
+#mais-alugado-titles h2 {
+  font-weight: 800;
+}
+
+#livro-mais-alugado img {
+  width: clamp(6rem, 8vw, 10rem);
+  border-radius: 5px;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+#livro-atrasado {
+  grid-area: fora-prazo;
+}
+
+#livro-emprestado {
+  grid-area: dentro-prazo;
+}
+
+.livro-div {
+  background: linear-gradient(to top left, #004147, #16696d);
+  border-radius: 10px;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 3rem);
+}
+
+.livro-info-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+section #locatarios-data,
+section #livros-chart {
+  background: linear-gradient(to top left, #004147, #16696d);
+  border-radius: clamp(0.5rem, 1vw, 10px);
+  padding: clamp(1rem, 2vw, 1.5rem);
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+section #locatarios-data {
+  grid-area: locatarios;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#locatarios-header select {
+  border-radius: 10px;
+}
+
+#locatarios-container {
+  order: 2;
+  padding: clamp(1rem, 1vw, 2rem);
+  height: 100%;
+  width: 100%;
+}
+
+/* #locatarios-info {
+  order: 3;
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(1rem, 6vw, 8rem);
+} */
+
+section #livros-chart {
+  grid-area: chart;
+  display: flex;
+  flex-direction: column;
+}
+
+#chart-container {
+  padding-top: clamp(0.5rem, 1vw, 1rem);
+  order: 2;
+  height: 100%;
+}
+
+#livros-chart-bar {
+  height: 100%;
+}
+
+/* #livros-chart-info {
+  order: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(1rem, 6vw, 8rem);
+  padding-left: 1rem;
+  padding-right: 1rem;
+} */
+
+/* .info-value {
+  margin-left: clamp(0.5rem, 1vw, 1rem);
+  display: inline-block;
+} */
+
+@media (max-width: 1140px) {
+  nav {
+    width: clamp(2rem, 12vw, 8rem);
+  }
+
+  nav ul {
+    gap: clamp(2.5rem, 4vw, 3.5rem);
+  }
+
+  nav .nav-item {
+    justify-content: center;
+    padding-left: 0;
+    font-size: 0;
+  }
+
+  nav .nav-item span {
+    font-size: clamp(1.4rem, 3.4vw, 5rem);
+  }
+
+  nav .nav-item:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #007984;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    margin-left: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 9999;
+  }
+
+  nav .nav-item.active:hover::after {
+    display: none;
+  }
+
+  main section {
+    width: clamp(10rem, 81vw, 80rem);
+    grid-template-rows: 1fr 1fr;
+  }
+}
+
+@media (max-width: 840px) {
+  nav ul {
+    gap: clamp(3rem, 5vw, 4rem);
+  }
+
+  html {
+    height: 100%;
+  }
+
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  main {
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  main section {
+    grid-template-areas:
+      "livros"
+      "locatarios"
+      "chart";
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+
+  main section::-webkit-scrollbar {
+    width: 6px;
+  }
+  main section::-webkit-scrollbar-thumb {
+    background-color: rgb(206, 206, 206);
+    border: 1px solid rgb(163, 163, 163);
+    border-radius: 10px;
+  }
+
+  #locatarios-chart-pie {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  #livros-chart-bar {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}

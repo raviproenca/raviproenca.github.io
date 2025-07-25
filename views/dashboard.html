@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aluguéis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles/dashboard.css" />
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <body>
+    <header>
+      <h1>Locadora de livros</h1>
+      <div id="header-user">
+        <span class="material-icons-outlined">person</span>
+      </div>
+    </header>
+    <nav>
+      <img src="/assets/images/WDA GROUP LOGO.png" alt="" />
+      <ul>
+        <li>
+          <a href="#" class="nav-item active" data-title="Relatório geral"
+            ><span class="material-icons-outlined">grid_view</span> Relatório
+            geral</a
+          >
+        </li>
+        <li>
+          <a href="usuarios.html" class="nav-item" data-title="Usuários"
+            ><span class="material-icons-outlined">group</span> Usuários</a
+          >
+        </li>
+        <li>
+          <a href="editoras.html" class="nav-item" data-title="Editoras"
+            ><span class="material-icons-outlined">import_contacts</span>
+            Editoras</a
+          >
+        </li>
+        <li>
+          <a href="livros.html" class="nav-item" data-title="Livros"
+            ><span class="material-icons-outlined">library_books</span>
+            Livros</a
+          >
+        </li>
+        <li>
+          <a href="locatarios.html" class="nav-item" data-title="Locatários"
+            ><span class="material-icons-outlined">person_add</span>
+            Locatários</a
+          >
+        </li>
+        <li>
+          <a href="alugueis.html" class="nav-item" data-title="Aluguéis"
+            ><span class="material-icons-outlined">bookmark</span> Aluguéis</a
+          >
+        </li>
+      </ul>
+    </nav>
+    <main>
+      <section>
+        <div id="livros-data">
+          <div id="livro-mais-alugado">
+            <div id="mais-alugado-titles">
+              <p>Livro mais alugado</p>
+              <h2>A Divina Comédia</h2>
+            </div>
+            <img
+              src="/assets/images/a-divina-comedia-cke-664863907.jpg"
+              alt=""
+            />
+          </div>
+          <div id="livro-emprestado" class="livro-div">
+            <div class="livro-info-div">
+              <span class="material-icons-outlined">library_add_check</span>
+              <p>22</p>
+            </div>
+            <p>Livros emprestados</p>
+          </div>
+          <div id="livro-atrasado" class="livro-div">
+            <div class="livro-info-div">
+              <span class="material-icons-outlined">schedule</span>
+              <p>7</p>
+            </div>
+            <p>Livros atrasados</p>
+          </div>
+        </div>
+        <div id="locatarios-data">
+          <div id="locatarios-header">
+            <p>
+              Locatário:
+              <select>
+                <option>selecione</option>
+              </select>
+            </p>
+          </div>
+          <div id="locatarios-container">
+            <canvas id="locatarios-chart-pie"></canvas>
+          </div>
+          <!-- <div id="locatarios-info">
+            <p>Total de livros emprestados: <span class="info-value">6</span></p>
+            <p>Total de aluguéis: <span class="info-value">4</span></p>
+          </div> -->
+        </div>
+        <div id="livros-chart">
+          <div id="chart-container">
+            <canvas id="livros-chart-bar"></canvas>
+          </div>
+          <!-- <div id="livros-chart-info">
+            <p>
+              Total de livros devolvidos dentro do prazo:
+              <span class="info-value">36</span>
+            </p>
+            <p>
+              Total de livros devolvidos fora do prazo: <span class="info-value">19</span>
+            </p>
+          </div> -->
+        </div>
+      </section>
+    </main>
+    <script src="/js/dashboard.js"></script>
+  </body>
+</html>
