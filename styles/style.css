@@ -37,7 +37,14 @@ header h1 {
   text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
 }
 
-header #header-user {
+/* Container externo para evitar que o modal herde o transform */
+.profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#header-user {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,12 +58,64 @@ header #header-user {
   will-change: transform;
 }
 
-header #header-user span {
+#header-user span {
   font-size: clamp(1.6rem, 4.4vw, 2.5rem);
 }
 
-header #header-user:hover {
+#header-user:hover {
   transform: scale(1.05);
+}
+
+#profile-modal {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: #ffffff;
+  border-radius: 0.6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  width: clamp(12rem, 20vw, 16rem);
+  padding: 1rem;
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#profile-modal.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+#profile-modal .name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+#profile-modal .email {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.75rem;
+  word-break: break-word;
+}
+
+#logout-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+#logout-button:hover {
+  background-color: #c0392b;
 }
 
 nav {
@@ -68,6 +127,10 @@ nav {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+#toggle-nav {
+  display: none;
 }
 
 nav img {
@@ -332,6 +395,14 @@ main .delete-btn .material-icons-outlined {
   color: #f44336;
 }
 
+main .returned-btn {
+  opacity: 30%;
+}
+
+main .returned-btn.active {
+  opacity: 100%;
+}
+
 .modal-overlay {
   position: fixed;
   height: 100vh;
@@ -402,15 +473,29 @@ main .delete-btn .material-icons-outlined {
   color: rgb(24, 209, 24);
 }
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
 .form-group input,
 .form-group select {
   width: 100%;
-  padding-top: clamp(2.4rem, 5.5vh, 6rem);
   border: none;
   border-bottom: 1px solid white;
   background: transparent;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 600;
   outline: none;
 }
@@ -561,9 +646,85 @@ main .delete-btn .material-icons-outlined {
 }
 
 @media (max-width: 840px) {
+  #navbar ul {
+    gap: clamp(2.8rem, 5vw, 4rem);
+  }
+
+  #navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 25%;
+    z-index: 1001;
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  #navbar.active {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  nav img {
+    max-height: 40px;
+    height: auto;
+    width: auto;
+    display: block;
+  }
+
+  main section {
+    width: clamp(10rem, 91vw, 80rem);
+  }
+
+  header h1 {
+    padding-left: 2rem;
+  }
+
+  header #toggle-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    border-bottom-right-radius: 10px;
+    padding-right: 0.1rem;
+    padding-left: 0.1rem;
+    padding-bottom: 0.2rem;
+    height: clamp(1.8rem, 6vw, 3.5rem);
+    width: clamp(1.8rem, 6vw, 3.5rem);
+    top: 0;
+    bottom: 1;
+    right: 1;
+    left: 0;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(to top left, #55bfc9, #16696d);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+    opacity: 80%;
+    transition: transform 0.2s ease;
+    will-change: transform;
+  }
+
+  header #toggle-nav:hover {
+    transform: scale(1.05);
+    opacity: 100%;
+  }
+
+  #toggle-nav span {
+    color: black;
+    opacity: 80%;
+    font-size: clamp(1.25rem, 4vw, 2rem);
+  }
+
   html {
     height: 100%;
   }
+
   body {
     height: 100%;
     overflow: hidden;
@@ -685,10 +846,18 @@ main .delete-btn .material-icons-outlined {
     margin-top: clamp(1rem, 2.2vh, 3rem);
   }
 
+  .form-group {
+    margin-bottom: clamp(1rem, 5vw, 2rem);
+  }
+
+  .form-group label {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
   .form-group input,
   .form-group select {
-    padding-top: clamp(2.4rem, 4vh, 6rem);
-    font-size: 1.3rem;
+    font-size: 1rem;
   }
 
   .modal-actions {
@@ -696,13 +865,12 @@ main .delete-btn .material-icons-outlined {
   }
 
   .modal-actions button {
-    font-size: 1.2rem;
-    width: 7rem;
-    height: 3.5rem;
+    font-size: 1rem;
+    width: clamp(6rem, 6vw, 8rem);
+    height: clamp(3rem, 6vw, 4rem);
   }
 
   main #pagination {
-    height: 2rem;
     display: flex;
     justify-content: center;
   }

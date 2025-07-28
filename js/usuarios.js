@@ -310,5 +310,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const toggleNav = document.getElementById("toggle-nav");
+  const nav = document.getElementById("navbar");
+  toggleNav.addEventListener("click", (e) => {
+    e.stopPropagation(); // impede propagação para o documento
+    nav.classList.toggle("active");
+  });
+
+  // Fecha navbar ao clicar fora
+  document.addEventListener("click", (e) => {
+    if (nav.classList.contains("active") && !nav.contains(e.target)) {
+      nav.classList.remove("active");
+    }
+  });
+
+  const profileButton = document.getElementById("profile-button");
+  const profileModal = document.getElementById("profile-modal");
+
+  profileButton.addEventListener("click", () => {
+    profileModal.classList.toggle("visible");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!profileButton.contains(e.target) && !profileModal.contains(e.target)) {
+      profileModal.classList.remove("visible");
+    }
+  });
+
   renderTable(userList, paginaAtual);
 });

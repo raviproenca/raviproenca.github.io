@@ -42,7 +42,14 @@ header h1 {
   text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
 }
 
-header #header-user {
+/* Container externo para evitar que o modal herde o transform */
+.profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#header-user {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,12 +63,64 @@ header #header-user {
   will-change: transform;
 }
 
-header #header-user span {
+#header-user span {
   font-size: clamp(1.6rem, 4.4vw, 2.5rem);
 }
 
-header #header-user:hover {
+#header-user:hover {
   transform: scale(1.05);
+}
+
+#profile-modal {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: #ffffff;
+  border-radius: 0.6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  width: clamp(12rem, 20vw, 16rem);
+  padding: 1rem;
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#profile-modal.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+#profile-modal .name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+#profile-modal .email {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.75rem;
+  word-break: break-word;
+}
+
+#logout-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+#logout-button:hover {
+  background-color: #c0392b;
 }
 
 nav {
@@ -73,6 +132,10 @@ nav {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+#toggle-nav {
+  display: none;
 }
 
 nav img {
@@ -155,19 +218,19 @@ section {
     "chart chart";
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto 1fr;
-  gap: clamp(1rem, 3vw, 3rem);
+  gap: clamp(1rem, 3vw, 2rem);
 }
 
 section #livros-data {
   grid-area: livros;
-  font-size: clamp(0.8rem, 1.25vw, 2rem);
+  font-size: clamp(0.8rem, 1.5vw, 1.4rem);
   display: grid;
   grid-template-areas:
     "mais-alugado mais-alugado"
     "dentro-prazo fora-prazo";
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
-  gap: clamp(1rem, 3vw, 3rem);
+  gap: clamp(1rem, 3vw, 1.5rem);
 }
 
 #livro-mais-alugado {
@@ -197,7 +260,7 @@ section #livros-data {
 }
 
 #livro-mais-alugado img {
-  width: clamp(6rem, 8vw, 10rem);
+  width: 10rem;
   border-radius: 5px;
   box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.25);
 }
@@ -249,17 +312,10 @@ section #locatarios-data {
 
 #locatarios-container {
   order: 2;
-  padding: clamp(1rem, 1vw, 2rem);
+  padding-top: clamp(1rem, 1vw, 2rem);
   height: 100%;
   width: 100%;
 }
-
-/* #locatarios-info {
-  order: 3;
-  display: flex;
-  justify-content: space-between;
-  gap: clamp(1rem, 6vw, 8rem);
-} */
 
 section #livros-chart {
   grid-area: chart;
@@ -268,7 +324,6 @@ section #livros-chart {
 }
 
 #chart-container {
-  padding-top: clamp(0.5rem, 1vw, 1rem);
   order: 2;
   height: 100%;
 }
@@ -276,20 +331,6 @@ section #livros-chart {
 #livros-chart-bar {
   height: 100%;
 }
-
-/* #livros-chart-info {
-  order: 1;
-  display: flex;
-  justify-content: space-between;
-  gap: clamp(1rem, 6vw, 8rem);
-  padding-left: 1rem;
-  padding-right: 1rem;
-} */
-
-/* .info-value {
-  margin-left: clamp(0.5rem, 1vw, 1rem);
-  display: inline-block;
-} */
 
 @media (max-width: 1140px) {
   nav {
@@ -335,11 +376,85 @@ section #livros-chart {
     width: clamp(10rem, 81vw, 80rem);
     grid-template-rows: 1fr 1fr;
   }
+
+  #livro-mais-alugado img {
+    width: 8rem;
+  }
 }
 
 @media (max-width: 840px) {
-  nav ul {
-    gap: clamp(3rem, 5vw, 4rem);
+  #navbar ul {
+    gap: clamp(2.8rem, 5vw, 4rem);
+  }
+
+  #navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 25%;
+    z-index: 999;
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  #navbar.active {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  nav img {
+    max-height: 40px;
+    height: auto;
+    width: auto;
+    display: block;
+  }
+
+  main section {
+    width: clamp(10rem, 91vw, 80rem);
+  }
+
+  header h1 {
+    padding-left: 2rem;
+  }
+
+  header #toggle-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    border-bottom-right-radius: 10px;
+    padding-right: 0.1rem;
+    padding-left: 0.1rem;
+    padding-bottom: 0.2rem;
+    height: clamp(1.8rem, 6vw, 3.5rem);
+    width: clamp(1.8rem, 6vw, 3.5rem);
+    top: 0;
+    bottom: 1;
+    right: 1;
+    left: 0;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(to top left, #55bfc9, #16696d);
+    opacity: 80%;
+    transition: transform 0.2s ease;
+    will-change: transform;
+  }
+
+  header #toggle-nav:hover {
+    transform: scale(1.05);
+    opacity: 100%;
+  }
+
+  #toggle-nav span {
+    color: black;
+    opacity: 80%;
+    font-size: clamp(1.25rem, 4vw, 2rem);
   }
 
   html {
@@ -378,13 +493,27 @@ section #livros-chart {
     border-radius: 10px;
   }
 
+  #locatarios-container {
+    height: auto;
+    min-height: 300px;
+  }
+
   #locatarios-chart-pie {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
+  }
+
+  #chart-container {
+    height: auto;
+    min-height: 300px;
   }
 
   #livros-chart-bar {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
+  }
+
+  #livro-mais-alugado img {
+    width: 7rem;
   }
 }

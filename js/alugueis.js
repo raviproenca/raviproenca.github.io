@@ -60,8 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <td data-label="Data de Locação">${aluguel.dataLocacao}</td>
         <td data-label="Data de Devolução">${aluguel.dataDevolucao}</td>
         <td data-label="Ações">
-          <button class="action-btn edit-btn" data-index="${inicio + i}">
-            <span class="material-icons-outlined">edit</span>
+          <button class="action-btn returned-btn" data-index="${inicio + i}">
+            <span class="material-icons-outlined">check_box</span>
           </button>
           <button class="action-btn delete-btn" data-index="${inicio + i}">
             <span class="material-icons-outlined">delete</span>
@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   tableBody.addEventListener("click", (event) => {
-    const editBtn = event.target.closest(".edit-btn");
+    const returnedBtn = event.target.closest(".returned-btn");
     const deleteBtn = event.target.closest(".delete-btn");
 
     const formatarDataParaInput = (dataBr) => {
@@ -231,19 +231,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return `${ano}-${mes}-${dia}`;
     };
 
-    if (editBtn) {
-      const index = parseInt(editBtn.dataset.index);
-      const aluguel = aluguelList[index];
-
-      inputLivro.value = aluguel.livro;
-      inputLocatario.value = aluguel.locatario;
-      inputDataLocacao.value = formatarDataParaInput(aluguel.dataLocacao);
-      inputDataDevolucao.value = formatarDataParaInput(aluguel.dataDevolucao);
-
-      indexAluguelEditando = index;
-
-      modalOverlay.classList.add("is-open");
-      modalAtualizar.classList.add("is-open");
+    if (returnedBtn) {
+      // const index = parseInt(returnedBtn.dataset.index);
+      returnedBtn.classList.toggle("active");
     }
 
     if (deleteBtn) {
@@ -311,6 +301,33 @@ document.addEventListener("DOMContentLoaded", () => {
       modalOverlay.classList.remove("is-open");
       indexParaExcluir = null;
     });
+  });
+
+  const toggleNav = document.getElementById("toggle-nav");
+  const nav = document.getElementById("navbar");
+  toggleNav.addEventListener("click", (e) => {
+    e.stopPropagation(); // impede propagação para o documento
+    nav.classList.toggle("active");
+  });
+
+  // Fecha navbar ao clicar fora
+  document.addEventListener("click", (e) => {
+    if (nav.classList.contains("active") && !nav.contains(e.target)) {
+      nav.classList.remove("active");
+    }
+  });
+
+  const profileButton = document.getElementById("profile-button");
+  const profileModal = document.getElementById("profile-modal");
+
+  profileButton.addEventListener("click", () => {
+    profileModal.classList.toggle("visible");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!profileButton.contains(e.target) && !profileModal.contains(e.target)) {
+      profileModal.classList.remove("visible");
+    }
   });
 
   renderTable(aluguelList, paginaAtual);

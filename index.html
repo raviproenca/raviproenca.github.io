@@ -15,27 +15,50 @@
     <link rel="stylesheet" href="/styles/index.css" />
   </head>
   <body>
-    <main>
-      <div id="login-div">
+    <main class="login-main-container">
+      <div class="login-header">
         <h1>LOGIN</h1>
-        <a href="#" id="forgot-password">Esqueci minha senha</a>
+        <a href="#" class="forgot-password-link">Esqueci minha senha</a>
       </div>
-      <form action="">
-        <div class="login-input-div">
+      <form id="form-login" class="login-form">
+        <div class="login-input-group">
           <span class="material-icons-outlined">person</span>
-          <input type="text" placeholder="Digite seu nome" />
+          <input
+            type="text"
+            id="login-name"
+            name="name"
+            placeholder="Digite seu nome"
+            oninput="this.setCustomValidity('')"
+          />
         </div>
-        <div class="login-input-div">
+        <div class="login-input-group">
           <span class="material-icons-outlined">mail</span>
-          <input type="text" placeholder="Digite seu email" />
+          <input
+            type="email"
+            id="login-email"
+            name="email"
+            placeholder="Digite seu email"
+            oninput="this.setCustomValidity('')"
+          />
         </div>
-        <div class="login-input-div">
+        <div class="login-input-group">
           <span class="material-icons-outlined">lock</span>
-          <input type="text" placeholder="Digite sua senha" />
+          <input
+            type="password"
+            id="login-password"
+            name="password"
+            placeholder="Digite sua senha"
+            oninput="this.setCustomValidity('')"
+          />
         </div>
-        <button type="submit">Entrar</button>
+        <button type="submit" class="login-button">Entrar</button>
       </form>
-      <img src="WDA GROUP LOGO.png" alt="" />
+      <img
+        src="/assets/images/WDA GROUP LOGO.png"
+        alt="WDA Group Logo"
+        class="login-logo"
+      />
     </main>
+    <script src="/js/index.js"></script>
   </body>
 </html>

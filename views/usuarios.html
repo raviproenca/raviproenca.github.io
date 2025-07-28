@@ -18,12 +18,30 @@
   </head>
   <body>
     <header>
+      <div id="toggle-nav">
+        <span class="material-icons-outlined">dehaze</span>
+      </div>
+
       <h1>Locadora de livros</h1>
-      <div id="header-user">
-        <span class="material-icons-outlined">person</span>
+
+      <!-- Wrapper fora de #header-user -->
+      <div class="profile-wrapper">
+        <div id="header-user">
+          <span id="profile-button" class="material-icons-outlined"
+            >person</span
+          >
+        </div>
+
+        <!-- Modal fora de #header-user -->
+        <div id="profile-modal">
+          <p class="name">João Silva</p>
+          <p class="email">joao@email.com</p>
+          <a href="/index.html" id="logout-button">Log Out</a>
+        </div>
       </div>
     </header>
-    <nav>
+
+    <nav id="navbar">
       <img src="/assets/images/WDA GROUP LOGO.png" alt="" />
       <ul>
         <li>
@@ -108,6 +126,7 @@
         </button>
         <form id="form-cadastrar">
           <div class="form-group">
+            <label for="register-name">Nome</label>
             <input
               type="text"
               id="register-name"
@@ -117,6 +136,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-email">Email</label>
             <input
               type="email"
               id="register-email"
@@ -126,6 +146,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-password">Senha</label>
             <input
               type="password"
               id="register-password"
@@ -135,6 +156,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-permission">Permissão</label>
             <select
               id="register-permission"
               name="permission"
@@ -159,6 +181,7 @@
         </button>
         <form id="form-atualizar">
           <div class="form-group">
+            <label for="update-name">Nome</label>
             <input
               type="text"
               id="update-name"
@@ -168,6 +191,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-email">Email</label>
             <input
               type="email"
               id="update-email"
@@ -177,6 +201,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-password">Senha</label>
             <input
               type="password"
               id="update-password"
@@ -186,6 +211,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-permission">Permissão</label>
             <select id="update-permission" name="permission">
               <option value="usuario">Leitor</option>
               <option value="editor">Editor</option>
@@ -204,6 +230,7 @@
         </form>
       </div>
     </div>
+
     <div id="modal-cadastrando" class="modal">
       <div class="modal-content">
         <button class="close-modal-btn" aria-label="Fechar">

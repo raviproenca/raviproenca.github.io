@@ -18,12 +18,29 @@
   </head>
   <body>
     <header>
+      <div id="toggle-nav">
+        <span class="material-icons-outlined">dehaze</span>
+      </div>
+
       <h1>Locadora de livros</h1>
-      <div id="header-user">
-        <span class="material-icons-outlined">person</span>
+
+      <!-- Wrapper fora de #header-user -->
+      <div class="profile-wrapper">
+        <div id="header-user">
+          <span id="profile-button" class="material-icons-outlined"
+            >person</span
+          >
+        </div>
+
+        <!-- Modal fora de #header-user -->
+        <div id="profile-modal">
+          <p class="name">João Silva</p>
+          <p class="email">joao@email.com</p>
+          <a href="/index.html" id="logout-button">Log Out</a>
+        </div>
       </div>
     </header>
-    <nav>
+    <nav id="navbar">
       <img src="/assets/images/WDA GROUP LOGO.png" alt="" />
       <ul>
         <li>
@@ -108,6 +125,7 @@
         </button>
         <form id="form-cadastrar">
           <div class="form-group">
+            <label for="register-livro">Livro</label>
             <input
               type="text"
               id="register-livro"
@@ -117,6 +135,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-locatario">Locatário</label>
             <input
               type="text"
               id="register-locatario"
@@ -126,6 +145,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-data-locacao">Data de Locação</label>
             <input
               type="date"
               id="register-data-locacao"
@@ -135,6 +155,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-data-devolucao">Data de Devolução</label>
             <input
               type="date"
               id="register-data-devolucao"
@@ -158,6 +179,7 @@
         </button>
         <form id="form-atualizar">
           <div class="form-group">
+            <label for="update-livro">Livro</label>
             <input
               type="text"
               id="update-livro"
@@ -167,6 +189,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-locatario">Locatário</label>
             <input
               type="text"
               id="update-locatario"
@@ -176,6 +199,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-data-locacao">Data de Locação</label>
             <input
               type="date"
               id="update-data-locacao"
@@ -185,6 +209,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-data-devolucao">Data de Devolução</label>
             <input
               type="date"
               id="update-data-devolucao"

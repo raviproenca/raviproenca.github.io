@@ -18,12 +18,29 @@
   </head>
   <body>
     <header>
+      <div id="toggle-nav">
+        <span class="material-icons-outlined">dehaze</span>
+      </div>
+
       <h1>Locadora de livros</h1>
-      <div id="header-user">
-        <span class="material-icons-outlined">person</span>
+
+      <!-- Wrapper fora de #header-user -->
+      <div class="profile-wrapper">
+        <div id="header-user">
+          <span id="profile-button" class="material-icons-outlined"
+            >person</span
+          >
+        </div>
+
+        <!-- Modal fora de #header-user -->
+        <div id="profile-modal">
+          <p class="name">João Silva</p>
+          <p class="email">joao@email.com</p>
+          <a href="/index.html" id="logout-button">Log Out</a>
+        </div>
       </div>
     </header>
-    <nav>
+    <nav id="navbar">
       <img src="/assets/images/WDA GROUP LOGO.png" alt="" />
       <ul>
         <li>
@@ -108,6 +125,7 @@
         </button>
         <form id="form-cadastrar">
           <div class="form-group">
+            <label for="register-name">Nome</label>
             <input
               type="text"
               id="register-name"
@@ -117,6 +135,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-email">Email</label>
             <input
               type="email"
               id="register-email"
@@ -126,6 +145,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-telefone">Telefone</label>
             <input
               type="tel"
               id="register-telefone"
@@ -135,6 +155,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="register-site">Site</label>
             <input
               type="text"
               id="register-site"
@@ -158,6 +179,7 @@
         </button>
         <form id="form-atualizar">
           <div class="form-group">
+            <label for="update-name">Nome</label>
             <input
               type="text"
               id="update-name"
@@ -167,6 +189,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-email">Email</label>
             <input
               type="email"
               id="update-email"
@@ -176,6 +199,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-telefone">Telefone</label>
             <input
               type="tel"
               id="update-telefone"
@@ -185,6 +209,7 @@
             />
           </div>
           <div class="form-group">
+            <label for="update-site">Site</label>
             <input
               type="text"
               id="update-site"
@@ -245,7 +270,7 @@
           <span class="material-icons-outlined">close</span>
         </button>
         <div class="modal-smaller-content">
-          <h3>Você realmente deseja excluir esse usuário?</h3>
+          <h3>Você realmente deseja excluir essa editora?</h3>
           <div class="modal-actions">
             <button type="submit" class="btn-primary">Sim</button>
             <button type="button" class="btn-secondary">Cancelar</button>

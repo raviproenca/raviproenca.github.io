@@ -17,14 +17,32 @@
     <link rel="stylesheet" href="/styles/dashboard.css" />
   </head>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
   <body>
     <header>
+      <div id="toggle-nav">
+        <span class="material-icons-outlined">dehaze</span>
+      </div>
+
       <h1>Locadora de livros</h1>
-      <div id="header-user">
-        <span class="material-icons-outlined">person</span>
+
+      <!-- Wrapper fora de #header-user -->
+      <div class="profile-wrapper">
+        <div id="header-user">
+          <span id="profile-button" class="material-icons-outlined"
+            >person</span
+          >
+        </div>
+
+        <!-- Modal fora de #header-user -->
+        <div id="profile-modal">
+          <p class="name">João Silva</p>
+          <p class="email">joao@email.com</p>
+          <a href="/index.html" id="logout-button">Log Out</a>
+        </div>
       </div>
     </header>
-    <nav>
+    <nav id="navbar">
       <img src="/assets/images/WDA GROUP LOGO.png" alt="" />
       <ul>
         <li>
@@ -39,7 +57,11 @@
           >
         </li>
         <li>
-          <a href="editoras.html" class="nav-item" data-title="Editoras"
+          <a
+            href="editoras.html"
+            id="editoras-btn"
+            class="nav-item"
+            data-title="Editoras"
             ><span class="material-icons-outlined">import_contacts</span>
             Editoras</a
           >
@@ -103,24 +125,11 @@
           <div id="locatarios-container">
             <canvas id="locatarios-chart-pie"></canvas>
           </div>
-          <!-- <div id="locatarios-info">
-            <p>Total de livros emprestados: <span class="info-value">6</span></p>
-            <p>Total de aluguéis: <span class="info-value">4</span></p>
-          </div> -->
         </div>
         <div id="livros-chart">
           <div id="chart-container">
             <canvas id="livros-chart-bar"></canvas>
           </div>
-          <!-- <div id="livros-chart-info">
-            <p>
-              Total de livros devolvidos dentro do prazo:
-              <span class="info-value">36</span>
-            </p>
-            <p>
-              Total de livros devolvidos fora do prazo: <span class="info-value">19</span>
-            </p>
-          </div> -->
         </div>
       </section>
     </main>

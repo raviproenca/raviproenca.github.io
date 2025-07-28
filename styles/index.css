@@ -1,3 +1,4 @@
+/* Reset básico */
 * {
   margin: 0;
   padding: 0;
@@ -8,152 +9,174 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: "Roboto", sans-serif;
-  background: linear-gradient(to left, #2AA9B5 35%, #C4FAFF);
+  background: linear-gradient(to left, #2aa9b5 35%, #c4faff);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
 }
 
-main {
+/* Container principal do login */
+.login-main-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 43.75rem;
+  max-width: 37rem;
+  padding: 1rem;
 }
 
-main #login-div {
+.login-header {
   display: flex;
   width: 100%;
-  height: auto;
-  min-height: 5rem;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem 0 2rem;
+  padding: 0 1rem;
   flex-wrap: wrap;
   text-align: center;
+  margin-bottom: 1rem;
 }
 
-main #login-div h1,
-main #login-div a {
+.login-header h1,
+.login-header .forgot-password-link {
   color: white;
   text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.25);
   font-weight: bolder;
 }
 
-main #login-div h1 {
+.login-header h1 {
   font-size: clamp(1.75rem, 5vw, 2.25rem);
-  padding-left: 0;
 }
 
-main #login-div a {
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
-  padding-right: 0;
+.login-header .forgot-password-link {
+  font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+  text-decoration: none;
 }
 
-main form {
+.login-header .forgot-password-link:hover {
+  text-decoration: underline;
+}
+
+.login-form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(1.5rem, 5vw, 2.5rem);
-  background-color: #FFFFFF;
+  gap: clamp(1rem, 3vw, 1.5rem);
+  background-color: #ffffff;
   padding: clamp(2rem, 5vw, 3.5rem) clamp(1rem, 5vw, 2rem);
-  height: auto;
-  min-height: 34rem;
   width: 100%;
   border-radius: 40px;
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.25);
+  min-height: auto;
 }
 
-main form .login-input-div {
+.login-input-group {
   display: flex;
   align-items: center;
   width: 90%;
-  max-width: 32.8125rem;
-  height: clamp(4rem, 10vw, 5.5rem);
-  border-radius: 25px;
-  border: none;
+  height: clamp(3.5rem, 8vw, 4.5rem);
+  border-radius: 20px;
   box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.25);
   background-color: #fafafa;
-  padding-left: 2.5rem;
+  padding-left: 1.5rem;
 }
 
-main form .login-input-div input {
+.login-input-group input {
   border: none;
   background: transparent;
-  text-align: left;
-  padding-left: 3rem;
+  flex-grow: 1;
+  padding-left: 1rem;
   outline: none;
-  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   color: black;
 }
 
-form button {
+.login-input-group input::placeholder {
+  color: #888;
+}
+
+.login-button {
   width: 90%;
   max-width: 16.625rem;
-  height: clamp(4rem, 10vw, 5.5rem);
+  height: clamp(3.5rem, 8vw, 4.5rem);
   border-radius: 15px;
   border: none;
   box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.25);
   background-color: #006670;
   color: white;
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
   font-weight: bolder;
   margin-top: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-form button:hover {
+.login-button:hover {
   background-color: #004d55;
+  transform: translateY(-2px);
 }
 
-main img {
+.login-logo {
   height: auto;
-  max-height: 12rem;
+  max-height: 8rem;
   width: 100%;
-  max-width: 12rem;
+  max-width: 8rem;
   object-fit: contain;
   margin-top: 1.5rem;
 }
 
 .material-icons-outlined {
-  font-size: clamp(2rem, 6vw, 3rem);
-  color: black;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  color: #555;
 }
 
 @media (max-width: 768px) {
-  #login-div {
+  .login-header {
     flex-direction: column;
-    align-items: center;
-    text-align: center;
+    gap: 0.5rem;
+    padding: 0 0.5rem;
+    margin-bottom: 1rem;
   }
 
-  #login-div h1,
-  #login-div a {
-    padding: 0;
+  .login-header h1 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
   }
 
-  main form {
-    border-radius: 20px;
-    padding: 1.5rem 1rem;
+  .login-header .forgot-password-link {
+    font-size: clamp(0.8rem, 2.5vw, 1rem);
   }
 
-  .login-input-div,
-  form button {
+  .login-form {
+    padding: clamp(1.5rem, 4vw, 2.5rem) clamp(0.75rem, 3vw, 1.5rem);
+    border-radius: 30px;
+  }
+
+  .login-input-group {
     width: 95%;
-  }
-}
-
-@media (max-width: 480px) {
-  body {
-    padding: 0.5rem;
+    height: clamp(3rem, 7vw, 4rem);
+    padding-left: 1rem;
   }
 
-  main form {
-    padding: 1rem 0.5rem;
-    min-height: auto;
+  .login-input-group input {
+    font-size: clamp(0.9rem, 2.2vw, 1.1rem);
+    padding-left: 0.75rem;
+  }
+
+  .login-button {
+    width: 95%;
+    height: clamp(3rem, 7vw, 4rem);
+    font-size: clamp(1.1rem, 2.8vw, 1.5rem);
+    margin-top: 0.75rem;
+  }
+
+  .material-icons-outlined {
+    font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  }
+
+  .login-logo {
+    max-height: 6rem;
+    max-width: 6rem;
+    margin-top: 1rem;
   }
 }

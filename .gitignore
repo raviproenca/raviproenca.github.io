@@ -1,0 +1,45 @@
+# Diretório de dependências
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Diretórios temporários
+tmp/
+temp/
+.cache/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Compilações (ex: TypeScript, Babel)
+dist/
+build/
+out/
+
+# Cobertura de testes
+coverage/
+
+# IDEs e editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos de lock alternativos (caso não use)
+# (se você usa apenas npm, pode ignorar yarn.lock ou pnpm-lock.yaml)
+yarn.lock
+pnpm-lock.yaml
