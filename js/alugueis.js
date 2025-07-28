@@ -163,8 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   formCadastrar.addEventListener("submit", (event) => {
-    if (!formCadastrar.checkValidity()) return;
     event.preventDefault();
+    if (!formCadastrar.checkValidity()) return;
 
     const livroInput = document.getElementById("register-livro");
     const locatarioInput = document.getElementById("register-locatario");

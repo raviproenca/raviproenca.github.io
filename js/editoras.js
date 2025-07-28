@@ -163,10 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   formCadastrar.addEventListener("submit", (event) => {
-    if (!formCadastrar.checkValidity()) {
-      return;
-    }
     event.preventDefault();
+    if (!formCadastrar.checkValidity()) return;
 
     const nomeInput = document.getElementById("register-name");
     const emailInput = document.getElementById("register-email");
