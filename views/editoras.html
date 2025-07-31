@@ -123,7 +123,7 @@
         <button class="close-modal-btn" aria-label="Fechar">
           <span class="material-icons-outlined">close</span>
         </button>
-        <form id="form-cadastrar">
+        <form id="form-cadastrar" novalidate>
           <div class="form-group">
             <label for="register-name">Nome</label>
             <input
@@ -141,7 +141,6 @@
               id="register-email"
               name="email"
               placeholder="email@exemplo.com"
-              oninput="this.setCustomValidity('')"
             />
           </div>
           <div class="form-group">
@@ -155,7 +154,7 @@
             />
           </div>
           <div class="form-group">
-            <label for="register-site">Site</label>
+            <label for="register-site">Site (opcional)</label>
             <input
               type="text"
               id="register-site"
@@ -209,13 +208,12 @@
             />
           </div>
           <div class="form-group">
-            <label for="update-site">Site</label>
+            <label for="update-site">Site (opcional)</label>
             <input
               type="text"
               id="update-site"
               name="site"
               placeholder="www.exemplo.com"
-              required
             />
           </div>
           <div class="modal-actions">
@@ -278,6 +276,6 @@
         </div>
       </div>
     </div>
-    <script src="/js/editoras.js"></script>
+    <script type="module" src="/js/editoras.js"></script>
   </body>
 </html>

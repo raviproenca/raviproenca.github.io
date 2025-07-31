@@ -194,11 +194,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleNav = document.getElementById("toggle-nav");
   const nav = document.getElementById("navbar");
   toggleNav.addEventListener("click", (e) => {
-    e.stopPropagation(); // impede propagação para o documento
+    e.stopPropagation();
     nav.classList.toggle("active");
   });
 
-  // Fecha navbar ao clicar fora
   document.addEventListener("click", (e) => {
     if (nav.classList.contains("active") && !nav.contains(e.target)) {
       nav.classList.remove("active");
