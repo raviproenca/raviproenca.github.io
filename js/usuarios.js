@@ -97,6 +97,7 @@ const renderPaginacao = (usuarios) => {
     paginaAtual--;
     renderTable(usuarios, paginaAtual);
   });
+
   paginacaoContainer.appendChild(btnAnterior);
 
   for (let i = 1; i <= totalPaginas; i++) {
@@ -192,7 +193,7 @@ const cadastrarUsuario = async (userData) => {
 
     await fetchUsers();
     searchInput.value = "";
-    paginaAtual = Math.ceil(todosOsUsuarios.length / usuariosPorPagina);
+    paginaAtual = 1;
     renderTable(todosOsUsuarios, paginaAtual);
   } catch (error) {
     console.error("Erro ao cadastrar usuário:", error);
@@ -297,20 +298,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  registerNameInput.addEventListener("input", () => {
+    if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      registerNameInput.setCustomValidity("");
+    }
+  });
+
   registerEmailInput.addEventListener("input", () => {
     if (
       registerEmailInput.validity.typeMismatch ||
-      registerEmailInput.value.trim().length < 7
+      registerEmailInput.value.trim().length < 7 ||
+      registerEmailInput.value.trim().length > 50
     ) {
       registerEmailInput.setCustomValidity(
-        "Por favor, insira um e-mail válido."
+        "Por favor, insira um email válido."
       );
     } else {
       registerEmailInput.setCustomValidity("");
     }
   });
 
-  formCadastrar.addEventListener("submit", (event) => {
+  registerPasswordInput.addEventListener("input", () => {
+    if (registerPasswordInput.value.trim().length < 8) {
+      registerPasswordInput.setCustomValidity(
+        "A senha deve possui no mínimo 8 dígitos"
+      );
+    } else if (registerPasswordInput.value.trim().length > 30) {
+      registerPasswordInput.setCustomValidity(
+        "Por favor, insira uma senha válida."
+      );
+    } else {
+      registerPasswordInput.setCustomValidity("");
+    }
+  });
+
+  formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (!registerNameInput.value.trim()) {
@@ -332,53 +359,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (
       registerEmailInput.validity.typeMismatch ||
-      registerEmailInput.value.trim().length < 7
+      registerEmailInput.value.trim().length < 7 ||
+      registerEmailInput.value.trim().length > 50
     ) {
       registerEmailInput.setCustomValidity(
-        "Por favor, insira um e-mail válido."
+        "Por favor, insira um email válido."
       );
       registerEmailInput.reportValidity();
       return;
     }
 
-    if (registerNameInput.value.trim().length > 50) {
-      registerNameInput.setCustomValidity(
-        "O nome excedeu o limite de 50 caracteres."
-      );
-      registerNameInput.reportValidity();
-      return;
-    }
-
-    if (registerNameInput.value.trim().length < 3) {
-      registerNameInput.setCustomValidity(
-        "O nome deve possuir no mínimo 3 letras."
-      );
-      registerNameInput.reportValidity();
-      return;
-    }
-
-    if (registerPasswordInput.value.trim().length > 50) {
+    if (registerPasswordInput.value.trim().length < 8) {
       registerPasswordInput.setCustomValidity(
-        "A senha excedeu o limite de 50 caracteres."
+        "A senha deve possui no mínimo 8 dígitos"
+      );
+    } else if (registerPasswordInput.value.trim().length > 30) {
+      registerPasswordInput.setCustomValidity(
+        "Por favor, insira uma senha válida."
       );
       registerPasswordInput.reportValidity();
-      return;
-    }
-
-    if (registerPasswordInput.value.trim().length < 6) {
-      registerPasswordInput.setCustomValidity(
-        "A senha deve possuir no mínimo 6 caracteres."
-      );
-      registerPasswordInput.reportValidity();
-      return;
-    }
-
-    if (registerEmailInput.value.trim().length > 50) {
-      registerEmailInput.setCustomValidity(
-        "O email excedeu o limite de 50 caracteres."
-      );
-      registerEmailInput.reportValidity();
       return;
     }
 
@@ -416,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
       password: registerPasswordInput.value.trim(),
       role: registerPermissionInput.value.trim(),
     };
-    cadastrarUsuario(newUser);
+    await cadastrarUsuario(newUser);
   });
 
   tableBody.addEventListener("click", (event) => {
@@ -424,7 +433,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const deleteBtn = event.target.closest(".delete-btn");
 
     if (editBtn) {
-      console.log("Botão de editar clicado:", editBtn);
       const userId = parseInt(editBtn.dataset.id, 10);
       idUsuarioEditando = userId;
 
@@ -439,30 +447,129 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (deleteBtn) {
-      console.log("Botão de editar clicado:", deleteBtn);
       const userId = deleteBtn.dataset.id;
       idParaExcluir = userId;
       openModal(modalConfirmando);
     }
   });
 
-  formAtualizar.addEventListener("submit", (event) => {
+  updateNameInput.addEventListener("input", () => {
+    if (
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
+    ) {
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      updateNameInput.setCustomValidity("");
+    }
+  });
+
+  updateEmailInput.addEventListener("input", () => {
+    if (
+      updateEmailInput.validity.typeMismatch ||
+      updateEmailInput.value.trim().length < 7 ||
+      updateEmailInput.value.trim().length > 50
+    ) {
+      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
+    } else {
+      updateEmailInput.setCustomValidity("");
+    }
+  });
+
+  updatePasswordInput.addEventListener("input", () => {
+    if (updatePasswordInput.value.trim().length < 8) {
+      updatePasswordInput.setCustomValidity(
+        "A senha deve possui no mínimo 8 dígitos"
+      );
+    } else if (updatePasswordInput.value.trim().length > 30) {
+      updatePasswordInput.setCustomValidity(
+        "Por favor, insira uma senha válida."
+      );
+    } else {
+      updatePasswordInput.setCustomValidity("");
+    }
+  });
+
+  formAtualizar.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (idUsuarioEditando === null) return;
 
+    if (!updateNameInput.value.trim()) {
+      updateNameInput.setCustomValidity("O nome é obrigatório.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (!updateEmailInput.value.trim()) {
+      updateEmailInput.setCustomValidity("O email é obrigatório.");
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    if (!updatePasswordInput.value.trim()) {
+      updatePasswordInput.setCustomValidity("A senha é obrigatória.");
+      updatePasswordInput.reportValidity();
+      return;
+    }
+
     if (
-      !registerNameInput.value.trim() ||
-      !registerEmailInput.value.trim() ||
-      !registerPasswordInput.value.trim() ||
-      !formAtualizar.checkValidity()
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
     ) {
-      registerNameInput.setCustomValidity("O nome é obrigatório.");
-      registerEmailInput.setCustomValidity("O email é obrigatório.");
-      registerPasswordInput.setCustomValidity("A senha é obrigatória.");
-      registerNameInput.reportValidity();
-      registerEmailInput.reportValidity();
-      registerPasswordInput.reportValidity();
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateEmailInput.validity.typeMismatch ||
+      updateEmailInput.value.trim().length < 7 ||
+      updateEmailInput.value.trim().length > 50
+    ) {
+      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    if (updatePasswordInput.value.trim().length < 8) {
+      updatePasswordInput.setCustomValidity(
+        "A senha deve possui no mínimo 8 dígitos"
+      );
+    } else if (updatePasswordInput.value.trim().length > 30) {
+      updatePasswordInput.setCustomValidity(
+        "Por favor, insira uma senha válida."
+      );
+      updatePasswordInput.reportValidity();
+      return;
+    }
+
+    const emailExistente = todosOsUsuarios.some(
+      (usuario) =>
+        usuario.email.toLowerCase() ===
+        updateEmailInput.value.trim().toLowerCase()
+    );
+
+    if (emailExistente) {
+      updateEmailInput.setCustomValidity(
+        "Já existe um locatário com este e-mail."
+      );
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    const nomeExistente = todosOsUsuarios.some(
+      (usuario) =>
+        usuario.name.toLowerCase() ===
+        updateNameInput.value.trim().toLowerCase()
+    );
+
+    if (nomeExistente) {
+      updateNameInput.setCustomValidity(
+        "Já existe um locatário com este nome."
+      );
+      updateNameInput.reportValidity();
+      return;
     }
 
     const updatedUser = {
@@ -471,7 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
       role: updatePermissionInput.value.trim(),
     };
 
-    atualizarUsuario(idUsuarioEditando, updatedUser);
+    await atualizarUsuario(idUsuarioEditando, updatedUser);
   });
 
   confirmDeleteBtn.addEventListener("click", () => {

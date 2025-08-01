@@ -193,7 +193,7 @@ const cadastrarEditora = async (editoraData) => {
 
     await fetchEditoras();
     searchInput.value = "";
-    paginaAtual = Math.ceil(todasAsEditoras.length / editorasPorPagina);
+    paginaAtual = 1;
     renderTable(todasAsEditoras, paginaAtual);
   } catch (error) {
     console.error("Erro ao cadastrar editora:", error);
@@ -299,18 +299,106 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  registerNameInput.addEventListener("input", () => {
+    if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      registerNameInput.setCustomValidity("");
+    }
+  });
+
+  registerEmailInput.addEventListener("input", () => {
+    if (
+      registerEmailInput.validity.typeMismatch ||
+      registerEmailInput.value.trim().length < 7 ||
+      registerEmailInput.value.trim().length > 50
+    ) {
+      registerEmailInput.setCustomValidity(
+        "Por favor, insira um email válido."
+      );
+    } else {
+      registerEmailInput.setCustomValidity("");
+    }
+  });
+
+  registerTelefoneInput.addEventListener("input", () => {
+    if (
+      registerTelefoneInput.value.trim().length < 11 ||
+      registerTelefoneInput.value.trim().length > 16
+    ) {
+      registerTelefoneInput.setCustomValidity(
+        "Por favor, insira um telefone válido"
+      );
+    } else {
+      registerTelefoneInput.setCustomValidity("");
+    }
+  });
+
   formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (
-      !formCadastrar.checkValidity() ||
-      !registerNameInput.value.trim() ||
-      !registerEmailInput.value.trim() ||
-      !registerTelefoneInput.value.trim()
-    ) {
+
+    if (!registerNameInput.value.trim()) {
+      registerNameInput.setCustomValidity("O nome é obrigatório.");
       registerNameInput.reportValidity();
+      return;
+    }
+
+    if (!registerEmailInput.value.trim()) {
+      registerEmailInput.setCustomValidity("O email é obrigatório.");
       registerEmailInput.reportValidity();
+      return;
+    }
+
+    if (!registerTelefoneInput.value.trim()) {
+      registerTelefoneInput.setCustomValidity("O telefone é obrigatório.");
       registerTelefoneInput.reportValidity();
       return;
+    }
+
+    if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (
+      registerEmailInput.validity.typeMismatch ||
+      registerEmailInput.value.trim().length < 7 ||
+      registerEmailInput.value.trim().length > 50
+    ) {
+      registerEmailInput.setCustomValidity(
+        "Por favor, insira um email válido."
+      );
+      registerEmailInput.reportValidity();
+      return;
+    }
+
+    if (
+      registerTelefoneInput.value.trim().length < 11 ||
+      registerTelefoneInput.value.trim().length > 16
+    ) {
+      registerTelefoneInput.setCustomValidity(
+        "Por favor, insira um telefone válido"
+      );
+      registerTelefoneInput.reportValidity();
+      return;
+    }
+
+    if (registerSiteInput.value.trim() != "") {
+      if (
+        registerSiteInput.validity.typeMismatch ||
+        registerSiteInput.value.trim().length < 16
+      ) {
+        registerSiteInput.setCustomValidity("Por favor, insira um site válido");
+        registerSiteInput.reportValidity();
+        return;
+      }
     }
 
     const newEditora = {
@@ -322,51 +410,141 @@ document.addEventListener("DOMContentLoaded", () => {
     await cadastrarEditora(newEditora);
   });
 
-  tableBody.addEventListener("click", async (event) => {
+  tableBody.addEventListener("click", (event) => {
     const editBtn = event.target.closest(".edit-btn");
     const deleteBtn = event.target.closest(".delete-btn");
 
     if (editBtn) {
-      const editoraId = editBtn.dataset.id;
+      const editoraId = parseInt(editBtn.dataset.id, 10);
       idEditoraEditando = editoraId;
 
-      try {
-        const token = getToken();
-        if (!token) return;
-
-        const response = await axios.get(
-          `${API_BASE_URL}/publisher/${editoraId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const editoraToEdit = response.data;
-
-        if (editoraToEdit) {
-          updateNameInput.value = editoraToEdit.name;
-          updateEmailInput.value = editoraToEdit.email;
-          updateTelefoneInput.value = editoraToEdit.telephone;
-          updateSiteInput.value = editoraToEdit.site;
-          openModal(modalAtualizar);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar dados da editora para edição:", error);
-        alert("Não foi possível carregar os dados da editora para edição.");
+      const editoraToEdit = todasAsEditoras.find((u) => u.id === editoraId);
+      if (editoraToEdit) {
+        updateNameInput.value = editoraToEdit.name;
+        updateEmailInput.value = editoraToEdit.email;
+        updateTelefoneInput.value = editoraToEdit.telephone;
+        updateSiteInput.value = editoraToEdit.site || "";
+        openModal(modalAtualizar);
       }
     }
 
     if (deleteBtn) {
-      const editoraId = deleteBtn.dataset.id;
+      const editoraId = parseInt(deleteBtn.dataset.id, 10);
       idParaExcluir = editoraId;
       openModal(modalConfirmando);
     }
   });
 
+  updateNameInput.addEventListener("input", () => {
+    if (
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
+    ) {
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      updateNameInput.setCustomValidity("");
+    }
+  });
+
+  updateEmailInput.addEventListener("input", () => {
+    if (
+      updateEmailInput.validity.typeMismatch ||
+      updateEmailInput.value.trim().length < 7 ||
+      updateEmailInput.value.trim().length > 50
+    ) {
+      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
+    } else {
+      updateEmailInput.setCustomValidity("");
+    }
+  });
+
+  updateTelefoneInput.addEventListener("input", () => {
+    if (
+      updateTelefoneInput.value.trim().length < 11 ||
+      updateTelefoneInput.value.trim().length > 16
+    ) {
+      updateTelefoneInput.setCustomValidity(
+        "Por favor, insira um telefone válido"
+      );
+    } else {
+      updateTelefoneInput.setCustomValidity("");
+    }
+  });
+
+  updateSiteInput.addEventListener("input", () => {
+    if (
+      updateSiteInput.validity.typeMismatch ||
+      updateSiteInput.value.trim().length < 16
+    ) {
+      updateSiteInput.setCustomValidity("Por favor, insira um site válido");
+    } else {
+      updateSiteInput.setCustomValidity("");
+    }
+  });
+
   formAtualizar.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!formAtualizar.checkValidity() || idEditoraEditando === null) return;
+
+    if (idEditoraEditando === null) return;
+
+    if (!updateNameInput.value.trim()) {
+      updateNameInput.setCustomValidity("O nome é obrigatório.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (!updateEmailInput.value.trim()) {
+      updateEmailInput.setCustomValidity("O email é obrigatório.");
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    if (!updateTelefoneInput.value.trim()) {
+      updateTelefoneInput.setCustomValidity("O telefone é obrigatório.");
+      updateTelefoneInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
+    ) {
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateEmailInput.validity.typeMismatch ||
+      updateEmailInput.value.trim().length < 7 ||
+      updateEmailInput.value.trim().length > 50
+    ) {
+      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateTelefoneInput.value.trim().length < 11 ||
+      updateTelefoneInput.value.trim().length > 16
+    ) {
+      updateTelefoneInput.setCustomValidity(
+        "Por favor, insira um telefone válido"
+      );
+      updateTelefoneInput.reportValidity();
+      return;
+    }
+
+    if (updateSiteInput.value.trim() != "") {
+      if (
+        updateSiteInput.validity.typeMismatch ||
+        updateSiteInput.value.trim().length < 16
+      ) {
+        updateSiteInput.setCustomValidity("Por favor, insira um site válido");
+        updateSiteInput.reportValidity();
+        return;
+      }
+    }
 
     const updatedEditora = {
       name: updateNameInput.value.trim(),

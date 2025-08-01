@@ -132,7 +132,7 @@
               id="register-name"
               name="name"
               placeholder="Nome"
-              oninput="this.setCustomValidity('')"
+              autocomplete="off"
             />
           </div>
           <div class="form-group">
@@ -142,6 +142,7 @@
               id="register-email"
               name="email"
               placeholder="email@exemplo.com"
+              autocomplete="off"
             />
           </div>
           <div class="form-group">
@@ -151,16 +152,12 @@
               id="register-password"
               name="password"
               placeholder="********"
-              oninput="this.setCustomValidity('')"
+              autocomplete="off"
             />
           </div>
           <div class="form-group">
             <label for="register-permission">Permissão</label>
-            <select
-              id="register-permission"
-              name="permission"
-              oninput="this.setCustomValidity('')"
-            >
+            <select id="register-permission" name="permission">
               <option value="USER">Leitor</option>
               <option value="ADMIN">Editor</option>
             </select>
@@ -178,7 +175,7 @@
         <button class="close-modal-btn" aria-label="Fechar">
           <span class="material-icons-outlined">close</span>
         </button>
-        <form id="form-atualizar">
+        <form id="form-atualizar" novalidate>
           <div class="form-group">
             <label for="update-name">Nome</label>
             <input
@@ -186,7 +183,7 @@
               id="update-name"
               name="name"
               placeholder="Nome"
-              required
+              autocomplete="off"
             />
           </div>
           <div class="form-group">
@@ -196,7 +193,7 @@
               id="update-email"
               name="email"
               placeholder="email@exemplo.com"
-              required
+              autocomplete="off"
             />
           </div>
           <div class="form-group">
@@ -206,7 +203,7 @@
               id="update-password"
               name="password"
               placeholder="********"
-              required
+              autocomplete="off"
             />
           </div>
           <div class="form-group">

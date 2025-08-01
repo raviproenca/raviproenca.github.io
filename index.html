@@ -20,7 +20,7 @@
         <h1>LOGIN</h1>
         <a href="#" class="forgot-password-link">Esqueci minha senha</a>
       </div>
-      <form id="form-login" class="login-form">
+      <form id="form-login" class="login-form" novalidate>
         <div class="login-input-group">
           <span class="material-icons-outlined">person</span>
           <input
@@ -28,7 +28,7 @@
             id="login-name"
             name="name"
             placeholder="Digite seu nome"
-            oninput="this.setCustomValidity('')"
+            autocomplete="off"
           />
         </div>
         <div class="login-input-group">
@@ -38,7 +38,7 @@
             id="login-email"
             name="email"
             placeholder="Digite seu email"
-            oninput="this.setCustomValidity('')"
+            autocomplete="off"
           />
         </div>
         <div class="login-input-group">
@@ -48,7 +48,7 @@
             id="login-password"
             name="password"
             placeholder="Digite sua senha"
-            oninput="this.setCustomValidity('')"
+            autocomplete="off"
           />
         </div>
         <button type="submit" class="login-button">Entrar</button>

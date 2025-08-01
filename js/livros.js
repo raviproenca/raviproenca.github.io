@@ -1,373 +1,309 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const livroList = [
-    {
-      nome: "Xal, sua autobiografia",
-      autor: "Xal",
-      editora: "Panda Books",
-      lancamento: "11/07/2025",
-      estoque: 115,
-    },
-    {
-      nome: "O Garoto da Novela",
-      autor: "Walcyr Carrasco",
-      editora: "Moderna",
-      lancamento: "11/07/2025",
-      estoque: 67,
-    },
-    {
-      nome: "Meu Lugar no Mundo",
-      autor: "Walcyr Carrasco",
-      editora: "Moderna",
-      lancamento: "11/07/2025",
-      estoque: 83,
-    },
-    {
-      nome: "Hoje está um dia melhor",
-      autor: "André de Leones",
-      editora: "Record",
-      lancamento: "11/07/2025",
-      estoque: 29,
-    },
-    {
-      nome: "O Milagre da Manhã",
-      autor: "Hal Elrod",
-      editora: "Saraiva",
-      lancamento: "11/07/2025",
-      estoque: 104,
-    },
-    {
-      nome: "O frágil toque dos monstros",
-      autor: "Alex Sens",
-      editora: "Saraiva",
-      lancamento: "11/07/2025",
-      estoque: 55,
-    },
-  ];
+import axios from "axios";
 
-  const livrosPorPagina = 6;
-  let paginaAtual = 1;
+// --- Configurações Iniciais e Variáveis Globais ---
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const getToken = () => localStorage.getItem("token");
+const livrosPorPagina = 6;
+let paginaAtual = 1;
+let todosOsLivros = [];
+let idLivroEditando = null;
+let idParaExcluir = null;
 
-  const searchInput = document.getElementById("search-input");
-  const tableBody = document.querySelector("#users-table tbody");
-  const paginacaoContainer = document.getElementById("pagination");
+// --- Seleção de Elementos do DOM ---
+const tableBody = document.querySelector("#books-table tbody");
+const paginacaoContainer = document.getElementById("pagination");
+const searchInput = document.getElementById("search-input");
+const mensagemErro = document.getElementById("mensagem-erro");
+const modalOverlay = document.getElementById("modal-overlay");
+const modalCadastrar = document.getElementById("modal-cadastrar");
+const modalAtualizar = document.getElementById("modal-atualizar");
+const modalCadastrando = document.getElementById("modal-cadastrando");
+const modalAtualizando = document.getElementById("modal-atualizando");
+const modalConfirmando = document.getElementById("modal-confirmando");
+const modalDeletando = document.getElementById("modal-deletando");
+const formCadastrar = document.getElementById("form-cadastrar");
+const formAtualizar = document.getElementById("form-atualizar");
+const registerNameInput = document.getElementById("register-name");
+const registerAuthorInput = document.getElementById("register-author");
+const registerLaunchInput = document.getElementById("register-launch");
+const registerQuantityInput = document.getElementById("register-quantity");
+const registerPublisherInput = document.getElementById("register-publisher");
+const updateNameInput = document.getElementById("update-name");
+const updateAuthorInput = document.getElementById("update-author");
+const updateLaunchInput = document.getElementById("update-launch");
+const updateQuantityInput = document.getElementById("update-quantity");
+const updatePublisherInput = document.getElementById("update-publisher");
+const addLivroBtn = document.getElementById("add-book-btn");
+const confirmDeleteBtn = modalConfirmando.querySelector(".btn-primary");
+const toggleNav = document.getElementById("toggle-nav");
+const nav = document.getElementById("navbar");
+const profileButton = document.getElementById("profile-button");
+const profileModal = document.getElementById("profile-modal");
 
-  const renderTable = (livros, pagina = 1) => {
-    tableBody.innerHTML = "";
+// --- Funções de Renderização e UI ---
+const renderTable = (livros, pagina = 1) => {
+  tableBody.innerHTML = "";
+  const inicio = (pagina - 1) * livrosPorPagina;
+  const fim = inicio + livrosPorPagina;
+  const livrosPaginados = livros.slice(inicio, fim);
 
-    const inicio = (pagina - 1) * livrosPorPagina;
-    const fim = inicio + livrosPorPagina;
-    const livrosPaginados = livros.slice(inicio, fim);
+  if (livrosPaginados.length === 0 && pagina > 1) {
+    paginaAtual = Math.max(1, paginaAtual - 1);
+    renderTable(livros, paginaAtual);
+    return;
+  }
 
-    livrosPaginados.forEach((livro, i) => {
-      let tr = tableBody.insertRow();
-      tr.innerHTML = `
-        <td data-label="Nome">${livro.nome}</td>
-        <td data-label="Autor">${livro.autor}</td>
-        <td data-label="Editora">${livro.editora}</td>
-        <td data-label="Lançamento">${livro.lancamento}</td>
-        <td data-label="Estoque" class="${
-          livro.estoque < 30 ? "text-danger" : ""
-        }">${livro.estoque}</td>
-        <td data-label="Ações">
-          <button class="action-btn edit-btn" data-index="${inicio + i}">
-            <span class="material-icons-outlined">edit</span>
-          </button>
-          <button class="action-btn delete-btn" data-index="${inicio + i}">
-            <span class="material-icons-outlined">delete</span>
-          </button>
-        </td>
-      `;
-    });
-
-    const mensagemErro = document.getElementById("mensagem-erro");
-    if (livros.length === 0) {
-      mensagemErro.style.display = "block";
-      paginacaoContainer.innerHTML = "";
-    } else {
-      mensagemErro.style.display = "none";
-      renderPaginacao(livros);
-    }
-  };
-
-  const renderPaginacao = (livros) => {
-    const totalPaginas = Math.ceil(livros.length / livrosPorPagina);
-    paginacaoContainer.innerHTML = "";
-
-    const btnAnterior = document.createElement("button");
-    btnAnterior.innerText = "Anterior";
-    btnAnterior.disabled = paginaAtual === 1;
-    btnAnterior.classList.add("page-btn");
-    btnAnterior.addEventListener("click", () => {
-      paginaAtual--;
-      renderTable(livros, paginaAtual);
-    });
-    paginacaoContainer.appendChild(btnAnterior);
-
-    for (let i = 1; i <= totalPaginas; i++) {
-      const btn = document.createElement("button");
-      btn.innerText = i;
-      btn.classList.add("page-btn");
-      if (i === paginaAtual) btn.classList.add("active");
-      btn.addEventListener("click", () => {
-        paginaAtual = i;
-        renderTable(livros, paginaAtual);
-      });
-      paginacaoContainer.appendChild(btn);
-    }
-
-    const btnProximo = document.createElement("button");
-    btnProximo.innerText = "Próximo";
-    btnProximo.disabled = paginaAtual === totalPaginas;
-    btnProximo.classList.add("page-btn");
-    btnProximo.addEventListener("click", () => {
-      paginaAtual++;
-      renderTable(livros, paginaAtual);
-    });
-    paginacaoContainer.appendChild(btnProximo);
-  };
-
-  const filterLivros = () => {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-
-    const filteredLivros = livroList.filter((livro) => {
-      return (
-        livro.nome.toLowerCase().includes(searchTerm) ||
-        livro.autor.toLowerCase().includes(searchTerm) ||
-        livro.editora.toLowerCase().includes(searchTerm) ||
-        livro.lancamento.toLowerCase().includes(searchTerm) ||
-        String(livro.estoque).includes(searchTerm) ||
-        searchTerm === ""
-      );
-    });
-
-    paginaAtual = 1;
-    renderTable(filteredLivros, paginaAtual);
-  };
-
-  searchInput.addEventListener("input", filterLivros);
-
-  // Modais
-  const addLivro = document.getElementById("add-user-btn"); // Reusing this ID as per the pattern
-  const cancelar = document.querySelectorAll(".btn-secondary");
-  const fechar = document.querySelectorAll(".close-modal-btn");
-  const modalOverlay = document.getElementById("modal-overlay");
-  const modalCadastrar = document.getElementById("modal-cadastrar");
-  const modalAtualizar = document.getElementById("modal-atualizar");
-  const modalCadastrando = document.getElementById("modal-cadastrando");
-  const modalAtualizando = document.getElementById("modal-atualizando");
-  const modalConfirmando = document.getElementById("modal-confirmando");
-  const modalDeletando = document.getElementById("modal-deletando");
-  const formCadastrar = document.getElementById("form-cadastrar");
-  const formAtualizar = document.getElementById("form-atualizar");
-  const inputName = document.getElementById("update-name");
-  const inputAutor = document.getElementById("update-autor");
-  const inputEditora = document.getElementById("update-editora");
-  const inputLancamento = document.getElementById("update-lancamento");
-  const inputEstoque = document.getElementById("update-estoque");
-
-  let indexLivroEditando = null;
-  let indexParaExcluir = null;
-
-  addLivro.addEventListener("click", () => {
-    modalOverlay.classList.add("is-open");
-    modalCadastrar.classList.add("is-open");
+  livrosPaginados.forEach((livro) => {
+    const tr = tableBody.insertRow();
+    tr.innerHTML = `
+      <td data-label="Nome">${livro.name}</td>
+      <td data-label="Autor">${livro.author}</td>
+      <td data-label="Lançamento">${new Date(
+        livro.launchDate
+      ).toLocaleDateString()}</td>
+      <td data-label="Quantidade">${livro.totalQuantity}</td>
+      <td data-label="Editora">${livro.publisherId}</td>
+      <td data-label="Ações">
+        <button class="action-btn edit-btn" data-id="${
+          livro.id
+        }"><span class="material-icons-outlined">edit</span></button>
+        <button class="action-btn delete-btn" data-id="${
+          livro.id
+        }"><span class="material-icons-outlined">delete</span></button>
+      </td>
+    `;
   });
 
+  if (livros.length === 0) {
+    mensagemErro.style.display = "block";
+    mensagemErro.textContent = "Nenhum livro encontrado.";
+    paginacaoContainer.innerHTML = "";
+  } else {
+    mensagemErro.style.display = "none";
+    renderPaginacao(livros);
+  }
+};
+
+const renderPaginacao = (livros) => {
+  const totalPaginas = Math.ceil(livros.length / livrosPorPagina);
+  paginacaoContainer.innerHTML = "";
+
+  const btnAnterior = document.createElement("button");
+  btnAnterior.innerText = "Anterior";
+  btnAnterior.disabled = paginaAtual === 1;
+  btnAnterior.classList.add("page-btn");
+  btnAnterior.addEventListener("click", () => {
+    paginaAtual--;
+    renderTable(livros, paginaAtual);
+  });
+  paginacaoContainer.appendChild(btnAnterior);
+
+  for (let i = 1; i <= totalPaginas; i++) {
+    const btn = document.createElement("button");
+    btn.innerText = i;
+    btn.classList.add("page-btn");
+    if (i === paginaAtual) btn.classList.add("active");
+    btn.addEventListener("click", () => {
+      paginaAtual = i;
+      renderTable(livros, paginaAtual);
+    });
+    paginacaoContainer.appendChild(btn);
+  }
+
+  const btnProximo = document.createElement("button");
+  btnProximo.innerText = "Próximo";
+  btnProximo.disabled = paginaAtual === totalPaginas;
+  btnProximo.classList.add("page-btn");
+  btnProximo.addEventListener("click", () => {
+    paginaAtual++;
+    renderTable(livros, paginaAtual);
+  });
+  paginacaoContainer.appendChild(btnProximo);
+};
+
+// --- Funções de Interação com a API (Axios) ---
+const fetchBooks = async () => {
+  try {
+    const token = getToken();
+    if (!token) {
+      window.location.href = "/";
+      return;
+    }
+    const response = await axios.get(`${API_BASE_URL}/book`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    todosOsLivros = response.data;
+    renderTable(todosOsLivros, paginaAtual);
+  } catch (error) {
+    mensagemErro.style.display = "block";
+    mensagemErro.textContent = "Erro ao carregar livros.";
+  }
+};
+
+const cadastrarLivro = async (livroData) => {
+  try {
+    const token = getToken();
+    if (!token) return;
+    await axios.post(`${API_BASE_URL}/book`, livroData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    closeModal(modalCadastrar);
+    openModal(modalCadastrando);
+    setTimeout(() => closeModal(modalCadastrando), 1500);
+    await fetchBooks();
+    searchInput.value = "";
+    paginaAtual = 1;
+  } catch (error) {
+    alert("Erro ao cadastrar livro.");
+  }
+};
+
+const atualizarLivro = async (id, livroData) => {
+  try {
+    const token = getToken();
+    if (!token) return;
+    await axios.put(`${API_BASE_URL}/book/${id}`, livroData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    closeModal(modalAtualizar);
+    openModal(modalAtualizando);
+    setTimeout(() => closeModal(modalAtualizando), 1500);
+    await fetchBooks();
+    searchInput.value = "";
+  } catch (error) {
+    alert("Erro ao atualizar livro.");
+  }
+};
+
+const excluirLivro = async (id) => {
+  try {
+    const token = getToken();
+    if (!token) return;
+    await axios.delete(`${API_BASE_URL}/book/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    closeModal(modalConfirmando);
+    openModal(modalDeletando);
+    setTimeout(() => closeModal(modalDeletando), 1500);
+    await fetchBooks();
+    searchInput.value = "";
+  } catch (error) {
+    alert("Erro ao excluir livro.");
+  }
+};
+
+// --- Funções de Modal ---
+const openModal = (modal) => {
+  modalOverlay.classList.add("is-open");
+  modal.classList.add("is-open");
+};
+const closeModal = (modal) => {
+  modal.classList.remove("is-open");
+  modalOverlay.classList.remove("is-open");
+  idLivroEditando = null;
+  idParaExcluir = null;
+  formCadastrar.reset();
+  formAtualizar.reset();
+};
+
+// --- Gerenciamento de Eventos ---
+document.addEventListener("DOMContentLoaded", () => {
+  fetchBooks();
+
+  searchInput.addEventListener("input", () => {
+    const termo = searchInput.value.toLowerCase().trim();
+    const filtrados = todosOsLivros.filter(
+      (l) =>
+        l.name.toLowerCase().includes(termo) ||
+        l.author.toLowerCase().includes(termo) ||
+        l.launchDate.includes(termo) ||
+        String(l.totalQuantity).includes(termo) ||
+        String(l.publisherId).includes(termo)
+    );
+    paginaAtual = 1;
+    renderTable(filtrados, paginaAtual);
+  });
+
+  addLivroBtn.addEventListener("click", () => openModal(modalCadastrar));
   formCadastrar.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (!formCadastrar.checkValidity()) return;
-
-    const nomeInput = document.getElementById("register-name");
-    const autorInput = document.getElementById("register-autor");
-    const editoraInput = document.getElementById("register-editora");
-    const lancamentoInput = document.getElementById("register-lancamento");
-    const estoqueInput = document.getElementById("register-estoque");
-
-    const nome = nomeInput.value.trim();
-    const autor = autorInput.value.trim();
-    const editora = editoraInput.value.trim();
-    const lancamento = lancamentoInput.value.trim();
-    const estoque = parseInt(estoqueInput.value.trim(), 10);
-
-    if (nome === "") {
-      nomeInput.setCustomValidity("O nome é obrigatório.");
-      nomeInput.reportValidity();
-      return;
-    }
-
-    if (autor === "") {
-      autorInput.setCustomValidity("O autor é obrigatório.");
-      autorInput.reportValidity();
-      return;
-    }
-
-    if (editora === "") {
-      editoraInput.setCustomValidity("A editora é obrigatória.");
-      editoraInput.reportValidity();
-      return;
-    }
-
-    if (lancamento === "") {
-      lancamentoInput.setCustomValidity("A data de lançamento é obrigatória.");
-      lancamentoInput.reportValidity();
-      return;
-    }
-
-    if (isNaN(estoque) || estoque < 0) {
-      estoqueInput.setCustomValidity("O estoque deve ser um número positivo.");
-      estoqueInput.reportValidity();
-      return;
-    }
-
-    const nomeExistente = livroList.some(
-      (livro) => livro.nome.toLowerCase() === nome.toLowerCase()
-    );
-
-    if (nomeExistente) {
-      nomeInput.setCustomValidity("Já existe um livro com este nome.");
-      nomeInput.reportValidity();
-      return;
-    }
-
-    const novoLivro = {
-      nome,
-      autor,
-      editora,
-      lancamento,
-      estoque,
+    const data = {
+      name: registerNameInput.value.trim(),
+      author: registerAuthorInput.value.trim(),
+      launchDate: registerLaunchInput.value,
+      totalQuantity: parseInt(registerQuantityInput.value, 10),
+      publisherId: parseInt(registerPublisherInput.value, 10),
     };
+    cadastrarLivro(data);
+  });
 
-    livroList.push(novoLivro);
-    searchInput.value = "";
-    paginaAtual = Math.ceil(livroList.length / livrosPorPagina);
-    renderTable(livroList, paginaAtual);
-
-    modalCadastrar.classList.remove("is-open");
-    modalCadastrando.classList.add("is-open");
-
-    formCadastrar.reset();
+  formAtualizar.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (idLivroEditando === null) return;
+    const data = {
+      name: updateNameInput.value.trim(),
+      author: updateAuthorInput.value.trim(),
+      launchDate: updateLaunchInput.value,
+      totalQuantity: parseInt(updateQuantityInput.value, 10),
+      publisherId: parseInt(updatePublisherInput.value, 10),
+    };
+    atualizarLivro(idLivroEditando, data);
   });
 
   tableBody.addEventListener("click", (event) => {
     const editBtn = event.target.closest(".edit-btn");
     const deleteBtn = event.target.closest(".delete-btn");
 
-    const formatarDataParaInput = (dataBr) => {
-      const [dia, mes, ano] = dataBr.split("/");
-      return `${ano}-${mes}-${dia}`;
-    };
-
     if (editBtn) {
-      const index = parseInt(editBtn.dataset.index);
-      const livro = livroList[index];
-
-      inputName.value = livro.nome;
-      inputAutor.value = livro.autor;
-      inputEditora.value = livro.editora;
-      inputLancamento.value = formatarDataParaInput(livro.lancamento);
-      inputEstoque.value = livro.estoque;
-
-      indexLivroEditando = index;
-
-      modalOverlay.classList.add("is-open");
-      modalAtualizar.classList.add("is-open");
+      idLivroEditando = parseInt(editBtn.dataset.id, 10);
+      const livro = todosOsLivros.find((l) => l.id === idLivroEditando);
+      if (livro) {
+        updateNameInput.value = livro.name;
+        updateAuthorInput.value = livro.author;
+        updateLaunchInput.value = livro.launchDate;
+        updateQuantityInput.value = livro.totalQuantity;
+        updatePublisherInput.value = livro.publisherId;
+        openModal(modalAtualizar);
+      }
     }
 
     if (deleteBtn) {
-      const index = parseInt(deleteBtn.dataset.index);
-      indexParaExcluir = index;
-
-      modalOverlay.classList.add("is-open");
-      modalConfirmando.classList.add("is-open");
+      idParaExcluir = parseInt(deleteBtn.dataset.id, 10);
+      openModal(modalConfirmando);
     }
   });
 
-  formAtualizar.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    const nome = inputName.value.trim();
-    const autor = inputAutor.value.trim();
-    const editora = inputEditora.value.trim();
-    const lancamento = inputLancamento.value.trim();
-    const estoque = parseInt(inputEstoque.value.trim(), 10);
-
-    livroList[indexLivroEditando].nome = nome;
-    livroList[indexLivroEditando].autor = autor;
-    livroList[indexLivroEditando].editora = editora;
-    livroList[indexLivroEditando].lancamento = lancamento;
-    livroList[indexLivroEditando].estoque = estoque;
-
-    renderTable(livroList, paginaAtual);
-    searchInput.value = "";
-
-    modalAtualizar.classList.remove("is-open");
-    modalAtualizando.classList.add("is-open");
-
-    formAtualizar.reset();
-    indexLivroEditando = null;
+  confirmDeleteBtn.addEventListener("click", () => {
+    if (idParaExcluir !== null) excluirLivro(idParaExcluir);
   });
 
-  modalConfirmando.addEventListener("click", (event) => {
-    const sim = event.target.closest(".btn-primary");
-    if (sim && indexParaExcluir !== null) {
-      livroList.splice(indexParaExcluir, 1);
-      indexParaExcluir = null;
+  cancelarBtns.forEach((btn) =>
+    btn.addEventListener("click", (e) => {
+      const m = e.target.closest(".modal");
+      closeModal(m);
+    })
+  );
+  fecharBtns.forEach((btn) =>
+    btn.addEventListener("click", (e) => {
+      const m = e.target.closest(".modal");
+      closeModal(m);
+    })
+  );
 
-      paginaAtual = Math.min(
-        paginaAtual,
-        Math.ceil(livroList.length / livrosPorPagina)
-      );
-
-      renderTable(livroList, paginaAtual);
-      modalConfirmando.classList.remove("is-open");
-      modalDeletando.classList.add("is-open");
-    }
-  });
-
-  cancelar.forEach((btn) => {
-    btn.addEventListener("click", (event) => {
-      const modal = event.target.closest(".modal");
-      modal.classList.remove("is-open");
-      modalOverlay.classList.remove("is-open");
-      indexParaExcluir = null;
-    });
-  });
-
-  fechar.forEach((btn) => {
-    btn.addEventListener("click", (event) => {
-      const modal = event.target.closest(".modal");
-      modal.classList.remove("is-open");
-      modalOverlay.classList.remove("is-open");
-      indexParaExcluir = null;
-    });
-  });
-
-  const toggleNav = document.getElementById("toggle-nav");
-  const nav = document.getElementById("navbar");
   toggleNav.addEventListener("click", (e) => {
-    e.stopPropagation(); // impede propagação para o documento
+    e.stopPropagation();
     nav.classList.toggle("active");
   });
-
-  // Fecha navbar ao clicar fora
   document.addEventListener("click", (e) => {
-    if (nav.classList.contains("active") && !nav.contains(e.target)) {
+    if (nav.classList.contains("active") && !nav.contains(e.target))
       nav.classList.remove("active");
-    }
   });
 
-  const profileButton = document.getElementById("profile-button");
-  const profileModal = document.getElementById("profile-modal");
-
-  profileButton.addEventListener("click", () => {
-    profileModal.classList.toggle("visible");
-  });
-
+  profileButton.addEventListener("click", () =>
+    profileModal.classList.toggle("visible")
+  );
   document.addEventListener("click", (e) => {
-    if (!profileButton.contains(e.target) && !profileModal.contains(e.target)) {
+    if (!profileButton.contains(e.target) && !profileModal.contains(e.target))
       profileModal.classList.remove("visible");
-    }
   });
-
-  renderTable(livroList, paginaAtual);
 });

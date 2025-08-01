@@ -1,43 +1,105 @@
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const formLogin = document.getElementById("form-login");
 
+const registerNameInput = document.getElementById("login-name");
+const registerEmailInput = document.getElementById("login-email");
+const registerPasswordInput = document.getElementById("login-password");
+
+registerNameInput.addEventListener("input", () => {
+  if (
+    registerNameInput.value.trim().length < 3 ||
+    registerNameInput.value.trim().length > 30
+  ) {
+    registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+  } else {
+    registerNameInput.setCustomValidity("");
+  }
+});
+
+registerEmailInput.addEventListener("input", () => {
+  if (
+    registerEmailInput.validity.typeMismatch ||
+    registerEmailInput.value.trim().length < 7 ||
+    registerEmailInput.value.trim().length > 50
+  ) {
+    registerEmailInput.setCustomValidity("Por favor, insira um email válido.");
+  } else {
+    registerEmailInput.setCustomValidity("");
+  }
+});
+
+registerPasswordInput.addEventListener("input", () => {
+  if (registerPasswordInput.value.trim().length < 8) {
+    registerPasswordInput.setCustomValidity(
+      "A senha deve possui no mínimo 8 dígitos"
+    );
+  } else if (registerPasswordInput.value.trim().length > 30) {
+    registerPasswordInput.setCustomValidity(
+      "Por favor, insira uma senha válida."
+    );
+  } else {
+    registerPasswordInput.setCustomValidity("");
+  }
+});
+
 formLogin.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!formLogin.checkValidity()) return;
 
-  const nomeInput = document.getElementById("login-name");
-  const emailInput = document.getElementById("login-email");
-  const senhaInput = document.getElementById("login-password");
-
-  const nome = nomeInput.value.trim();
-  const email = emailInput.value.trim();
-  const senha = senhaInput.value.trim();
-
-  if (nome === "") {
-    nomeInput.setCustomValidity("O nome é obrigatório.");
-    nomeInput.reportValidity();
+  if (!registerNameInput.value.trim()) {
+    registerNameInput.setCustomValidity("O nome é obrigatório.");
+    registerNameInput.reportValidity();
     return;
   }
 
-  if (email === "") {
-    emailInput.setCustomValidity("O email é obrigatório.");
-    emailInput.reportValidity();
+  if (!registerEmailInput.value.trim()) {
+    registerEmailInput.setCustomValidity("O email é obrigatório.");
+    registerEmailInput.reportValidity();
     return;
   }
 
-  if (senha === "") {
-    senhaInput.setCustomValidity("A senha é obrigatória.");
-    senhaInput.reportValidity();
+  if (!registerPasswordInput.value.trim()) {
+    registerPasswordInput.setCustomValidity("A senha é obrigatória.");
+    registerPasswordInput.reportValidity();
     return;
   }
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  if (
+    registerNameInput.value.trim().length < 3 ||
+    registerNameInput.value.trim().length > 30
+  ) {
+    registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    registerNameInput.reportValidity();
+    return;
+  }
+
+  if (
+    registerEmailInput.validity.typeMismatch ||
+    registerEmailInput.value.trim().length < 7 ||
+    registerEmailInput.value.trim().length > 50
+  ) {
+    registerEmailInput.setCustomValidity("Por favor, insira um email válido.");
+    registerEmailInput.reportValidity();
+    return;
+  }
+
+  if (registerPasswordInput.value.trim().length < 8) {
+    registerPasswordInput.setCustomValidity(
+      "A senha deve possui no mínimo 8 dígitos"
+    );
+  } else if (registerPasswordInput.value.trim().length > 30) {
+    registerPasswordInput.setCustomValidity(
+      "Por favor, insira uma senha válida."
+    );
+    registerPasswordInput.reportValidity();
+    return;
+  }
 
   try {
     const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-      email: email,
-      password: senha,
+      email: registerEmailInput.value.trim(),
+      password: registerPasswordInput.value.trim(),
     });
 
     console.log("Login realizado:", response.data);
