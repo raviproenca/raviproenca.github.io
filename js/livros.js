@@ -39,6 +39,7 @@ const toggleNav = document.getElementById("toggle-nav");
 const nav = document.getElementById("navbar");
 const profileButton = document.getElementById("profile-button");
 const profileModal = document.getElementById("profile-modal");
+const publisherSelect = document.getElementById("register-editora");
 
 // --- Funções de Renderização e UI ---
 const renderTable = (livros, pagina = 1) => {
@@ -138,6 +139,15 @@ const fetchBooks = async () => {
     mensagemErro.style.display = "block";
     mensagemErro.textContent = "Erro ao carregar livros.";
   }
+};
+
+const FetchPublishers = async () => {
+  const token = getToken();
+  if (!token) return;
+
+  const response = await axios.get(`${API_BASE_URL}/publisher`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 };
 
 const cadastrarLivro = async (livroData) => {

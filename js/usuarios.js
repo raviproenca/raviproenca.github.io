@@ -1,8 +1,10 @@
-import axios from "axios";
+import {
+  fetchUsers,
+  cadastrarUsuario,
+  atualizarUsuario,
+  excluirUsuario,
+} from "/services/usuariosService";
 
-// --- Configurações Iniciais e Variáveis Globais ---
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const getToken = () => localStorage.getItem("token");
 const usuariosPorPagina = 6;
 let paginaAtual = 1;
 let todosOsUsuarios = [];
@@ -40,7 +42,6 @@ const nav = document.getElementById("navbar");
 const profileButton = document.getElementById("profile-button");
 const profileModal = document.getElementById("profile-modal");
 
-// --- Funções de Renderização e UI ---
 const renderTable = (usuariosParaExibir, pagina = 1) => {
   tableBody.innerHTML = "";
 
@@ -55,7 +56,6 @@ const renderTable = (usuariosParaExibir, pagina = 1) => {
   }
 
   usuariosPaginados.forEach((user) => {
-    console.log("Renderizando usuário:", user);
     const tr = tableBody.insertRow();
     tr.innerHTML = `
         <td data-label="Nome">${user.name}</td>
@@ -137,138 +137,19 @@ const closeModal = (modalElement) => {
   formAtualizar.reset();
 };
 
-// --- Funções de Interação com a API (Axios) ---
-const fetchUsers = async () => {
+const carregarUsuarios = async () => {
   try {
-    const token = getToken();
-    if (!token) {
-      console.error(
-        "Token de autenticação não encontrado. Redirecionando para login."
-      );
-      window.location.href = "/";
-      return;
-    }
-
-    const response = await axios.get(`${API_BASE_URL}/user`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    todosOsUsuarios = response.data;
+    todosOsUsuarios = await fetchUsers();
     renderTable(todosOsUsuarios, paginaAtual);
   } catch (error) {
     console.error("Erro ao buscar usuários:", error);
     mensagemErro.style.display = "block";
-    mensagemErro.textContent =
-      "Não foi possível carregar os usuários. Verifique sua conexão ou faça login novamente.";
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403)
-    ) {
-      alert(
-        "Sessão expirada ou não autorizada. Por favor, faça login novamente."
-      );
-      localStorage.removeItem("token");
-      window.location.href = "/";
-    }
+    mensagemErro.textContent = "Erro ao carregar usuários.";
   }
 };
 
-const cadastrarUsuario = async (userData) => {
-  try {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
-    const response = await axios.post(`${API_BASE_URL}/user`, userData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    closeModal(modalCadastrar);
-    openModal(modalCadastrando);
-    setTimeout(() => closeModal(modalCadastrando), 1500);
-
-    await fetchUsers();
-    searchInput.value = "";
-    paginaAtual = 1;
-    renderTable(todosOsUsuarios, paginaAtual);
-  } catch (error) {
-    console.error("Erro ao cadastrar usuário:", error);
-    alert(
-      "Erro ao cadastrar usuário: " +
-        (error.response?.data?.message ||
-          "Verifique os dados ou tente novamente.")
-    );
-  }
-};
-
-const atualizarUsuario = async (userId, userData) => {
-  try {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
-    const response = await axios.put(
-      `${API_BASE_URL}/user/${userId}`,
-      userData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    closeModal(modalAtualizar);
-    openModal(modalAtualizando);
-    setTimeout(() => closeModal(modalAtualizando), 1500);
-
-    await fetchUsers();
-    searchInput.value = "";
-  } catch (error) {
-    console.error("Erro ao atualizar usuário:", error);
-    alert(
-      "Erro ao atualizar usuário: " +
-        (error.response?.data?.message ||
-          "Verifique os dados ou tente novamente.")
-    );
-  }
-};
-
-const excluirUsuario = async (userId) => {
-  try {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
-    await axios.delete(`${API_BASE_URL}/user/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    closeModal(modalConfirmando);
-    openModal(modalDeletando);
-    setTimeout(() => closeModal(modalDeletando), 1500);
-
-    await fetchUsers();
-    searchInput.value = "";
-  } catch (error) {
-    console.error("Erro ao excluir usuário:", error);
-    alert(
-      "Erro ao excluir usuário: " +
-        (error.response?.data?.message || "Ocorreu um erro ao tentar excluir.")
-    );
-  }
-};
-
-// --- Gerenciamento de Eventos ---
 document.addEventListener("DOMContentLoaded", () => {
-  fetchUsers();
+  carregarUsuarios();
 
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
@@ -291,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       closeModal(modal);
     });
   });
+
   fecharBtns.forEach((btn) => {
     btn.addEventListener("click", (event) => {
       const modal = event.target.closest(".modal");
@@ -298,134 +180,49 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  registerNameInput.addEventListener("input", () => {
-    if (
-      registerNameInput.value.trim().length < 3 ||
-      registerNameInput.value.trim().length > 30
-    ) {
-      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
-    } else {
-      registerNameInput.setCustomValidity("");
-    }
-  });
-
-  registerEmailInput.addEventListener("input", () => {
-    if (
-      registerEmailInput.validity.typeMismatch ||
-      registerEmailInput.value.trim().length < 7 ||
-      registerEmailInput.value.trim().length > 50
-    ) {
-      registerEmailInput.setCustomValidity(
-        "Por favor, insira um email válido."
-      );
-    } else {
-      registerEmailInput.setCustomValidity("");
-    }
-  });
-
-  registerPasswordInput.addEventListener("input", () => {
-    if (registerPasswordInput.value.trim().length < 8) {
-      registerPasswordInput.setCustomValidity(
-        "A senha deve possui no mínimo 8 dígitos"
-      );
-    } else if (registerPasswordInput.value.trim().length > 30) {
-      registerPasswordInput.setCustomValidity(
-        "Por favor, insira uma senha válida."
-      );
-    } else {
-      registerPasswordInput.setCustomValidity("");
-    }
-  });
-
   formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
-
-    if (!registerNameInput.value.trim()) {
-      registerNameInput.setCustomValidity("O nome é obrigatório.");
-      registerNameInput.reportValidity();
-      return;
-    }
-
-    if (!registerEmailInput.value.trim()) {
-      registerEmailInput.setCustomValidity("O email é obrigatório.");
-      registerEmailInput.reportValidity();
-      return;
-    }
-
-    if (!registerPasswordInput.value.trim()) {
-      registerPasswordInput.setCustomValidity("A senha é obrigatória.");
-      registerPasswordInput.reportValidity();
-      return;
-    }
-
-    if (
-      registerNameInput.value.trim().length < 3 ||
-      registerNameInput.value.trim().length > 30
-    ) {
-      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
-      registerNameInput.reportValidity();
-      return;
-    }
-
-    if (
-      registerEmailInput.validity.typeMismatch ||
-      registerEmailInput.value.trim().length < 7 ||
-      registerEmailInput.value.trim().length > 50
-    ) {
-      registerEmailInput.setCustomValidity(
-        "Por favor, insira um email válido."
-      );
-      registerEmailInput.reportValidity();
-      return;
-    }
-
-    if (registerPasswordInput.value.trim().length < 8) {
-      registerPasswordInput.setCustomValidity(
-        "A senha deve possui no mínimo 8 dígitos"
-      );
-    } else if (registerPasswordInput.value.trim().length > 30) {
-      registerPasswordInput.setCustomValidity(
-        "Por favor, insira uma senha válida."
-      );
-      registerPasswordInput.reportValidity();
-      return;
-    }
-
-    const emailExistente = todosOsUsuarios.some(
-      (usuario) =>
-        usuario.email.toLowerCase() ===
-        registerEmailInput.value.trim().toLowerCase()
-    );
-
-    if (emailExistente) {
-      registerEmailInput.setCustomValidity(
-        "Já existe um locatário com este e-mail."
-      );
-      registerEmailInput.reportValidity();
-      return;
-    }
-
-    const nomeExistente = todosOsUsuarios.some(
-      (usuario) =>
-        usuario.name.toLowerCase() ===
-        registerNameInput.value.trim().toLowerCase()
-    );
-
-    if (nomeExistente) {
-      registerNameInput.setCustomValidity(
-        "Já existe um locatário com este nome."
-      );
-      registerNameInput.reportValidity();
-      return;
-    }
-
     const newUser = {
       name: registerNameInput.value.trim(),
       email: registerEmailInput.value.trim(),
       password: registerPasswordInput.value.trim(),
       role: registerPermissionInput.value.trim(),
     };
-    await cadastrarUsuario(newUser);
+    try {
+      await cadastrarUsuario(newUser);
+      closeModal(modalCadastrar);
+      openModal(modalCadastrando);
+      setTimeout(() => closeModal(modalCadastrando), 1500);
+      await carregarUsuarios();
+      searchInput.value = "";
+      paginaAtual = 1;
+    } catch (error) {
+      console.error("Erro ao cadastrar usuário:", error);
+      alert("Erro ao cadastrar usuário.");
+    }
+  });
+
+  formAtualizar.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (idUsuarioEditando === null) return;
+
+    const updatedUser = {
+      name: updateNameInput.value.trim(),
+      email: updateEmailInput.value.trim(),
+      role: updatePermissionInput.value.trim(),
+    };
+
+    try {
+      await atualizarUsuario(idUsuarioEditando, updatedUser);
+      closeModal(modalAtualizar);
+      openModal(modalAtualizando);
+      setTimeout(() => closeModal(modalAtualizando), 1500);
+      await carregarUsuarios();
+      searchInput.value = "";
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error);
+      alert("Erro ao atualizar usuário.");
+    }
   });
 
   tableBody.addEventListener("click", (event) => {
@@ -435,7 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (editBtn) {
       const userId = parseInt(editBtn.dataset.id, 10);
       idUsuarioEditando = userId;
-
       const userToEdit = todosOsUsuarios.find((u) => u.id === userId);
       if (userToEdit) {
         updateNameInput.value = userToEdit.name;
@@ -447,143 +243,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (deleteBtn) {
-      const userId = deleteBtn.dataset.id;
-      idParaExcluir = userId;
+      idParaExcluir = parseInt(deleteBtn.dataset.id, 10);
       openModal(modalConfirmando);
     }
   });
 
-  updateNameInput.addEventListener("input", () => {
-    if (
-      updateNameInput.value.trim().length < 3 ||
-      updateNameInput.value.trim().length > 30
-    ) {
-      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
-    } else {
-      updateNameInput.setCustomValidity("");
-    }
-  });
-
-  updateEmailInput.addEventListener("input", () => {
-    if (
-      updateEmailInput.validity.typeMismatch ||
-      updateEmailInput.value.trim().length < 7 ||
-      updateEmailInput.value.trim().length > 50
-    ) {
-      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
-    } else {
-      updateEmailInput.setCustomValidity("");
-    }
-  });
-
-  updatePasswordInput.addEventListener("input", () => {
-    if (updatePasswordInput.value.trim().length < 8) {
-      updatePasswordInput.setCustomValidity(
-        "A senha deve possui no mínimo 8 dígitos"
-      );
-    } else if (updatePasswordInput.value.trim().length > 30) {
-      updatePasswordInput.setCustomValidity(
-        "Por favor, insira uma senha válida."
-      );
-    } else {
-      updatePasswordInput.setCustomValidity("");
-    }
-  });
-
-  formAtualizar.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    if (idUsuarioEditando === null) return;
-
-    if (!updateNameInput.value.trim()) {
-      updateNameInput.setCustomValidity("O nome é obrigatório.");
-      updateNameInput.reportValidity();
-      return;
-    }
-
-    if (!updateEmailInput.value.trim()) {
-      updateEmailInput.setCustomValidity("O email é obrigatório.");
-      updateEmailInput.reportValidity();
-      return;
-    }
-
-    if (!updatePasswordInput.value.trim()) {
-      updatePasswordInput.setCustomValidity("A senha é obrigatória.");
-      updatePasswordInput.reportValidity();
-      return;
-    }
-
-    if (
-      updateNameInput.value.trim().length < 3 ||
-      updateNameInput.value.trim().length > 30
-    ) {
-      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
-      updateNameInput.reportValidity();
-      return;
-    }
-
-    if (
-      updateEmailInput.validity.typeMismatch ||
-      updateEmailInput.value.trim().length < 7 ||
-      updateEmailInput.value.trim().length > 50
-    ) {
-      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
-      updateEmailInput.reportValidity();
-      return;
-    }
-
-    if (updatePasswordInput.value.trim().length < 8) {
-      updatePasswordInput.setCustomValidity(
-        "A senha deve possui no mínimo 8 dígitos"
-      );
-    } else if (updatePasswordInput.value.trim().length > 30) {
-      updatePasswordInput.setCustomValidity(
-        "Por favor, insira uma senha válida."
-      );
-      updatePasswordInput.reportValidity();
-      return;
-    }
-
-    const emailExistente = todosOsUsuarios.some(
-      (usuario) =>
-        usuario.email.toLowerCase() ===
-        updateEmailInput.value.trim().toLowerCase()
-    );
-
-    if (emailExistente) {
-      updateEmailInput.setCustomValidity(
-        "Já existe um locatário com este e-mail."
-      );
-      updateEmailInput.reportValidity();
-      return;
-    }
-
-    const nomeExistente = todosOsUsuarios.some(
-      (usuario) =>
-        usuario.name.toLowerCase() ===
-        updateNameInput.value.trim().toLowerCase()
-    );
-
-    if (nomeExistente) {
-      updateNameInput.setCustomValidity(
-        "Já existe um locatário com este nome."
-      );
-      updateNameInput.reportValidity();
-      return;
-    }
-
-    const updatedUser = {
-      name: updateNameInput.value.trim(),
-      email: updateEmailInput.value.trim(),
-      role: updatePermissionInput.value.trim(),
-    };
-
-    await atualizarUsuario(idUsuarioEditando, updatedUser);
-  });
-
-  confirmDeleteBtn.addEventListener("click", () => {
+  confirmDeleteBtn.addEventListener("click", async () => {
     if (idParaExcluir !== null) {
-      excluirUsuario(idParaExcluir);
+      try {
+        await excluirUsuario(idParaExcluir);
+        closeModal(modalConfirmando);
+        openModal(modalDeletando);
+        setTimeout(() => closeModal(modalDeletando), 1500);
+        await carregarUsuarios();
+        searchInput.value = "";
+      } catch (error) {
+        console.error("Erro ao excluir usuário:", error);
+        alert("Erro ao excluir usuário.");
+      }
     }
   });
 

@@ -1,8 +1,11 @@
-import axios from "axios";
+// --- views/editoras.js ---
+import {
+  fetchEditoras,
+  cadastrarEditora,
+  atualizarEditora,
+  excluirEditora,
+} from "../services/editorasService";
 
-// --- Configurações Iniciais e Variáveis Globais ---
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const getToken = () => localStorage.getItem("token");
 const editorasPorPagina = 6;
 let paginaAtual = 1;
 let todasAsEditoras = [];
@@ -40,7 +43,6 @@ const nav = document.getElementById("navbar");
 const profileButton = document.getElementById("profile-button");
 const profileModal = document.getElementById("profile-modal");
 
-// --- Funções de Renderização e UI ---
 const renderTable = (editorasParaExibir, pagina = 1) => {
   tableBody.innerHTML = "";
 
@@ -94,6 +96,7 @@ const renderPaginacao = (editoras) => {
     paginaAtual--;
     renderTable(editoras, paginaAtual);
   });
+
   paginacaoContainer.appendChild(btnAnterior);
 
   for (let i = 1; i <= totalPaginas; i++) {
@@ -133,142 +136,19 @@ const closeModal = (modalElement) => {
   formAtualizar.reset();
 };
 
-// --- Funções de Interação com a API (Axios) ---
-const fetchEditoras = async () => {
+const carregarEditoras = async () => {
   try {
-    const token = getToken();
-    if (!token) {
-      console.error(
-        "Token de autenticação não encontrado. Redirecionando para login."
-      );
-      window.location.href = "/";
-      return;
-    }
-
-    const response = await axios.get(`${API_BASE_URL}/publisher`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    todasAsEditoras = response.data;
+    todasAsEditoras = await fetchEditoras();
     renderTable(todasAsEditoras, paginaAtual);
   } catch (error) {
     console.error("Erro ao buscar editoras:", error);
     mensagemErro.style.display = "block";
-    mensagemErro.textContent =
-      "Não foi possível carregar as editoras. Verifique sua conexão ou faça login novamente.";
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403)
-    ) {
-      alert(
-        "Sessão expirada ou não autorizada. Por favor, faça login novamente."
-      );
-      localStorage.removeItem("token");
-      window.location.href = "/";
-    }
+    mensagemErro.textContent = "Erro ao carregar editoras.";
   }
 };
 
-const cadastrarEditora = async (editoraData) => {
-  try {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
-    const response = await axios.post(
-      `${API_BASE_URL}/publisher`,
-      editoraData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    closeModal(modalCadastrar);
-    openModal(modalCadastrando);
-    setTimeout(() => closeModal(modalCadastrando), 1500);
-
-    await fetchEditoras();
-    searchInput.value = "";
-    paginaAtual = 1;
-    renderTable(todasAsEditoras, paginaAtual);
-  } catch (error) {
-    console.error("Erro ao cadastrar editora:", error);
-    alert(
-      "Erro ao cadastrar editora: " +
-        (error.response?.data?.message ||
-          "Verifique os dados ou tente novamente.")
-    );
-  }
-};
-
-const atualizarEditora = async (editoraId, editoraData) => {
-  try {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
-    const response = await axios.put(
-      `${API_BASE_URL}/publisher/${editoraId}`,
-      editoraData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    closeModal(modalAtualizar);
-    openModal(modalAtualizando);
-    setTimeout(() => closeModal(modalAtualizando), 1500);
-
-    await fetchEditoras();
-    searchInput.value = "";
-  } catch (error) {
-    console.error("Erro ao atualizar editora:", error);
-    alert(
-      "Erro ao atualizar editora: " +
-        (error.response?.data?.message ||
-          "Verifique os dados ou tente novamente.")
-    );
-  }
-};
-
-const excluirEditora = async (editoraId) => {
-  try {
-    const token = getToken();
-    if (!token) {
-      return;
-    }
-
-    await axios.delete(`${API_BASE_URL}/publisher/${editoraId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    closeModal(modalConfirmando);
-    openModal(modalDeletando);
-    setTimeout(() => closeModal(modalDeletando), 1500);
-
-    await fetchEditoras();
-    searchInput.value = "";
-  } catch (error) {
-    console.error("Erro ao excluir editora:", error);
-    alert(
-      "Erro ao excluir editora: " +
-        (error.response?.data?.message || "Ocorreu um erro ao tentar excluir.")
-    );
-  }
-};
-
-// --- Gerenciamento de Eventos ---
 document.addEventListener("DOMContentLoaded", () => {
-  fetchEditoras();
+  carregarEditoras();
 
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
@@ -292,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       closeModal(modal);
     });
   });
+
   fecharBtns.forEach((btn) => {
     btn.addEventListener("click", (event) => {
       const modal = event.target.closest(".modal");
@@ -299,115 +180,50 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  registerNameInput.addEventListener("input", () => {
-    if (
-      registerNameInput.value.trim().length < 3 ||
-      registerNameInput.value.trim().length > 30
-    ) {
-      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
-    } else {
-      registerNameInput.setCustomValidity("");
-    }
-  });
-
-  registerEmailInput.addEventListener("input", () => {
-    if (
-      registerEmailInput.validity.typeMismatch ||
-      registerEmailInput.value.trim().length < 7 ||
-      registerEmailInput.value.trim().length > 50
-    ) {
-      registerEmailInput.setCustomValidity(
-        "Por favor, insira um email válido."
-      );
-    } else {
-      registerEmailInput.setCustomValidity("");
-    }
-  });
-
-  registerTelefoneInput.addEventListener("input", () => {
-    if (
-      registerTelefoneInput.value.trim().length < 11 ||
-      registerTelefoneInput.value.trim().length > 16
-    ) {
-      registerTelefoneInput.setCustomValidity(
-        "Por favor, insira um telefone válido"
-      );
-    } else {
-      registerTelefoneInput.setCustomValidity("");
-    }
-  });
-
   formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
-
-    if (!registerNameInput.value.trim()) {
-      registerNameInput.setCustomValidity("O nome é obrigatório.");
-      registerNameInput.reportValidity();
-      return;
-    }
-
-    if (!registerEmailInput.value.trim()) {
-      registerEmailInput.setCustomValidity("O email é obrigatório.");
-      registerEmailInput.reportValidity();
-      return;
-    }
-
-    if (!registerTelefoneInput.value.trim()) {
-      registerTelefoneInput.setCustomValidity("O telefone é obrigatório.");
-      registerTelefoneInput.reportValidity();
-      return;
-    }
-
-    if (
-      registerNameInput.value.trim().length < 3 ||
-      registerNameInput.value.trim().length > 30
-    ) {
-      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
-      registerNameInput.reportValidity();
-      return;
-    }
-
-    if (
-      registerEmailInput.validity.typeMismatch ||
-      registerEmailInput.value.trim().length < 7 ||
-      registerEmailInput.value.trim().length > 50
-    ) {
-      registerEmailInput.setCustomValidity(
-        "Por favor, insira um email válido."
-      );
-      registerEmailInput.reportValidity();
-      return;
-    }
-
-    if (
-      registerTelefoneInput.value.trim().length < 11 ||
-      registerTelefoneInput.value.trim().length > 16
-    ) {
-      registerTelefoneInput.setCustomValidity(
-        "Por favor, insira um telefone válido"
-      );
-      registerTelefoneInput.reportValidity();
-      return;
-    }
-
-    if (registerSiteInput.value.trim() != "") {
-      if (
-        registerSiteInput.validity.typeMismatch ||
-        registerSiteInput.value.trim().length < 16
-      ) {
-        registerSiteInput.setCustomValidity("Por favor, insira um site válido");
-        registerSiteInput.reportValidity();
-        return;
-      }
-    }
-
     const newEditora = {
       name: registerNameInput.value.trim(),
       email: registerEmailInput.value.trim(),
       telephone: registerTelefoneInput.value.trim(),
       site: registerSiteInput.value.trim() || "",
     };
-    await cadastrarEditora(newEditora);
+    try {
+      await cadastrarEditora(newEditora);
+      closeModal(modalCadastrar);
+      openModal(modalCadastrando);
+      setTimeout(() => closeModal(modalCadastrando), 1500);
+      await carregarEditoras();
+      searchInput.value = "";
+      paginaAtual = 1;
+    } catch (error) {
+      console.error("Erro ao cadastrar editora:", error);
+      alert("Erro ao cadastrar editora.");
+    }
+  });
+
+  formAtualizar.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (idEditoraEditando === null) return;
+
+    const updatedEditora = {
+      name: updateNameInput.value.trim(),
+      email: updateEmailInput.value.trim(),
+      telephone: updateTelefoneInput.value.trim(),
+      site: updateSiteInput.value.trim() || "",
+    };
+
+    try {
+      await atualizarEditora(idEditoraEditando, updatedEditora);
+      closeModal(modalAtualizar);
+      openModal(modalAtualizando);
+      setTimeout(() => closeModal(modalAtualizando), 1500);
+      await carregarEditoras();
+      searchInput.value = "";
+    } catch (error) {
+      console.error("Erro ao atualizar editora:", error);
+      alert("Erro ao atualizar editora.");
+    }
   });
 
   tableBody.addEventListener("click", (event) => {
@@ -417,7 +233,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (editBtn) {
       const editoraId = parseInt(editBtn.dataset.id, 10);
       idEditoraEditando = editoraId;
-
       const editoraToEdit = todasAsEditoras.find((u) => u.id === editoraId);
       if (editoraToEdit) {
         updateNameInput.value = editoraToEdit.name;
@@ -429,136 +244,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (deleteBtn) {
-      const editoraId = parseInt(deleteBtn.dataset.id, 10);
-      idParaExcluir = editoraId;
+      idParaExcluir = parseInt(deleteBtn.dataset.id, 10);
       openModal(modalConfirmando);
     }
   });
 
-  updateNameInput.addEventListener("input", () => {
-    if (
-      updateNameInput.value.trim().length < 3 ||
-      updateNameInput.value.trim().length > 30
-    ) {
-      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
-    } else {
-      updateNameInput.setCustomValidity("");
-    }
-  });
-
-  updateEmailInput.addEventListener("input", () => {
-    if (
-      updateEmailInput.validity.typeMismatch ||
-      updateEmailInput.value.trim().length < 7 ||
-      updateEmailInput.value.trim().length > 50
-    ) {
-      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
-    } else {
-      updateEmailInput.setCustomValidity("");
-    }
-  });
-
-  updateTelefoneInput.addEventListener("input", () => {
-    if (
-      updateTelefoneInput.value.trim().length < 11 ||
-      updateTelefoneInput.value.trim().length > 16
-    ) {
-      updateTelefoneInput.setCustomValidity(
-        "Por favor, insira um telefone válido"
-      );
-    } else {
-      updateTelefoneInput.setCustomValidity("");
-    }
-  });
-
-  updateSiteInput.addEventListener("input", () => {
-    if (
-      updateSiteInput.validity.typeMismatch ||
-      updateSiteInput.value.trim().length < 16
-    ) {
-      updateSiteInput.setCustomValidity("Por favor, insira um site válido");
-    } else {
-      updateSiteInput.setCustomValidity("");
-    }
-  });
-
-  formAtualizar.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    if (idEditoraEditando === null) return;
-
-    if (!updateNameInput.value.trim()) {
-      updateNameInput.setCustomValidity("O nome é obrigatório.");
-      updateNameInput.reportValidity();
-      return;
-    }
-
-    if (!updateEmailInput.value.trim()) {
-      updateEmailInput.setCustomValidity("O email é obrigatório.");
-      updateEmailInput.reportValidity();
-      return;
-    }
-
-    if (!updateTelefoneInput.value.trim()) {
-      updateTelefoneInput.setCustomValidity("O telefone é obrigatório.");
-      updateTelefoneInput.reportValidity();
-      return;
-    }
-
-    if (
-      updateNameInput.value.trim().length < 3 ||
-      updateNameInput.value.trim().length > 30
-    ) {
-      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
-      updateNameInput.reportValidity();
-      return;
-    }
-
-    if (
-      updateEmailInput.validity.typeMismatch ||
-      updateEmailInput.value.trim().length < 7 ||
-      updateEmailInput.value.trim().length > 50
-    ) {
-      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
-      updateEmailInput.reportValidity();
-      return;
-    }
-
-    if (
-      updateTelefoneInput.value.trim().length < 11 ||
-      updateTelefoneInput.value.trim().length > 16
-    ) {
-      updateTelefoneInput.setCustomValidity(
-        "Por favor, insira um telefone válido"
-      );
-      updateTelefoneInput.reportValidity();
-      return;
-    }
-
-    if (updateSiteInput.value.trim() != "") {
-      if (
-        updateSiteInput.validity.typeMismatch ||
-        updateSiteInput.value.trim().length < 16
-      ) {
-        updateSiteInput.setCustomValidity("Por favor, insira um site válido");
-        updateSiteInput.reportValidity();
-        return;
-      }
-    }
-
-    const updatedEditora = {
-      name: updateNameInput.value.trim(),
-      email: updateEmailInput.value.trim(),
-      telephone: updateTelefoneInput.value.trim(),
-      site: updateSiteInput.value.trim() || "",
-    };
-
-    await atualizarEditora(idEditoraEditando, updatedEditora);
-  });
-
   confirmDeleteBtn.addEventListener("click", async () => {
     if (idParaExcluir !== null) {
-      await excluirEditora(idParaExcluir);
+      try {
+        await excluirEditora(idParaExcluir);
+        closeModal(modalConfirmando);
+        openModal(modalDeletando);
+        setTimeout(() => closeModal(modalDeletando), 1500);
+        await carregarEditoras();
+        searchInput.value = "";
+      } catch (error) {
+        console.error("Erro ao excluir editora:", error);
+        alert("Erro ao excluir editora.");
+      }
     }
   });
 
