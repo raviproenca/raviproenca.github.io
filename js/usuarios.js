@@ -5,6 +5,7 @@ import {
   excluirUsuario,
 } from "/services/usuariosService";
 
+// --- Variáveis Globais ---
 const usuariosPorPagina = 6;
 let paginaAtual = 1;
 let todosOsUsuarios = [];
@@ -42,6 +43,7 @@ const nav = document.getElementById("navbar");
 const profileButton = document.getElementById("profile-button");
 const profileModal = document.getElementById("profile-modal");
 
+// --- Funções de Renderização ---
 const renderTable = (usuariosParaExibir, pagina = 1) => {
   tableBody.innerHTML = "";
 
@@ -123,6 +125,7 @@ const renderPaginacao = (usuarios) => {
   paginacaoContainer.appendChild(btnProximo);
 };
 
+// --- Funções de Modal ---
 const openModal = (modalElement) => {
   modalOverlay.classList.add("is-open");
   modalElement.classList.add("is-open");
@@ -137,6 +140,7 @@ const closeModal = (modalElement) => {
   formAtualizar.reset();
 };
 
+// --- Função Principal de Carregamento ---
 const carregarUsuarios = async () => {
   try {
     todosOsUsuarios = await fetchUsers();
@@ -148,6 +152,7 @@ const carregarUsuarios = async () => {
   }
 };
 
+// --- Event Listeners ---
 document.addEventListener("DOMContentLoaded", () => {
   carregarUsuarios();
 
@@ -180,14 +185,140 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // --- Formulário de Cadastro ---
+
+  registerNameInput.addEventListener("input", () => {
+    if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      registerNameInput.setCustomValidity("");
+    }
+  });
+
+  registerEmailInput.addEventListener("input", () => {
+    if (
+      registerEmailInput.validity.typeMismatch ||
+      registerEmailInput.value.trim().length < 7 ||
+      registerEmailInput.value.trim().length > 50
+    ) {
+      registerEmailInput.setCustomValidity(
+        "Por favor, insira um email válido."
+      );
+    } else {
+      registerEmailInput.setCustomValidity("");
+    }
+  });
+
+  registerPasswordInput.addEventListener("input", () => {
+    if (registerPasswordInput.value.trim().length < 8) {
+      registerPasswordInput.setCustomValidity(
+        "A senha deve possui no mínimo 8 dígitos"
+      );
+    } else if (registerPasswordInput.value.trim().length > 30) {
+      registerPasswordInput.setCustomValidity(
+        "Por favor, insira uma senha válida."
+      );
+    } else {
+      registerPasswordInput.setCustomValidity("");
+    }
+  });
+
   formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
+
+    if (!registerNameInput.value.trim()) {
+      registerNameInput.setCustomValidity("O nome é obrigatório.");
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (!registerEmailInput.value.trim()) {
+      registerEmailInput.setCustomValidity("O email é obrigatório.");
+      registerEmailInput.reportValidity();
+      return;
+    }
+
+    if (!registerPasswordInput.value.trim()) {
+      registerPasswordInput.setCustomValidity("A senha é obrigatória.");
+      registerPasswordInput.reportValidity();
+      return;
+    }
+
+    if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (
+      registerEmailInput.validity.typeMismatch ||
+      registerEmailInput.value.trim().length < 7 ||
+      registerEmailInput.value.trim().length > 50
+    ) {
+      registerEmailInput.setCustomValidity(
+        "Por favor, insira um email válido."
+      );
+      registerEmailInput.reportValidity();
+      return;
+    }
+
+    if (registerPasswordInput.value.trim().length < 8) {
+      registerPasswordInput.setCustomValidity(
+        "A senha deve possui no mínimo 8 dígitos"
+      );
+      registerPasswordInput.reportValidity();
+      return;
+    }
+
+    if (registerPasswordInput.value.trim().length > 30) {
+      registerPasswordInput.setCustomValidity(
+        "Por favor, insira uma senha válida."
+      );
+      registerPasswordInput.reportValidity();
+      return;
+    }
+
+    const nomeExistente = todosOsUsuarios.some(
+      (usuario) =>
+        usuario.name.toLowerCase() ===
+        registerNameInput.value.trim().toLowerCase()
+    );
+
+    const emailExistente = todosOsUsuarios.some(
+      (usuario) =>
+        usuario.email.toLowerCase() ===
+        registerEmailInput.value.trim().toLowerCase()
+    );
+
+    if (nomeExistente) {
+      registerNameInput.setCustomValidity(
+        "Já existe um usuário cadastrado com esse nome."
+      );
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (emailExistente) {
+      registerEmailInput.setCustomValidity(
+        "Já existe um usuário cadastrado com esse email."
+      );
+      registerEmailInput.reportValidity();
+      return;
+    }
+
     const newUser = {
       name: registerNameInput.value.trim(),
       email: registerEmailInput.value.trim(),
       password: registerPasswordInput.value.trim(),
       role: registerPermissionInput.value.trim(),
     };
+
     try {
       await cadastrarUsuario(newUser);
       closeModal(modalCadastrar);
@@ -202,9 +333,129 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  updateNameInput.addEventListener("input", () => {
+    if (
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
+    ) {
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      updateNameInput.setCustomValidity("");
+    }
+  });
+
+  updateEmailInput.addEventListener("input", () => {
+    if (
+      updateEmailInput.validity.typeMismatch ||
+      updateEmailInput.value.trim().length < 7 ||
+      updateEmailInput.value.trim().length > 50
+    ) {
+      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
+    } else {
+      updateEmailInput.setCustomValidity("");
+    }
+  });
+
+  updatePasswordInput.addEventListener("input", () => {
+    if (updatePasswordInput.value.trim().length < 8) {
+      updatePasswordInput.setCustomValidity(
+        "A senha deve possui no mínimo 8 dígitos"
+      );
+    } else if (updatePasswordInput.value.trim().length > 30) {
+      updatePasswordInput.setCustomValidity(
+        "Por favor, insira uma senha válida."
+      );
+    } else {
+      updatePasswordInput.setCustomValidity("");
+    }
+  });
+
   formAtualizar.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (idUsuarioEditando === null) return;
+
+    if (!updateNameInput.value.trim()) {
+      updateNameInput.setCustomValidity("O nome é obrigatório.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (!updateEmailInput.value.trim()) {
+      updateEmailInput.setCustomValidity("O email é obrigatório.");
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    if (!updatePasswordInput.value.trim()) {
+      updatePasswordInput.setCustomValidity("A senha é obrigatória.");
+      updatePasswordInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
+    ) {
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateEmailInput.validity.typeMismatch ||
+      updateEmailInput.value.trim().length < 7 ||
+      updateEmailInput.value.trim().length > 50
+    ) {
+      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    if (updatePasswordInput.value.trim().length < 8) {
+      updatePasswordInput.setCustomValidity(
+        "A senha deve possuir no mínimo 8 dígitos"
+      );
+      updatePasswordInput.reportValidity();
+      return;
+    }
+
+    if (updatePasswordInput.value.trim().length > 30) {
+      updatePasswordInput.setCustomValidity(
+        "Por favor, insira uma senha válida."
+      );
+      updatePasswordInput.reportValidity();
+      return;
+    }
+
+    const nomeExistente = todosOsUsuarios.some(
+      (usuario) =>
+        usuario.id !== idUsuarioEditando &&
+        usuario.name.toLowerCase() ===
+          updateNameInput.value.trim().toLowerCase()
+    );
+
+    const emailExistente = todosOsUsuarios.some(
+      (usuario) =>
+        usuario.id !== idUsuarioEditando &&
+        usuario.email.toLowerCase() ===
+          updateEmailInput.value.trim().toLowerCase()
+    );
+
+    if (nomeExistente) {
+      updateNameInput.setCustomValidity(
+        "Já existe um usuário cadastrado com esse nome."
+      );
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (emailExistente) {
+      updateEmailInput.setCustomValidity(
+        "Já existe um usuário cadastrado com esse email."
+      );
+      updateEmailInput.reportValidity();
+      return;
+    }
 
     const updatedUser = {
       name: updateNameInput.value.trim(),

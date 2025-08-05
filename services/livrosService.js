@@ -3,12 +3,12 @@ import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const getToken = () => localStorage.getItem("token");
 
-export const fetchUsers = async () => {
+export const fetchBooks = async () => {
   const token = getToken();
   if (!token) throw new Error("Token de autenticação não encontrado.");
 
   try {
-    const response = await axios.get(`${API_BASE_URL}/user`, {
+    const response = await axios.get(`${API_BASE_URL}/book`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -17,12 +17,12 @@ export const fetchUsers = async () => {
   }
 };
 
-export const cadastrarUsuario = async (userData) => {
+export const cadastrarLivro = async (livroData) => {
   const token = getToken();
   if (!token) throw new Error("Token de autenticação não encontrado.");
 
   try {
-    const response = await axios.post(`${API_BASE_URL}/user`, userData, {
+    const response = await axios.post(`${API_BASE_URL}/book`, livroData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -31,14 +31,14 @@ export const cadastrarUsuario = async (userData) => {
   }
 };
 
-export const atualizarUsuario = async (userId, userData) => {
+export const atualizarLivro = async (livroId, livroData) => {
   const token = getToken();
   if (!token) throw new Error("Token de autenticação não encontrado.");
 
   try {
     const response = await axios.put(
-      `${API_BASE_URL}/user/${userId}`,
-      userData,
+      `${API_BASE_URL}/book/${livroId}`,
+      livroData,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -49,12 +49,12 @@ export const atualizarUsuario = async (userId, userData) => {
   }
 };
 
-export const excluirUsuario = async (userId) => {
+export const excluirLivro = async (livroId) => {
   const token = getToken();
   if (!token) throw new Error("Token de autenticação não encontrado.");
 
   try {
-    await axios.delete(`${API_BASE_URL}/user/${userId}`, {
+    await axios.delete(`${API_BASE_URL}/book/${livroId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   } catch (error) {

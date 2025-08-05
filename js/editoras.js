@@ -1,10 +1,10 @@
 // --- views/editoras.js ---
 import {
-  fetchEditoras,
+  fetchPublishers,
   cadastrarEditora,
   atualizarEditora,
   excluirEditora,
-} from "../services/editorasService";
+} from "/services/editorasService";
 
 const editorasPorPagina = 6;
 let paginaAtual = 1;
@@ -138,7 +138,7 @@ const closeModal = (modalElement) => {
 
 const carregarEditoras = async () => {
   try {
-    todasAsEditoras = await fetchEditoras();
+    todasAsEditoras = await fetchPublishers();
     renderTable(todasAsEditoras, paginaAtual);
   } catch (error) {
     console.error("Erro ao buscar editoras:", error);
@@ -180,8 +180,136 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  registerNameInput.addEventListener("input", () => {
+    if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      registerNameInput.setCustomValidity("");
+    }
+  });
+
+  registerEmailInput.addEventListener("input", () => {
+    if (
+      registerEmailInput.validity.typeMismatch ||
+      registerEmailInput.value.trim().length < 7 ||
+      registerEmailInput.value.trim().length > 50
+    ) {
+      registerEmailInput.setCustomValidity(
+        "Por favor, insira um email válido."
+      );
+    } else {
+      registerEmailInput.setCustomValidity("");
+    }
+  });
+
+  registerTelefoneInput.addEventListener("input", () => {
+    if (
+      registerTelefoneInput.value.trim().length < 11 ||
+      registerTelefoneInput.value.trim().length > 16
+    ) {
+      registerTelefoneInput.setCustomValidity(
+        "Por favor, insira um telefone válido"
+      );
+    } else {
+      registerTelefoneInput.setCustomValidity("");
+    }
+  });
+
   formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
+
+    if (!registerNameInput.value.trim()) {
+      registerNameInput.setCustomValidity("O nome é obrigatório.");
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (!registerEmailInput.value.trim()) {
+      registerEmailInput.setCustomValidity("O email é obrigatório.");
+      registerEmailInput.reportValidity();
+      return;
+    }
+
+    if (!registerTelefoneInput.value.trim()) {
+      registerTelefoneInput.setCustomValidity("O telefone é obrigatório.");
+      registerTelefoneInput.reportValidity();
+      return;
+    }
+
+    if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (
+      registerEmailInput.validity.typeMismatch ||
+      registerEmailInput.value.trim().length < 7 ||
+      registerEmailInput.value.trim().length > 50
+    ) {
+      registerEmailInput.setCustomValidity(
+        "Por favor, insira um email válido."
+      );
+      registerEmailInput.reportValidity();
+      return;
+    }
+
+    if (
+      registerTelefoneInput.value.trim().length < 11 ||
+      registerTelefoneInput.value.trim().length > 16
+    ) {
+      registerTelefoneInput.setCustomValidity(
+        "Por favor, insira um telefone válido"
+      );
+      registerTelefoneInput.reportValidity();
+      return;
+    }
+
+    if (registerSiteInput.value.trim() != "") {
+      if (
+        registerSiteInput.validity.typeMismatch ||
+        registerSiteInput.value.trim().length < 16
+      ) {
+        registerSiteInput.setCustomValidity("Por favor, insira um site válido");
+        registerSiteInput.reportValidity();
+        return;
+      }
+    }
+
+    const nomeExistente = todasAsEditoras.some(
+      (editora) =>
+        editora.name.toLowerCase() ===
+        registerNameInput.value.trim().toLowerCase()
+    );
+
+    const emailExistente = todasAsEditoras.some(
+      (editora) =>
+        editora.email.toLowerCase() ===
+        registerEmailInput.value.trim().toLowerCase()
+    );
+
+    if (nomeExistente) {
+      registerNameInput.setCustomValidity(
+        "Já existe uma editora cadastrada com esse nome."
+      );
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (emailExistente) {
+      registerEmailInput.setCustomValidity(
+        "Já existe uma editora cadastrada com esse email."
+      );
+      registerEmailInput.reportValidity();
+      return;
+    }
+
     const newEditora = {
       name: registerNameInput.value.trim(),
       email: registerEmailInput.value.trim(),
@@ -202,9 +330,134 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  updateNameInput.addEventListener("input", () => {
+    if (
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
+    ) {
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      updateNameInput.setCustomValidity("");
+    }
+  });
+
+  updateEmailInput.addEventListener("input", () => {
+    if (
+      updateEmailInput.validity.typeMismatch ||
+      updateEmailInput.value.trim().length < 7 ||
+      updateEmailInput.value.trim().length > 50
+    ) {
+      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
+    } else {
+      updateEmailInput.setCustomValidity("");
+    }
+  });
+
+  updateTelefoneInput.addEventListener("input", () => {
+    if (
+      updateTelefoneInput.value.trim().length < 11 ||
+      updateTelefoneInput.value.trim().length > 16
+    ) {
+      updateTelefoneInput.setCustomValidity(
+        "Por favor, insira um telefone válido"
+      );
+    } else {
+      updateTelefoneInput.setCustomValidity("");
+    }
+  });
+
   formAtualizar.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (idEditoraEditando === null) return;
+
+    if (!updateNameInput.value.trim()) {
+      updateNameInput.setCustomValidity("O nome é obrigatório.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (!updateEmailInput.value.trim()) {
+      updateEmailInput.setCustomValidity("O email é obrigatório.");
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    if (!updateTelefoneInput.value.trim()) {
+      updateTelefoneInput.setCustomValidity("O telefone é obrigatório.");
+      updateTelefoneInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
+    ) {
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateEmailInput.validity.typeMismatch ||
+      updateEmailInput.value.trim().length < 7 ||
+      updateEmailInput.value.trim().length > 50
+    ) {
+      updateEmailInput.setCustomValidity("Por favor, insira um email válido.");
+      updateEmailInput.reportValidity();
+      return;
+    }
+
+    if (
+      updateTelefoneInput.value.trim().length < 11 ||
+      updateTelefoneInput.value.trim().length > 16
+    ) {
+      updateTelefoneInput.setCustomValidity(
+        "Por favor, insira um telefone válido"
+      );
+      updateTelefoneInput.reportValidity();
+      return;
+    }
+
+    if (updateSiteInput.value.trim() != "") {
+      if (
+        updateSiteInput.validity.typeMismatch ||
+        updateSiteInput.value.trim().length < 16
+      ) {
+        updateSiteInput.setCustomValidity("Por favor, insira um site válido");
+        updateSiteInput.reportValidity();
+        return;
+      }
+    }
+
+    const nomeExistente = todasAsEditoras.some(
+      (editora) =>
+        editora.id !== idEditoraEditando &&
+        editora.name.toLowerCase() ===
+          updateNameInput.value.trim().toLowerCase()
+    );
+
+    const emailExistente = todasAsEditoras.some(
+      (editora) =>
+        editora.id !== idEditoraEditando &&
+        editora.email.toLowerCase() ===
+          updateEmailInput.value.trim().toLowerCase()
+    );
+
+    if (nomeExistente) {
+      updateNameInput.setCustomValidity(
+        "Já existe uma editora cadastrada com esse nome."
+      );
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (emailExistente) {
+      updateEmailInput.setCustomValidity(
+        "Já existe uma editora cadastrada com esse email."
+      );
+      updateEmailInput.reportValidity();
+      return;
+    }
 
     const updatedEditora = {
       name: updateNameInput.value.trim(),
