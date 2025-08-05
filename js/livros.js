@@ -59,25 +59,15 @@ const renderTable = (livrosParaExibir, pagina = 1) => {
   }
 
   livrosPaginados.forEach((livro) => {
-    console.log(
-      "DEBUG -> livro.publisherId:",
-      livro.publisherId,
-      typeof livro.publisherId
-    );
-
     const editora = editorasDisponiveis.find(
-      (e) => Number(e.id) === Number(livro.publisherId)
+      (e) => e.id === livro.publisher.id
     );
-
-    const editoraNome = editora
-      ? editora.name
-      : `Editora não encontrada (ID: ${livro.publisherId})`;
 
     const tr = tableBody.insertRow();
     tr.innerHTML = `
       <td data-label="Nome">${livro.name}</td>
       <td data-label="Autor">${livro.author}</td>
-      <td data-label="Editora">${editoraNome}</td>
+      <td data-label="Editora">${editora.name}</td>
       <td data-label="Lançamento">${new Date(
         livro.launchDate
       ).toLocaleDateString()}</td>
@@ -217,12 +207,92 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", (e) => closeModal(e.target.closest(".modal")))
   );
 
+  registerNameInput.addEventListener("input", () => {
+    if (
+      registerNameInput.value.trim().length < 3 ||
+      registerNameInput.value.trim().length > 30
+    ) {
+      registerNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      registerNameInput.setCustomValidity("");
+    }
+  });
+
+  registerAuthorInput.addEventListener("input", () => {
+    if (
+      registerAuthorInput.validity.typeMismatch ||
+      registerAuthorInput.value.trim().length < 3 ||
+      registerAuthorInput.value.trim().length > 50
+    ) {
+      registerAuthorInput.setCustomValidity(
+        "Por favor, insira um nome de autor válido."
+      );
+    } else {
+      registerAuthorInput.setCustomValidity("");
+    }
+  });
+
+  registerQuantityInput.addEventListener("input", () => {
+    if (parseInt(registerQuantityInput.value.trim()) < 0) {
+      registerQuantityInput.setCustomValidity(
+        "O estoque deve ser um número positivo."
+      );
+    } else {
+      registerQuantityInput.setCustomValidity("");
+    }
+  });
+
   formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    if (!registerNameInput.value.trim()) {
+      registerNameInput.setCustomValidity("O nome é obrigatório.");
+      registerNameInput.reportValidity();
+      return;
+    }
+
+    if (!registerAuthorInput.value.trim()) {
+      registerAuthorInput.setCustomValidity("O autor é obrigatório.");
+      registerAuthorInput.reportValidity();
+      return;
+    }
+
     const selectedPublisherId = parseInt(registerPublisherInput.value, 10);
     if (isNaN(selectedPublisherId)) {
-      alert("Selecione uma editora válida.");
+      registerPublisherInput.setCustomValidity("A editora é obrigatória.");
+      registerPublisherInput.reportValidity();
+      return;
+    }
+
+    if (!registerLaunchInput.value.trim()) {
+      registerLaunchInput.setCustomValidity(
+        "A data de lançamento é obrigatória."
+      );
+      registerLaunchInput.reportValidity();
+      return;
+    }
+
+    const selectedDate = new Date(registerLaunchInput.value);
+    const today = new Date();
+    if (selectedDate > today) {
+      registerLaunchInput.setCustomValidity(
+        "A data de lançamento não pode ser no futuro."
+      );
+      registerLaunchInput.reportValidity();
+      return;
+    }
+
+    if (!registerQuantityInput.value.trim()) {
+      registerQuantityInput.setCustomValidity("O estoque é obrigatório");
+      registerQuantityInput.reportValidity();
+      return;
+    }
+
+    if (parseInt(registerQuantityInput.value.trim()) < 0) {
+      registerQuantityInput.setCustomValidity(
+        "O estoque deve ser um número positivo."
+      );
+      registerQuantityInput.reportValidity();
       return;
     }
 
@@ -234,6 +304,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       publisherId: selectedPublisherId,
     };
 
+    console.log(newLivro);
+
     try {
       await cadastrarLivro(newLivro);
       closeModal(modalCadastrar);
@@ -244,13 +316,99 @@ document.addEventListener("DOMContentLoaded", async () => {
       paginaAtual = 1;
     } catch (error) {
       console.error("Erro ao cadastrar livro:", error);
-      alert("Erro ao cadastrar livro.");
+      alert(error.message || "Erro ao cadastrar livro.");
+    }
+  });
+
+  updateNameInput.addEventListener("input", () => {
+    if (
+      updateNameInput.value.trim().length < 3 ||
+      updateNameInput.value.trim().length > 30
+    ) {
+      updateNameInput.setCustomValidity("Por favor, insira um nome válido.");
+    } else {
+      updateNameInput.setCustomValidity("");
+    }
+  });
+
+  updateAuthorInput.addEventListener("input", () => {
+    if (
+      updateAuthorInput.validity.typeMismatch ||
+      updateAuthorInput.value.trim().length < 3 ||
+      updateAuthorInput.value.trim().length > 50
+    ) {
+      updateAuthorInput.setCustomValidity(
+        "Por favor, insira um nome de autor válido."
+      );
+    } else {
+      updateAuthorInput.setCustomValidity("");
+    }
+  });
+
+  updateQuantityInput.addEventListener("input", () => {
+    if (parseInt(updateQuantityInput.value.trim()) < 0) {
+      updateQuantityInput.setCustomValidity(
+        "O estoque deve ser um número positivo."
+      );
+    } else {
+      updateQuantityInput.setCustomValidity("");
     }
   });
 
   formAtualizar.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (idLivroEditando === null) return;
+
+    if (!updateNameInput.value.trim()) {
+      updateNameInput.setCustomValidity("O nome é obrigatório.");
+      updateNameInput.reportValidity();
+      return;
+    }
+
+    if (!updateAuthorInput.value.trim()) {
+      updateAuthorInput.setCustomValidity("O autor é obrigatório.");
+      updateAuthorInput.reportValidity();
+      return;
+    }
+
+    const selectedPublisherId = parseInt(updatePublisherInput.value, 10);
+    if (isNaN(selectedPublisherId)) {
+      updatePublisherInput.setCustomValidity("A editora é obrigatória.");
+      updatePublisherInput.reportValidity();
+      return;
+    }
+
+    if (!updateLaunchInput.value.trim()) {
+      updateLaunchInput.setCustomValidity(
+        "A data de lançamento é obrigatória."
+      );
+      updateLaunchInput.reportValidity();
+      return;
+    }
+
+    const selectedDate = new Date(updateLaunchInput.value);
+    const today = new Date();
+    if (selectedDate > today) {
+      updateLaunchInput.setCustomValidity(
+        "A data de lançamento não pode ser no futuro."
+      );
+      updateLaunchInput.reportValidity();
+      return;
+    }
+
+    if (!updateQuantityInput.value.trim()) {
+      updateQuantityInput.setCustomValidity("O estoque é obrigatório");
+      updateQuantityInput.reportValidity();
+      return;
+    }
+
+    if (parseInt(updateQuantityInput.value.trim()) < 0) {
+      updateQuantityInput.setCustomValidity(
+        "O estoque deve ser um número positivo."
+      );
+      updateQuantityInput.reportValidity();
+      return;
+    }
 
     const updatedLivro = {
       name: updateNameInput.value.trim(),
@@ -269,7 +427,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       searchInput.value = "";
     } catch (error) {
       console.error("Erro ao atualizar livro:", error);
-      alert("Erro ao atualizar livro.");
+      alert(error.message || "Erro ao atualizar livro.");
     }
   });
 
@@ -280,12 +438,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (editBtn) {
       idLivroEditando = parseInt(editBtn.dataset.id, 10);
       const livro = todosOsLivros.find((l) => l.id === idLivroEditando);
+      const editora = editorasDisponiveis.find(
+        (e) => e.id === livro.publisher.id
+      );
       if (livro) {
         updateNameInput.value = livro.name;
         updateAuthorInput.value = livro.author;
         updateLaunchInput.value = livro.launchDate;
         updateQuantityInput.value = livro.totalQuantity;
-        updatePublisherInput.value = livro.publisherId;
+        updatePublisherInput.value = editora.id;
         openModal(modalAtualizar);
       }
     }
@@ -307,7 +468,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         searchInput.value = "";
       } catch (error) {
         console.error("Erro ao excluir livro:", error);
-        alert("Erro ao excluir livro.");
+        alert(error.message || "Erro ao excluir livro.");
       }
     }
   });
