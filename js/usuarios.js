@@ -61,7 +61,9 @@ const renderTable = (usuariosParaExibir, pagina = 1) => {
     const tr = tableBody.insertRow();
     tr.innerHTML = `
         <td data-label="Nome">${user.name}</td>
-        <td data-label="Email">${user.email}</td>
+        <td data-label="Email"><div class="editable-cell" contenteditable="true">${
+          user.email
+        }</div></td>
         <td data-label="Senha">********</td>
         <td data-label="Permissão">${
           user.role === "ADMIN" ? "Usuário Editor" : "Usuário Leitor"

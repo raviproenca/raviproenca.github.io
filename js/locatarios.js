@@ -60,7 +60,7 @@ const renderTable = (locatariosParaExibir, pagina = 1) => {
     const tr = tableBody.insertRow();
     tr.innerHTML = `
       <td data-label="Nome">${locatario.name}</td>
-      <td data-label="Email">${locatario.email}</td>
+      <td data-label="Email"><div class="editable-cell" contenteditable="true">${locatario.email}</div></td>
       <td data-label="Celular">${locatario.telephone}</td>
       <td data-label="Endereço">${locatario.address}</td>
       <td data-label="CPF">${locatario.cpf}</td>

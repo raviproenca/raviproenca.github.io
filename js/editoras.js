@@ -60,9 +60,9 @@ const renderTable = (editorasParaExibir, pagina = 1) => {
     const tr = tableBody.insertRow();
     tr.innerHTML = `
         <td data-label="Nome">${editora.name}</td>
-        <td data-label="Email">${editora.email}</td>
+        <td data-label="Email"><div class="editable-cell" contenteditable="true">${editora.email}</div></td>
         <td data-label="Telefone">${editora.telephone}</td>
-        <td data-label="Site">${editora.site}</td>
+        <td data-label="Site"><div class="editable-cell" contenteditable="true">${editora.site}</div></td>
         <td data-label="Ações">
           <button class="action-btn edit-btn" data-id="${editora.id}">
             <span class="material-icons-outlined">edit</span>
