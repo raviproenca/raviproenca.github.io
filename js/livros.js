@@ -43,6 +43,10 @@ const addLivroBtn = document.getElementById("add-user-btn");
 const cancelarBtns = document.querySelectorAll(".btn-secondary");
 const fecharBtns = document.querySelectorAll(".close-modal-btn");
 const confirmDeleteBtn = modalConfirmando.querySelector(".btn-primary");
+const toggleNav = document.getElementById("toggle-nav");
+const nav = document.getElementById("navbar");
+const profileButton = document.getElementById("profile-button");
+const profileModal = document.getElementById("profile-modal");
 
 // --- Funções de Renderização ---
 const renderTable = (livrosParaExibir, pagina = 1) => {
@@ -473,4 +477,34 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
   });
+
+  if (toggleNav && nav) {
+    toggleNav.addEventListener("click", (e) => {
+      e.stopPropagation();
+      nav.classList.toggle("active");
+    });
+    document.addEventListener("click", (e) => {
+      if (
+        nav.classList.contains("active") &&
+        !nav.contains(e.target) &&
+        e.target !== toggleNav
+      ) {
+        nav.classList.remove("active");
+      }
+    });
+  }
+
+  if (profileButton && profileModal) {
+    profileButton.addEventListener("click", () => {
+      profileModal.classList.toggle("visible");
+    });
+    document.addEventListener("click", (e) => {
+      if (
+        !profileButton.contains(e.target) &&
+        !profileModal.contains(e.target)
+      ) {
+        profileModal.classList.remove("visible");
+      }
+    });
+  }
 });
