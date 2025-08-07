@@ -33,18 +33,12 @@ const formCadastrar = document.getElementById("form-cadastrar");
 const formAtualizar = document.getElementById("form-atualizar");
 const registerLivroInput = document.getElementById("register-livro");
 const registerLocatarioInput = document.getElementById("register-locatario");
-const registerDataLocacaoInput = document.getElementById(
-  "register-data-locacao"
-);
-const registerDataDevolucaoInput = document.getElementById(
-  "register-data-devolucao"
+const registerDataEntregaInput = document.getElementById(
+  "register-data-entrega"
 );
 const updateLivroInput = document.getElementById("update-livro");
 const updateLocatarioInput = document.getElementById("update-locatario");
-const updateDataLocacaoInput = document.getElementById("update-data-locacao");
-const updateDataDevolucaoInput = document.getElementById(
-  "update-data-devolucao"
-);
+const updateDataEntregaInput = document.getElementById("update-data-entrega");
 const addAluguelBtn = document.getElementById("add-user-btn");
 const cancelarBtns = document.querySelectorAll(".btn-secondary");
 const fecharBtns = document.querySelectorAll(".close-modal-btn");
@@ -65,27 +59,40 @@ const renderTable = (alugueis, pagina = 1) => {
     );
 
     const tr = tableBody.insertRow();
+
+    const isReturned =
+      aluguel.status === "DELIVERED_WITH_DELAY" || aluguel.status === "IN_TIME";
+
+    const returnedBtnClass = isReturned
+      ? "action-btn returned-btn active"
+      : "action-btn returned-btn";
+
     tr.innerHTML = `
       <td data-label="Livro">${livro.name}</td>
       <td data-label="Locatário">${locatario.name}</td>
       <td data-label="Data de Locação">${new Date(
         aluguel.rentDate
       ).toLocaleDateString()}</td>
-      <td data-label="Data de Devolução">${new Date(
+      <td data-label="Data de Devolução">${
+        aluguel.status === "LATE"
+        ? "Aluguel em andamento"
+        : new Date(
         aluguel.devolutionDate
       ).toLocaleDateString()}</td>
       <td data-label="Status">${
         aluguel.status === "LATE"
           ? "Atrasado"
           : aluguel.status === "DELIVERED_WITH_DELAY"
-          ? "Devolvido com Atraso"
+          ? "Devolvido com atraso"
+          : aluguel.status === "IN_TIME"
+          ? "Devolvido no prazo"
           : "Em dia"
       }</td>
       <td data-label="Ações">
         <button class="action-btn edit-btn" data-id="${aluguel.id}">
           <span class="material-icons-outlined">edit</span>
         </button>
-        <button class="action-btn returned-btn" data-id="${aluguel.id}">
+        <button class="action-btn ${returnedBtnClass}" data-id="${aluguel.id}">
           <span class="material-icons-outlined">check_box</span>
         </button>
       </td>
@@ -216,10 +223,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
     const filteredAlugueis = todosOsAlugueis.filter((aluguel) => {
       return (
-        aluguel.livro.toLowerCase().includes(searchTerm) ||
-        aluguel.locatario.toLowerCase().includes(searchTerm) ||
-        aluguel.dataLocacao.toLowerCase().includes(searchTerm) ||
-        aluguel.dataDevolucao.toLowerCase().includes(searchTerm)
+        aluguel.book.name.toLowerCase().includes(searchTerm) ||
+        aluguel.renter.name.toLowerCase().includes(searchTerm) ||
+        aluguel.rentDate.toLowerCase().includes(searchTerm) ||
+        aluguel.devolutionDate.toLowerCase().includes(searchTerm)
       );
     });
     paginaAtual = 1;
@@ -239,14 +246,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const livro = registerLivroInput.value.trim();
-    const locatario = registerLocatarioInput.value.trim();
-    const dataLocacao = registerDataLocacaoInput.value.trim();
-    const dataDevolucao = registerDataDevolucaoInput.value.trim();
+    const bookId = registerLivroInput.value.trim();
+    const renterId = registerLocatarioInput.value.trim();
+    const deadLine = registerDataEntregaInput.value.trim();
 
-    if (!livro || !locatario || !dataLocacao || !dataDevolucao) return;
+    if (!renterId || !bookId || !deadLine) return;
 
-    const novoAluguel = { livro, locatario, dataLocacao, dataDevolucao };
+    const novoAluguel = { renterId, bookId, deadLine };
 
     try {
       await cadastrarAluguel(novoAluguel);
@@ -266,14 +272,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     event.preventDefault();
     if (idAluguelEditando === null) return;
 
-    const livro = updateLivroInput.value.trim();
-    const locatario = updateLocatarioInput.value.trim();
-    const dataLocacao = updateDataLocacaoInput.value.trim();
-    const dataDevolucao = updateDataDevolucaoInput.value.trim();
+    const bookId = updateLivroInput.value.trim();
+    const renterId = updateLocatarioInput.value.trim();
+    const deadLine = updateDataEntregaInput.value.trim();
 
-    if (!livro || !locatario || !dataLocacao || !dataDevolucao) return;
+    if (!renterId || !bookId || !deadLine) return;
 
-    const aluguelAtualizado = { livro, locatario, dataLocacao, dataDevolucao };
+    const aluguelAtualizado = { renterId, bookId, deadLine };
 
     try {
       await atualizarAluguel(idAluguelEditando, aluguelAtualizado);
@@ -302,14 +307,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (aluguel) {
         updateLivroInput.value = livro.name;
         updateLocatarioInput.value = locatario.name;
-        updateDataLocacaoInput.value = aluguel.rentDate;
-        updateDataDevolucaoInput.value = aluguel.devolutionDate;
+        updateDataEntregaInput.value = aluguel.deadLine;
         openModal(modalAtualizar);
       }
     }
 
-    if (returnedBtn) {
-      returnedBtn.classList.toggle("active");
+    if (!returnedBtn.classList.contains("active")) {
+      idParaExcluir = parseInt(returnedBtn.dataset.id, 10);
+      openModal(modalConfirmando);
     }
   });
 
@@ -323,7 +328,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         await carregarAlugueis();
         searchInput.value = "";
       } catch (error) {
-        console.error("Erro ao excluir aluguel:", error);
+        console.error("Erro ao finalizar aluguel:", error);
         alert(error.message);
       }
     }
