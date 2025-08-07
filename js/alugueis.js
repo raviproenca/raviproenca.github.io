@@ -58,10 +58,10 @@ const renderTable = (alugueis, pagina = 1) => {
   const fim = inicio + alugueisPorPagina;
   const alugueisPaginados = alugueis.slice(inicio, fim);
 
-  alugueisPaginados.forEach((aluguel, i) => {
-    const livro = livrosDisponiveis.find((e) => e.id === aluguel.livro.id);
+  alugueisPaginados.forEach((aluguel) => {
+    const livro = livrosDisponiveis.find((e) => e.id === aluguel.book.id);
     const locatario = locatariosDisponiveis.find(
-      (e) => e.id === aluguel.locatario.id
+      (e) => e.id === aluguel.renter.id
     );
 
     const tr = tableBody.insertRow();
@@ -69,17 +69,24 @@ const renderTable = (alugueis, pagina = 1) => {
       <td data-label="Livro">${livro.name}</td>
       <td data-label="Locatário">${locatario.name}</td>
       <td data-label="Data de Locação">${new Date(
-        aluguel.dataLocacao
+        aluguel.rentDate
       ).toLocaleDateString()}</td>
       <td data-label="Data de Devolução">${new Date(
-        aluguel.dataDevolucao
+        aluguel.devolutionDate
       ).toLocaleDateString()}</td>
+      <td data-label="Status">${
+        aluguel.status === "LATE"
+          ? "Atrasado"
+          : aluguel.status === "DELIVERED_WITH_DELAY"
+          ? "Devolvido com Atraso"
+          : "Em dia"
+      }</td>
       <td data-label="Ações">
+        <button class="action-btn edit-btn" data-id="${aluguel.id}">
+          <span class="material-icons-outlined">edit</span>
+        </button>
         <button class="action-btn returned-btn" data-id="${aluguel.id}">
           <span class="material-icons-outlined">check_box</span>
-        </button>
-        <button class="action-btn delete-btn" data-id="${aluguel.id}">
-          <span class="material-icons-outlined">delete</span>
         </button>
       </td>
     `;
@@ -176,7 +183,7 @@ const carregarLivros = async () => {
 
 const carregarLocatarios = async () => {
   try {
-    livrosDisponiveis = await fetchRenters();
+    locatariosDisponiveis = await fetchRenters();
     renderLocatariosNoSelect(registerLocatarioInput);
     renderLocatariosNoSelect(updateLocatarioInput);
   } catch (error) {
@@ -283,15 +290,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   tableBody.addEventListener("click", (event) => {
     const returnedBtn = event.target.closest(".returned-btn");
-    const deleteBtn = event.target.closest(".delete-btn");
+    const editBtn = event.target.closest(".edit-btn");
+
+    if (editBtn) {
+      idAluguelEditando = parseInt(editBtn.dataset.id, 10);
+      const aluguel = todosOsAlugueis.find((l) => l.id === idAluguelEditando);
+      const livro = livrosDisponiveis.find((e) => e.id === aluguel.book.id);
+      const locatario = locatariosDisponiveis.find(
+        (e) => e.id === aluguel.renter.id
+      );
+      if (aluguel) {
+        updateLivroInput.value = livro.name;
+        updateLocatarioInput.value = locatario.name;
+        updateDataLocacaoInput.value = aluguel.rentDate;
+        updateDataDevolucaoInput.value = aluguel.devolutionDate;
+        openModal(modalAtualizar);
+      }
+    }
 
     if (returnedBtn) {
       returnedBtn.classList.toggle("active");
-    }
-
-    if (deleteBtn) {
-      idParaExcluir = parseInt(deleteBtn.dataset.index, 10);
-      openModal(modalConfirmando);
     }
   });
 

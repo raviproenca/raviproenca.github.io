@@ -72,6 +72,7 @@ const renderTable = (livrosParaExibir, pagina = 1) => {
         livro.launchDate
       ).toLocaleDateString()}</td>
       <td data-label="Estoque">${livro.totalQuantity}</td>
+      <td data-label="Alugados">${livro.totalInUse}</td>
       <td data-label="Ações">
         <button class="action-btn edit-btn" data-id="${livro.id}">
           <span class="material-icons-outlined">edit</span>
@@ -190,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         book.author.toLowerCase().includes(searchTerm) ||
         book.launchDate.toLowerCase().includes(searchTerm) ||
         String(book.totalQuantity).includes(searchTerm) ||
-        String(book.publisherId).includes(searchTerm)
+        book.publisher.name.toLowerCase().includes(searchTerm)
       );
     });
     paginaAtual = 1;
