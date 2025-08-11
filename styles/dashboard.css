@@ -246,36 +246,16 @@ section #livros-data {
   align-items: center;
 }
 
-.mais-alugado-h2 {
+.mais-alugado {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.mais-alugado-h3 {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.mais-alugado-h4 {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
 }
 
 #livro-mais-alugado p {
   opacity: 80%;
   font-size: clamp(0.8rem, 1.25vw, 1.2rem);
-}
-
-#mais-alugado-titles h2 {
-  font-weight: 800;
 }
 
 #livro-atrasado {

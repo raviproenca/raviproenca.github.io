@@ -7,12 +7,70 @@ import {
   fetchRentsQuantity,
 } from "/services/dashboardService.js";
 
+import { fetchRenters } from "/services/locatariosService.js";
+
+const SelectLocatario = document.getElementById("register-locatario");
+
+let locatariosDisponiveis = [];
+let livrosMaisAlugados = [];
+
+const renderLocatariosNoSelect = (selectElement) => {
+  selectElement.innerHTML = `<option>selecione</option>`;
+  locatariosDisponiveis.forEach((locatario) => {
+    const option = document.createElement("option");
+    option.value = locatario.id;
+    option.textContent = locatario.name;
+    selectElement.appendChild(option);
+  });
+};
+
+const carregarLocatarios = async () => {
+  try {
+    locatariosDisponiveis = await fetchRenters();
+    renderLocatariosNoSelect(SelectLocatario);
+  } catch (error) {
+    console.error("Erro ao carregar locatários:", error);
+  }
+};
+
+const carregarLivros = async () => {
+  try {
+    livrosMaisAlugados = await fetchMoreRented(12);
+  } catch (error) {
+    console.error("Erro ao carregar livros:", error);
+  }
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
+  await carregarLivros();
+  await carregarLocatarios();
+
+  document.getElementById("mais-alugado").textContent = livrosMaisAlugados[0].name;
+  document.getElementById("segundo-mais-alugado").textContent =
+    livrosMaisAlugados[1].name;
+  document.getElementById("terceiro-mais-alugado").textContent =
+    livrosMaisAlugados[2].name;
+
   document.getElementById("emprestado-number").textContent =
     await fetchRentsQuantity(1);
   document.getElementById("atrasado-number").textContent = await fetchRentsLate(
     1
   );
+
+  const UmAnoNoPrazo = await fetchInTime(12);
+  const DoisAnosNoPrazo = await fetchInTime(24);
+  const TresAnosNoPrazo = await fetchInTime(36);
+  const QuatroAnosNoPrazo = await fetchInTime(48);
+  const CincoAnosNoPrazo = await fetchInTime(60);
+
+  const UmAnoForaPrazo = await fetchWithDelay(12);
+  const DoisAnosForaPrazo = await fetchWithDelay(24);
+  const TresAnosForaPrazo = await fetchWithDelay(36);
+  const QuatroAnosForaPrazo = await fetchWithDelay(48);
+  const CincoAnosForaPrazo = await fetchWithDelay(60);
+
+  const totalDentroPrazo = await fetchInTime(99);
+  const totalForaPrazo = await fetchWithDelay(99);
 
   const ctxLocatariosPie = document
     .getElementById("locatarios-chart-pie")
@@ -27,8 +85,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   const purple = "#9B59B6";
   const cyan = "#4ECDC4";
 
-  const dentroPrazo = [25, 30, 18, 28, 35];
-  const foraPrazo = [5, 7, 4, 6, 3];
+  const dentroPrazo = [
+    UmAnoNoPrazo,
+    DoisAnosNoPrazo - UmAnoNoPrazo,
+    TresAnosNoPrazo - DoisAnosNoPrazo,
+    QuatroAnosNoPrazo - TresAnosNoPrazo,
+    CincoAnosNoPrazo - QuatroAnosNoPrazo,
+  ];
+
+  const foraPrazo = [
+    UmAnoForaPrazo,
+    DoisAnosForaPrazo - UmAnoForaPrazo,
+    TresAnosForaPrazo - DoisAnosForaPrazo,
+    QuatroAnosForaPrazo - TresAnosForaPrazo,
+    CincoAnosForaPrazo - QuatroAnosForaPrazo,
+  ];
 
   const mediaQuery = window.matchMedia("(max-width: 480px)");
   const isMobile = mediaQuery.matches;
@@ -108,8 +179,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fontSize = isMobile ? 10 : 14;
     const titleFontSize = isMobile ? 12 : 16;
     const paddingMobile = isMobile ? 25 : 15;
-    const totalDentroPrazo = await fetchInTime(999);
-    const totalForaPrazo = await fetchWithDelay(999);
 
     chartInstance = new Chart(ctxLivrosBar, {
       type: "bar",
@@ -200,10 +269,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   };
 
-  createChart(isMobile);
-  mediaQuery.addEventListener("change", (e) => {
-    createChart(e.matches);
-    location.reload();
+  await createChart(isMobile);
+  mediaQuery.addEventListener("change", async (e) => {
+    await createChart(e.matches);
   });
 
   const toggleNav = document.getElementById("toggle-nav");

@@ -3,7 +3,7 @@ import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const getToken = () => localStorage.getItem("token");
 
-export const fetchMoreRented = async () => {
+export const fetchMoreRented = async (dashboardData) => {
   const token = getToken();
   if (!token) throw new Error("Token de autenticação não encontrado.");
 
@@ -11,6 +11,7 @@ export const fetchMoreRented = async () => {
     const response = await axios.get(
       `${API_BASE_URL}/dashboard/bookMoreRented`,
       {
+        params: { numberOfMonths: dashboardData },
         headers: { Authorization: `Bearer ${token}` },
       }
     );
