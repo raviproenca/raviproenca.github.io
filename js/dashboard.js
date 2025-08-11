@@ -1,4 +1,19 @@
-document.addEventListener("DOMContentLoaded", () => {
+import {
+  fetchMoreRented,
+  fetchInTime,
+  fetchWithDelay,
+  fetchRentsLate,
+  fetchPerRenter,
+  fetchRentsQuantity,
+} from "/services/dashboardService.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+  document.getElementById("emprestado-number").textContent =
+    await fetchRentsQuantity(1);
+  document.getElementById("atrasado-number").textContent = await fetchRentsLate(
+    1
+  );
+
   const ctxLocatariosPie = document
     .getElementById("locatarios-chart-pie")
     .getContext("2d");
@@ -87,14 +102,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // === BAR CHART COMPARATIVO ===
   let chartInstance;
 
-  function createChart(isMobile) {
+  const createChart = async (isMobile) => {
     if (chartInstance) chartInstance.destroy();
 
     const fontSize = isMobile ? 10 : 14;
     const titleFontSize = isMobile ? 12 : 16;
     const paddingMobile = isMobile ? 25 : 15;
-    const totalDentro = dentroPrazo.reduce((a, b) => a + b, 0);
-    const totalFora = foraPrazo.reduce((a, b) => a + b, 0);
+    const totalDentroPrazo = await fetchInTime(999);
+    const totalForaPrazo = await fetchWithDelay(999);
 
     chartInstance = new Chart(ctxLivrosBar, {
       type: "bar",
@@ -144,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           subtitle: {
             display: true,
-            text: `Livros devolvidos no prazo: ${totalDentro}    |    Devolvidos com atraso: ${totalFora}`,
+            text: `Livros devolvidos no prazo: ${totalDentroPrazo}    |    Devolvidos com atraso: ${totalForaPrazo}`,
             color: "#fff",
             font: {
               size: titleFontSize,
@@ -183,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       plugins: [ChartDataLabels],
     });
-  }
+  };
 
   createChart(isMobile);
   mediaQuery.addEventListener("change", (e) => {
