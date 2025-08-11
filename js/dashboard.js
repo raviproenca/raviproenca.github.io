@@ -45,11 +45,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   await carregarLivros();
   await carregarLocatarios();
 
-  document.getElementById("mais-alugado").textContent = livrosMaisAlugados[0].name;
+  document.getElementById("mais-alugado").textContent =
+    livrosMaisAlugados[0].name;
   document.getElementById("segundo-mais-alugado").textContent =
     livrosMaisAlugados[1].name;
   document.getElementById("terceiro-mais-alugado").textContent =
     livrosMaisAlugados[2].name;
+
+  document.getElementById(
+    "mais-alugado-number"
+  ).textContent = `${livrosMaisAlugados[0].totalRents}x`;
+  document.getElementById(
+    "segundo-mais-alugado-number"
+  ).textContent = `${livrosMaisAlugados[1].totalRents}x`;
+  document.getElementById(
+    "terceiro-mais-alugado-number"
+  ).textContent = `${livrosMaisAlugados[2].totalRents}x`;
 
   document.getElementById("emprestado-number").textContent =
     await fetchRentsQuantity(1);
@@ -57,17 +68,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     1
   );
 
-  const UmAnoNoPrazo = await fetchInTime(12);
-  const DoisAnosNoPrazo = await fetchInTime(24);
-  const TresAnosNoPrazo = await fetchInTime(36);
-  const QuatroAnosNoPrazo = await fetchInTime(48);
-  const CincoAnosNoPrazo = await fetchInTime(60);
+  const UmAnoNoPrazo = await fetchInTime(2);
+  const DoisAnosNoPrazo = await fetchInTime(4);
+  const TresAnosNoPrazo = await fetchInTime(7);
+  const QuatroAnosNoPrazo = await fetchInTime(10);
+  const CincoAnosNoPrazo = await fetchInTime(12);
 
-  const UmAnoForaPrazo = await fetchWithDelay(12);
-  const DoisAnosForaPrazo = await fetchWithDelay(24);
-  const TresAnosForaPrazo = await fetchWithDelay(36);
-  const QuatroAnosForaPrazo = await fetchWithDelay(48);
-  const CincoAnosForaPrazo = await fetchWithDelay(60);
+  const UmAnoForaPrazo = await fetchWithDelay(2);
+  const DoisAnosForaPrazo = await fetchWithDelay(4);
+  const TresAnosForaPrazo = await fetchWithDelay(7);
+  const QuatroAnosForaPrazo = await fetchWithDelay(10);
+  const CincoAnosForaPrazo = await fetchWithDelay(12);
 
   const totalDentroPrazo = await fetchInTime(99);
   const totalForaPrazo = await fetchWithDelay(99);
@@ -223,7 +234,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           },
           tooltip: {
             callbacks: {
-              label: (context) => `${context.dataset.label}: ${context.parsed}`,
+              label: (context) => {
+                const value =
+                  context.chart.options.indexAxis === "y"
+                    ? context.parsed.x
+                    : context.parsed.y;
+                return `${context.dataset.label}: ${value}`;
+              },
             },
           },
           subtitle: {

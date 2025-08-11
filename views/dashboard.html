@@ -16,6 +16,11 @@
     />
 
     <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=social_leaderboard"
     />
@@ -89,15 +94,31 @@
       <section>
         <div id="livros-data">
           <div id="livro-mais-alugado">
-            <p>Livros mais alugados</p>
+            <p id="livro-mais-alugado-title">Livros mais alugados</p>
             <div class="mais-alugado">
+              <span id="mais-alugado-span" class="material-icons ranking-icon"
+                >emoji_events</span
+              >
               <h2 id="mais-alugado"></h2>
+              <p id="mais-alugado-number"></p>
             </div>
             <div class="mais-alugado">
+              <span
+                id="segundo-mais-alugado-span"
+                class="material-icons ranking-icon"
+                >workspace_premium</span
+              >
               <h3 id="segundo-mais-alugado"></h3>
+              <p id="segundo-mais-alugado-number"></p>
             </div>
             <div class="mais-alugado">
+              <span
+                id="terceiro-mais-alugado-span"
+                class="material-icons ranking-icon"
+                >military_tech</span
+              >
               <h4 id="terceiro-mais-alugado"></h4>
+              <p id="terceiro-mais-alugado-number"></p>
             </div>
           </div>
           <div id="livro-emprestado" class="livro-div">
@@ -105,14 +126,14 @@
               <span class="material-icons-outlined">library_add_check</span>
               <p id="emprestado-number"></p>
             </div>
-            <p>Livros alugados no último mês</p>
+            <p>Livros alugados nos último mês</p>
           </div>
           <div id="livro-atrasado" class="livro-div">
             <div class="livro-info-div">
               <span class="material-icons-outlined">schedule</span>
               <p id="atrasado-number"></p>
             </div>
-            <p>Livros atrasados no último mês</p>
+            <p>Livros atrasados no momento</p>
           </div>
         </div>
         <div id="locatarios-data">
