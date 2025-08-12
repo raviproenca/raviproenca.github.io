@@ -64,7 +64,6 @@ const renderTable = (usuariosParaExibir, pagina = 1) => {
         <td data-label="Email"><div class="editable-cell" contenteditable="true">${
           user.email
         }</div></td>
-        <td data-label="Senha">********</td>
         <td data-label="Permissão">${
           user.role === "ADMIN" ? "Usuário Editor" : "Usuário Leitor"
         }</td>

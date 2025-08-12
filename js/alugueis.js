@@ -76,10 +76,12 @@ const renderTable = (alugueis, pagina = 1) => {
       <td data-label="Locatário">${locatario.name}</td>
       <td data-label="Data de Locação">${new Date(
         aluguel.rentDate
-      ).toLocaleDateString()}</td>
+      ).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</td>
       <td data-label="Data de Devolução">${
         aluguel.devolutionDate
-          ? new Date(aluguel.devolutionDate).toLocaleDateString()
+          ? new Date(aluguel.devolutionDate).toLocaleDateString("pt-BR", {
+              timeZone: "UTC",
+            })
           : "Aluguel em andamento"
       }</td>
       <td data-label="Status">${
@@ -150,7 +152,7 @@ const renderPaginacao = (alugueis) => {
 };
 
 const renderLivrosNoSelect = (selectElement) => {
-  selectElement.innerHTML = `<option value="">Selecione uma Livro</option>`;
+  selectElement.innerHTML = `<option value="">Selecione um Livro</option>`;
   livrosDisponiveis.forEach((livro) => {
     const option = document.createElement("option");
     option.value = livro.id;
@@ -225,9 +227,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
     const filteredAlugueis = todosOsAlugueis.filter((aluguel) => {
-      const rentDateFormatted = new Date(aluguel.rentDate).toLocaleDateString();
+      const rentDateFormatted = new Date(aluguel.rentDate).toLocaleDateString(
+        "pt-BR",
+        { timeZone: "UTC" }
+      );
       const devolutionDateFormatted = aluguel.devolutionDate
-        ? new Date(aluguel.devolutionDate).toLocaleDateString()
+        ? new Date(aluguel.devolutionDate).toLocaleDateString("pt-BR", {
+            timeZone: "UTC",
+          })
         : "";
       return (
         aluguel.book.name.toLowerCase().includes(searchTerm) ||
@@ -253,13 +260,43 @@ document.addEventListener("DOMContentLoaded", async () => {
   formCadastrar.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const bookId = registerLivroInput.value.trim();
-    const renterId = registerLocatarioInput.value.trim();
-    const deadLine = registerDataEntregaInput.value.trim();
+    const selectedBookId = parseInt(registerLivroInput.value, 10);
+    if (isNaN(selectedBookId)) {
+      registerLivroInput.setCustomValidity("O livro é obrigatório.");
+      registerLivroInput.reportValidity();
+      return;
+    }
 
-    if (!renterId || !bookId || !deadLine) return;
+    const selectedRenterId = parseInt(registerLocatarioInput.value, 10);
+    if (isNaN(selectedRenterId)) {
+      registerLocatarioInput.setCustomValidity("O locatário é obrigatório.");
+      registerLocatarioInput.reportValidity();
+      return;
+    }
 
-    const novoAluguel = { renterId, bookId, deadLine };
+    if (!registerDataEntregaInput.value.trim()) {
+      registerDataEntregaInput.setCustomValidity(
+        "A data de entrega é obrigatória."
+      );
+      registerDataEntregaInput.reportValidity();
+      return;
+    }
+
+    const selectedDate = new Date(registerDataEntregaInput.value);
+    const today = new Date();
+    if (selectedDate < today) {
+      registerDataEntregaInput.setCustomValidity(
+        "A data de entrega não pode ser no passado."
+      );
+      registerDataEntregaInput.reportValidity();
+      return;
+    }
+
+    const novoAluguel = {
+      renterId: parseInt(registerLocatarioInput.value, 10),
+      bookId: parseInt(registerLivroInput.value, 10),
+      deadLine: registerDataEntregaInput.value,
+    };
 
     try {
       await cadastrarAluguel(novoAluguel);
@@ -279,13 +316,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     event.preventDefault();
     if (idAluguelEditando === null) return;
 
-    const bookId = updateLivroInput.value.trim();
-    const renterId = updateLocatarioInput.value.trim();
-    const deadLine = updateDataEntregaInput.value.trim();
+    const selectedBookId = parseInt(updateLivroInput.value, 10);
+    if (isNaN(selectedBookId)) {
+      updateLivroInput.setCustomValidity("O livro é obrigatório.");
+      updateLivroInput.reportValidity();
+      return;
+    }
 
-    if (!renterId || !bookId || !deadLine) return;
+    const selectedRenterId = parseInt(updateLocatarioInput.value, 10);
+    if (isNaN(selectedRenterId)) {
+      updateLocatarioInput.setCustomValidity("O locatário é obrigatório.");
+      updateLocatarioInput.reportValidity();
+      return;
+    }
 
-    const aluguelAtualizado = { renterId, bookId, deadLine };
+    if (!updateDataEntregaInput.value.trim()) {
+      updateDataEntregaInput.setCustomValidity(
+        "A data de entrega é obrigatória."
+      );
+      updateDataEntregaInput.reportValidity();
+      return;
+    }
+
+    const selectedDate = new Date(updateDataEntregaInput.value);
+    const today = new Date();
+    if (selectedDate < today) {
+      updateDataEntregaInput.setCustomValidity(
+        "A data de entrega não pode ser no passado."
+      );
+      updateDataEntregaInput.reportValidity();
+      return;
+    }
+
+    const aluguelAtualizado = {
+      renterId: parseInt(updateLocatarioInput.value, 10),
+      bookId: parseInt(updateLivroInput.value, 10),
+      deadLine: updateDataEntregaInput.value,
+    };
 
     try {
       await atualizarAluguel(idAluguelEditando, aluguelAtualizado);
@@ -312,8 +379,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         (e) => e.id === aluguel.renter.id
       );
       if (aluguel) {
-        updateLivroInput.value = livro.name;
-        updateLocatarioInput.value = locatario.name;
+        updateLivroInput.value = livro.id;
+        updateLocatarioInput.value = locatario.id;
         updateDataEntregaInput.value = aluguel.deadLine;
         openModal(modalAtualizar);
       }

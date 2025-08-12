@@ -125,13 +125,16 @@
         <form id="form-cadastrar">
           <div class="form-group">
             <label for="register-livro">Livro</label>
-            <select id="register-livro">
+            <select id="register-livro" oninput="this.setCustomValidity('')">
               <option value="">Selecione um Livro</option>
             </select>
           </div>
           <div class="form-group">
             <label for="register-locatario">Locatário</label>
-            <select id="register-locatario">
+            <select
+              id="register-locatario"
+              oninput="this.setCustomValidity('')"
+            >
               <option value="">Selecione um Locatário</option>
             </select>
           </div>
@@ -142,6 +145,7 @@
               id="register-data-entrega"
               name="dataEntrega"
               placeholder="Data de Entrega"
+              oninput="this.setCustomValidity('')"
             />
           </div>
           <div class="modal-actions">
@@ -160,23 +164,15 @@
         <form id="form-atualizar">
           <div class="form-group">
             <label for="update-livro">Livro</label>
-            <input
-              type="text"
-              id="update-livro"
-              name="livro"
-              placeholder="Livro"
-              required
-            />
+            <select id="update-livro" oninput="this.setCustomValidity('')">
+              <option value="">Selecione um Livro</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="update-locatario">Locatário</label>
-            <input
-              type="text"
-              id="update-locatario"
-              name="locatario"
-              placeholder="Locatário"
-              required
-            />
+            <select id="update-locatario" oninput="this.setCustomValidity('')">
+              <option value="">Selecione um Locatário</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="update-data-entrega">Data de Entrega</label>
@@ -185,7 +181,6 @@
               id="update-data-entrega"
               name="dataEntrega"
               placeholder="Data de Entrega"
-              required
             />
           </div>
           <div class="modal-actions">

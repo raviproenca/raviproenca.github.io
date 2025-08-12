@@ -74,7 +74,7 @@ const renderTable = (livrosParaExibir, pagina = 1) => {
       <td data-label="Editora">${editora.name}</td>
       <td data-label="Lançamento">${new Date(
         livro.launchDate
-      ).toLocaleDateString()}</td>
+      ).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</td>
       <td data-label="Estoque">${livro.totalQuantity}</td>
       <td data-label="Alugados">${livro.totalInUse}</td>
       <td data-label="Ações">
@@ -190,9 +190,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
     const filteredBooks = todosOsLivros.filter((book) => {
-      const launchDateFormatted = new Date(
-        book.launchDate
-      ).toLocaleDateString();
+      const launchDateFormatted = new Date(book.launchDate).toLocaleDateString(
+        "pt-BR",
+        { timeZone: "UTC" }
+      );
       return (
         book.name.toLowerCase().includes(searchTerm) ||
         book.author.toLowerCase().includes(searchTerm) ||
@@ -309,7 +310,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       author: registerAuthorInput.value.trim(),
       launchDate: registerLaunchInput.value,
       totalQuantity: parseInt(registerQuantityInput.value, 10),
-      publisherId: selectedPublisherId,
+      publisherId: parseInt(registerPublisherInput.value, 10),
     };
 
     console.log(newLivro);

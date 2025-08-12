@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   locatarioChart = new Chart(ctxLocatariosPie, {
     type: "doughnut",
     data: {
-      labels: ["Livros alugados", "Aluguéis realizados"],
+      labels: ["Livros alugados no momento", "Total de aluguéis realizados"],
       datasets: [
         {
           label: "Status dos Livros",
