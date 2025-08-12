@@ -7,9 +7,7 @@ import {
   fetchRentsQuantity,
 } from "/services/dashboardService.js";
 
-import { fetchRenters } from "/services/locatariosService.js";
-
-const SelectLocatario = document.getElementById("register-locatario");
+const selectLocatario = document.getElementById("register-locatario");
 
 let locatariosDisponiveis = [];
 let livrosMaisAlugados = [];
@@ -18,7 +16,7 @@ const renderLocatariosNoSelect = (selectElement) => {
   selectElement.innerHTML = `<option>selecione</option>`;
   locatariosDisponiveis.forEach((locatario) => {
     const option = document.createElement("option");
-    option.value = locatario.id;
+    option.value = locatario.name;
     option.textContent = locatario.name;
     selectElement.appendChild(option);
   });
@@ -26,8 +24,8 @@ const renderLocatariosNoSelect = (selectElement) => {
 
 const carregarLocatarios = async () => {
   try {
-    locatariosDisponiveis = await fetchRenters();
-    renderLocatariosNoSelect(SelectLocatario);
+    locatariosDisponiveis = await fetchPerRenter();
+    renderLocatariosNoSelect(selectLocatario);
   } catch (error) {
     console.error("Erro ao carregar locatários:", error);
   }
@@ -117,15 +115,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   const dynamicFontSize = isMobile ? 11 : 14;
   const dynamicPadding = isMobile ? 10 : 20;
 
+  let locatarioChart = null;
+
+  selectLocatario.addEventListener("change", (event) => {
+    const nomeSelecionado = event.target.value;
+    const locatario = locatariosDisponiveis.find(
+      (l) => l.name === nomeSelecionado
+    );
+
+    if (locatarioChart) {
+      locatarioChart.data.datasets[0].data = [
+        locatario.rentsActive,
+        locatario.rentsQuantity,
+      ];
+      locatarioChart.update();
+    }
+  });
+
   // === DOUGHNUT CHART ===
-  new Chart(ctxLocatariosPie, {
+  locatarioChart = new Chart(ctxLocatariosPie, {
     type: "doughnut",
     data: {
       labels: ["Livros alugados", "Aluguéis realizados"],
       datasets: [
         {
           label: "Status dos Livros",
-          data: [37, 29],
+          data: [1, 1],
           backgroundColor: [limeGreen, purple],
           borderColor: [limeGreen, purple],
           borderWidth: 1,

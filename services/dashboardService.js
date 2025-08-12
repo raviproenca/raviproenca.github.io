@@ -91,8 +91,8 @@ export const fetchPerRenter = async () => {
       }
     );
 
-    console.log(response.data);
-    return response.data;
+    console.log(response.data.content);
+    return response.data.content;
   } catch (error) {
     handleAxiosError(error);
   }
