@@ -121,18 +121,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   new Chart(ctxLocatariosPie, {
     type: "doughnut",
     data: {
-      labels: [
-        "Livros alugados",
-        "Aluguéis realizados",
-        "Livros devolvidos no prazo",
-        "Livros devolvidos com atraso",
-      ],
+      labels: ["Livros alugados", "Aluguéis realizados"],
       datasets: [
         {
           label: "Status dos Livros",
-          data: [37, 29, 58, 11],
-          backgroundColor: [orange, limeGreen, purple, cyan],
-          borderColor: [orange, limeGreen, purple, cyan],
+          data: [37, 29],
+          backgroundColor: [limeGreen, purple],
+          borderColor: [limeGreen, purple],
           borderWidth: 1,
         },
       ],
@@ -245,7 +240,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           },
           subtitle: {
             display: true,
-            text: `Livros devolvidos no prazo: ${totalDentroPrazo}    |    Devolvidos com atraso: ${totalForaPrazo}`,
+            text: `Total devolvidos no prazo: ${totalDentroPrazo}    |    Devolvidos com atraso: ${totalForaPrazo}`,
             color: "#fff",
             font: {
               size: titleFontSize,

@@ -190,10 +190,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
     const filteredBooks = todosOsLivros.filter((book) => {
+      const launchDateFormatted = new Date(
+        book.launchDate
+      ).toLocaleDateString();
       return (
         book.name.toLowerCase().includes(searchTerm) ||
         book.author.toLowerCase().includes(searchTerm) ||
-        book.launchDate.toLowerCase().includes(searchTerm) ||
+        launchDateFormatted.includes(searchTerm) ||
         String(book.totalQuantity).includes(searchTerm) ||
         book.publisher.name.toLowerCase().includes(searchTerm)
       );

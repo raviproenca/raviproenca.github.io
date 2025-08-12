@@ -225,11 +225,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
     const filteredAlugueis = todosOsAlugueis.filter((aluguel) => {
+      const rentDateFormatted = new Date(aluguel.rentDate).toLocaleDateString();
+      const devolutionDateFormatted = aluguel.devolutionDate
+        ? new Date(aluguel.devolutionDate).toLocaleDateString()
+        : "";
       return (
         aluguel.book.name.toLowerCase().includes(searchTerm) ||
         aluguel.renter.name.toLowerCase().includes(searchTerm) ||
-        aluguel.rentDate.toLowerCase().includes(searchTerm) ||
-        aluguel.devolutionDate.toLowerCase().includes(searchTerm)
+        rentDateFormatted.includes(searchTerm) ||
+        devolutionDateFormatted.includes(searchTerm)
       );
     });
     paginaAtual = 1;

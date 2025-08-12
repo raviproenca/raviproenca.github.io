@@ -15,7 +15,7 @@ export const fetchMoreRented = async (dashboardData) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log(response.data);
+
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -34,7 +34,7 @@ export const fetchInTime = async (dashboardData) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log(response.data);
+
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -53,7 +53,7 @@ export const fetchWithDelay = async (dashboardData) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log(response.data);
+
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -72,7 +72,7 @@ export const fetchRentsLate = async (dashboardData) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log(response.data);
+
     return response.data;
   } catch (error) {
     handleAxiosError(error);
@@ -90,6 +90,7 @@ export const fetchPerRenter = async () => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -109,7 +110,7 @@ export const fetchRentsQuantity = async (dashboardData) => {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    console.log(response.data);
+
     return response.data;
   } catch (error) {
     handleAxiosError(error);
