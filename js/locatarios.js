@@ -182,6 +182,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderTable(filteredLocatarios, paginaAtual);
   });
 
+  logoutButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("nameUser");
+    localStorage.removeItem("emailUser");
+    localStorage.removeItem("roleUser");
+    window.location.href = "/index.html";
+  });
+
   addLocatarioBtn.addEventListener("click", () => openModal(modalCadastrar));
 
   cancelarBtns.forEach((btn) =>

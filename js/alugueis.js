@@ -257,6 +257,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderTable(filteredAlugueis, paginaAtual);
   });
 
+  logoutButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("nameUser");
+    localStorage.removeItem("emailUser");
+    localStorage.removeItem("roleUser");
+    window.location.href = "/index.html";
+  });
+
   addAluguelBtn.addEventListener("click", () => openModal(modalCadastrar));
 
   cancelarBtns.forEach((btn) =>

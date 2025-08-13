@@ -181,7 +181,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   logoutButton.addEventListener("click", (event) => {
-    event.preventDefault();
     localStorage.removeItem("token");
     localStorage.removeItem("nameUser");
     localStorage.removeItem("emailUser");

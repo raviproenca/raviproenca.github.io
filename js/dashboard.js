@@ -51,6 +51,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   await carregarLivros();
   await carregarLocatarios();
 
+  name.textContent = localStorage.getItem("nameUser");
+  email.textContent = localStorage.getItem("emailUser");
+  localStorage.getItem("roleUser") === "ADMIN"
+    ? (role.textContent = "Usuário Editor")
+    : "Usuário Leitor";
+
+  logoutButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("nameUser");
+    localStorage.removeItem("emailUser");
+    localStorage.removeItem("roleUser");
+    window.location.href = "/index.html";
+  });
+
   document.getElementById("mais-alugado").textContent =
     livrosMaisAlugados[0].name;
   document.getElementById("segundo-mais-alugado").textContent =
