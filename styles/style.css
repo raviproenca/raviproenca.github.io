@@ -101,6 +101,13 @@ header h1 {
   word-break: break-word;
 }
 
+#profile-modal .role {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.75rem;
+  word-break: break-word;
+}
+
 #logout-button {
   background-color: #e74c3c;
   color: white;

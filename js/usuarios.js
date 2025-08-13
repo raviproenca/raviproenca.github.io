@@ -42,6 +42,9 @@ const toggleNav = document.getElementById("toggle-nav");
 const nav = document.getElementById("navbar");
 const profileButton = document.getElementById("profile-button");
 const profileModal = document.getElementById("profile-modal");
+const name = document.querySelector(".name");
+const email = document.querySelector(".email");
+const role = document.querySelector(".role");
 
 // --- Funções de Renderização ---
 const renderTable = (usuariosParaExibir, pagina = 1) => {
@@ -154,8 +157,12 @@ const carregarUsuarios = async () => {
 };
 
 // --- Event Listeners ---
-document.addEventListener("DOMContentLoaded", () => {
-  carregarUsuarios();
+document.addEventListener("DOMContentLoaded", async () => {
+  await carregarUsuarios();
+
+  name.textContent = localStorage.getItem("nomeUsuario");
+  email.textContent = localStorage.getItem("emailUsuario");
+  role.textContent = localStorage.getItem("roleUsuario");
 
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
