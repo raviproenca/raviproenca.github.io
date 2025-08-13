@@ -47,6 +47,10 @@ const toggleNav = document.getElementById("toggle-nav");
 const nav = document.getElementById("navbar");
 const profileButton = document.getElementById("profile-button");
 const profileModal = document.getElementById("profile-modal");
+const name = document.querySelector(".name");
+const email = document.querySelector(".email");
+const role = document.querySelector(".role");
+const logoutButton = document.getElementById("logout-button");
 
 // --- Funções de Renderização ---
 const renderTable = (livrosParaExibir, pagina = 1) => {
@@ -186,6 +190,12 @@ const closeModal = (modal) => {
 document.addEventListener("DOMContentLoaded", async () => {
   await carregarEditoras();
   await carregarLivros();
+
+  name.textContent = localStorage.getItem("nameUser");
+  email.textContent = localStorage.getItem("emailUser");
+  localStorage.getItem("roleUser") === "ADMIN"
+    ? (role.textContent = "Usuário Editor")
+    : "Usuário Leitor";
 
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();

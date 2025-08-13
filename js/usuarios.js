@@ -45,6 +45,7 @@ const profileModal = document.getElementById("profile-modal");
 const name = document.querySelector(".name");
 const email = document.querySelector(".email");
 const role = document.querySelector(".role");
+const logoutButton = document.getElementById("logout-button");
 
 // --- Funções de Renderização ---
 const renderTable = (usuariosParaExibir, pagina = 1) => {
@@ -160,9 +161,11 @@ const carregarUsuarios = async () => {
 document.addEventListener("DOMContentLoaded", async () => {
   await carregarUsuarios();
 
-  name.textContent = localStorage.getItem("nomeUsuario");
-  email.textContent = localStorage.getItem("emailUsuario");
-  role.textContent = localStorage.getItem("roleUsuario");
+  name.textContent = localStorage.getItem("nameUser");
+  email.textContent = localStorage.getItem("emailUser");
+  localStorage.getItem("roleUser") === "ADMIN"
+    ? (role.textContent = "Usuário Editor")
+    : "Usuário Leitor";
 
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
@@ -175,6 +178,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     paginaAtual = 1;
     renderTable(filteredUsers, paginaAtual);
+  });
+
+  logoutButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("nameUser");
+    localStorage.removeItem("emailUser");
+    localStorage.removeItem("roleUser");
+    window.location.href = "/index.html";
   });
 
   addUserBtn.addEventListener("click", () => openModal(modalCadastrar));

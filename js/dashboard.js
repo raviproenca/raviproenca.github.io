@@ -8,6 +8,14 @@ import {
 } from "/services/dashboardService.js";
 
 const selectLocatario = document.getElementById("register-locatario");
+const toggleNav = document.getElementById("toggle-nav");
+const nav = document.getElementById("navbar");
+const profileButton = document.getElementById("profile-button");
+const profileModal = document.getElementById("profile-modal");
+const name = document.querySelector(".name");
+const email = document.querySelector(".email");
+const role = document.querySelector(".role");
+const logoutButton = document.getElementById("logout-button");
 
 let locatariosDisponiveis = [];
 let livrosMaisAlugados = [];
@@ -301,8 +309,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await createChart(e.matches);
   });
 
-  const toggleNav = document.getElementById("toggle-nav");
-  const nav = document.getElementById("navbar");
   toggleNav.addEventListener("click", (e) => {
     e.stopPropagation();
     nav.classList.toggle("active");
@@ -313,9 +319,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       nav.classList.remove("active");
     }
   });
-
-  const profileButton = document.getElementById("profile-button");
-  const profileModal = document.getElementById("profile-modal");
 
   profileButton.addEventListener("click", () => {
     profileModal.classList.toggle("visible");

@@ -11,16 +11,6 @@ export const login = async ({ email, password }) => {
 
     if (response.data.token) localStorage.setItem("token", response.data.token);
 
-    if (response.data.name)
-      localStorage.setItem("nameUser", response.data.name);
-
-    if (response.data.email)
-      localStorage.setItem("emailUser", response.data.email);
-
-    if (response.data.role)
-      localStorage.setItem("roleUser", response.data.role);
-
-    console.log(response.data.name);
     return response.data;
   } catch (error) {
     handleAxiosError(error);

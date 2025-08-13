@@ -97,7 +97,7 @@ header h1 {
 #profile-modal .email {
   font-size: 0.875rem;
   color: #666;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
   word-break: break-word;
 }
 
@@ -112,6 +112,7 @@ header h1 {
   background-color: #e74c3c;
   color: white;
   border: none;
+  text-decoration: none;
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
   cursor: pointer;

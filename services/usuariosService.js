@@ -11,6 +11,16 @@ export const fetchUsers = async () => {
     const response = await axios.get(`${API_BASE_URL}/user`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
+    if (response.data.name)
+      localStorage.setItem("nameUser", response.data.name);
+
+    if (response.data.email)
+      localStorage.setItem("emailUser", response.data.email);
+
+    if (response.data.role)
+      localStorage.setItem("roleUser", response.data.role);
+
     return response.data;
   } catch (error) {
     handleAxiosError(error);

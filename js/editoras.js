@@ -42,6 +42,10 @@ const toggleNav = document.getElementById("toggle-nav");
 const nav = document.getElementById("navbar");
 const profileButton = document.getElementById("profile-button");
 const profileModal = document.getElementById("profile-modal");
+const name = document.querySelector(".name");
+const email = document.querySelector(".email");
+const role = document.querySelector(".role");
+const logoutButton = document.getElementById("logout-button");
 
 const renderTable = (editorasParaExibir, pagina = 1) => {
   tableBody.innerHTML = "";
@@ -147,8 +151,14 @@ const carregarEditoras = async () => {
   }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  carregarEditoras();
+document.addEventListener("DOMContentLoaded", async () => {
+  await carregarEditoras();
+
+  name.textContent = localStorage.getItem("nameUser");
+  email.textContent = localStorage.getItem("emailUser");
+  localStorage.getItem("roleUser") === "ADMIN"
+    ? (role.textContent = "Usuário Editor")
+    : "Usuário Leitor";
 
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
