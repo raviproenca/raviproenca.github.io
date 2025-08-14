@@ -12,6 +12,8 @@ let todasAsEditoras = [];
 let idEditoraEditando = null;
 let idParaExcluir = null;
 
+const getRole = () => localStorage.getItem("userRole");
+
 // --- Seleção de Elementos do DOM ---
 const tableBody = document.querySelector("#users-table tbody");
 const paginacaoContainer = document.getElementById("pagination");
@@ -156,9 +158,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   name.textContent = localStorage.getItem("nameUser");
   email.textContent = localStorage.getItem("emailUser");
-  localStorage.getItem("roleUser") === "ADMIN"
+  getRole() === "ADMIN"
     ? (role.textContent = "Usuário Editor")
-    : "Usuário Leitor";
+    : (role.textContent = "Usuário Leitor");
 
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();

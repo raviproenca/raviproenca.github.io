@@ -12,6 +12,8 @@ let todosOsUsuarios = [];
 let idUsuarioEditando = null;
 let idParaExcluir = null;
 
+const getRole = () => localStorage.getItem("userRole");
+
 // --- Seleção de Elementos do DOM ---
 const tableBody = document.querySelector("#users-table tbody");
 const paginacaoContainer = document.getElementById("pagination");
@@ -149,6 +151,17 @@ const closeModal = (modalElement) => {
 const carregarUsuarios = async () => {
   try {
     todosOsUsuarios = await fetchUsers();
+
+    const usuarioLogin = todosOsUsuarios.find(
+      (u) => u.email === localStorage.getItem("loginEmail")
+    );
+
+    if (usuarioLogin) {
+      localStorage.setItem("nameUser", usuarioLogin.name);
+      localStorage.setItem("emailUser", usuarioLogin.email);
+      localStorage.setItem("roleUser", usuarioLogin.role);
+    }
+
     renderTable(todosOsUsuarios, paginaAtual);
   } catch (error) {
     console.error("Erro ao buscar usuários:", error);
@@ -163,9 +176,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   name.textContent = localStorage.getItem("nameUser");
   email.textContent = localStorage.getItem("emailUser");
-  localStorage.getItem("roleUser") === "ADMIN"
+  getRole() === "ADMIN"
     ? (role.textContent = "Usuário Editor")
-    : "Usuário Leitor";
+    : (role.textContent = "Usuário Leitor");
 
   searchInput.addEventListener("input", () => {
     const searchTerm = searchInput.value.toLowerCase().trim();

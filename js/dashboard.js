@@ -20,6 +20,8 @@ const logoutButton = document.getElementById("logout-button");
 let locatariosDisponiveis = [];
 let livrosMaisAlugados = [];
 
+const getRole = () => localStorage.getItem("userRole");
+
 const renderLocatariosNoSelect = (selectElement) => {
   selectElement.innerHTML = `<option>selecione</option>`;
   locatariosDisponiveis.forEach((locatario) => {
@@ -53,9 +55,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   name.textContent = localStorage.getItem("nameUser");
   email.textContent = localStorage.getItem("emailUser");
-  localStorage.getItem("roleUser") === "ADMIN"
+  getRole() === "ADMIN"
     ? (role.textContent = "Usuário Editor")
-    : "Usuário Leitor";
+    : (role.textContent = "Usuário Leitor");
 
   logoutButton.addEventListener("click", (event) => {
     event.preventDefault();
