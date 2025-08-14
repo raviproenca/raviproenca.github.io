@@ -17,7 +17,7 @@ let idParaExcluir = null;
 let livrosDisponiveis = [];
 let locatariosDisponiveis = [];
 
-const getRole = () => localStorage.getItem("userRole");
+const getRole = () => localStorage.getItem("roleUser");
 
 // --- Seleção de Elementos do DOM ---
 const tableBody = document.querySelector("#users-table tbody");
@@ -268,7 +268,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "/index.html";
   });
 
-  addAluguelBtn.addEventListener("click", () => openModal(modalCadastrar));
+  addAluguelBtn.addEventListener("click", () => {
+    if (getRole() !== "ADMIN") return;
+
+    openModal(modalCadastrar);
+  });
 
   cancelarBtns.forEach((btn) =>
     btn.addEventListener("click", (e) => closeModal(e.target.closest(".modal")))
@@ -393,6 +397,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const editBtn = event.target.closest(".edit-btn");
 
     if (editBtn) {
+      if (getRole() !== "ADMIN") return;
+
       idAluguelEditando = parseInt(editBtn.dataset.id, 10);
       const aluguel = todosOsAlugueis.find((l) => l.id === idAluguelEditando);
       const livro = livrosDisponiveis.find((e) => e.id === aluguel.book.id);
@@ -408,6 +414,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (!returnedBtn.classList.contains("active")) {
+      if (getRole() !== "ADMIN") return;
+
       idParaExcluir = parseInt(returnedBtn.dataset.id, 10);
       openModal(modalConfirmando);
     }

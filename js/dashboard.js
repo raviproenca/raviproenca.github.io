@@ -20,7 +20,7 @@ const logoutButton = document.getElementById("logout-button");
 let locatariosDisponiveis = [];
 let livrosMaisAlugados = [];
 
-const getRole = () => localStorage.getItem("userRole");
+const getRole = () => localStorage.getItem("roleUser");
 
 const renderLocatariosNoSelect = (selectElement) => {
   selectElement.innerHTML = `<option>selecione</option>`;

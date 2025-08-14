@@ -12,7 +12,7 @@ let todosOsUsuarios = [];
 let idUsuarioEditando = null;
 let idParaExcluir = null;
 
-const getRole = () => localStorage.getItem("userRole");
+const getRole = () => localStorage.getItem("roleUser");
 
 // --- Seleção de Elementos do DOM ---
 const tableBody = document.querySelector("#users-table tbody");
@@ -48,6 +48,8 @@ const name = document.querySelector(".name");
 const email = document.querySelector(".email");
 const role = document.querySelector(".role");
 const logoutButton = document.getElementById("logout-button");
+const iconModal = document.getElementById("icon_modal");
+const textModal = document.getElementById("text_modal");
 
 // --- Funções de Renderização ---
 const renderTable = (usuariosParaExibir, pagina = 1) => {
@@ -201,7 +203,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "/index.html";
   });
 
-  addUserBtn.addEventListener("click", () => openModal(modalCadastrar));
+  addUserBtn.addEventListener("click", () => {
+    if (getRole() !== "ADMIN") return;
+    openModal(modalCadastrar);
+  });
 
   cancelarBtns.forEach((btn) => {
     btn.addEventListener("click", (event) => {
@@ -513,6 +518,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const deleteBtn = event.target.closest(".delete-btn");
 
     if (editBtn) {
+      if (getRole() !== "ADMIN") return;
+
       const userId = parseInt(editBtn.dataset.id, 10);
       idUsuarioEditando = userId;
       const userToEdit = todosOsUsuarios.find((u) => u.id === userId);
@@ -526,23 +533,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (deleteBtn) {
+      if (getRole() !== "ADMIN") return;
+
       idParaExcluir = parseInt(deleteBtn.dataset.id, 10);
+
       openModal(modalConfirmando);
     }
   });
 
   confirmDeleteBtn.addEventListener("click", async () => {
     if (idParaExcluir !== null) {
-      try {
-        await excluirUsuario(idParaExcluir);
+      const usuarioLogin = todosOsUsuarios.find(
+        (u) => u.email === localStorage.getItem("loginEmail")
+      );
+      if (usuarioLogin.id === idParaExcluir) {
+        iconModal.style.color = "red";
+        iconModal.textContent = "cancel";
+        textModal.textContent = "Você não pode se excluir.";
         closeModal(modalConfirmando);
         openModal(modalDeletando);
-        setTimeout(() => closeModal(modalDeletando), 1500);
-        await carregarUsuarios();
         searchInput.value = "";
-      } catch (error) {
-        console.error("Erro ao excluir usuário:", error);
-        alert("Erro ao excluir usuário.");
+      } else {
+        try {
+          await excluirUsuario(idParaExcluir);
+          iconModal.style.color = "rgb(24, 209, 24)";
+          iconModal.textContent = "check_circle";
+          textModal.textContent = "Usuário excluído!";
+          closeModal(modalConfirmando);
+          openModal(modalDeletando);
+          setTimeout(() => closeModal(modalDeletando), 1500);
+          await carregarUsuarios();
+          searchInput.value = "";
+        } catch (error) {
+          console.error("Erro ao excluir usuário:", error);
+          alert("Erro ao excluir usuário.");
+        }
       }
     }
   });

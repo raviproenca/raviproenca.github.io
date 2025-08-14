@@ -15,7 +15,7 @@ let idLivroEditando = null;
 let idParaExcluir = null;
 let editorasDisponiveis = [];
 
-const getRole = () => localStorage.getItem("userRole");
+const getRole = () => localStorage.getItem("roleUser");
 
 // --- Seleção de Elementos do DOM ---
 const tableBody = document.querySelector("#users-table tbody");
@@ -53,6 +53,8 @@ const name = document.querySelector(".name");
 const email = document.querySelector(".email");
 const role = document.querySelector(".role");
 const logoutButton = document.getElementById("logout-button");
+const iconModal = document.getElementById("icon_modal");
+const textModal = document.getElementById("text_modal");
 
 // --- Funções de Renderização ---
 const renderTable = (livrosParaExibir, pagina = 1) => {
@@ -227,7 +229,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "/index.html";
   });
 
-  addLivroBtn.addEventListener("click", () => openModal(modalCadastrar));
+  addLivroBtn.addEventListener("click", () => {
+    if (getRole() !== "ADMIN") return;
+
+    openModal(modalCadastrar);
+  });
 
   cancelarBtns.forEach((btn) =>
     btn.addEventListener("click", (e) => closeModal(e.target.closest(".modal")))
@@ -466,6 +472,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const deleteBtn = event.target.closest(".delete-btn");
 
     if (editBtn) {
+      if (getRole() !== "ADMIN") return;
+
       idLivroEditando = parseInt(editBtn.dataset.id, 10);
       const livro = todosOsLivros.find((l) => l.id === idLivroEditando);
       const editora = editorasDisponiveis.find(
@@ -482,6 +490,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (deleteBtn) {
+      if (getRole() !== "ADMIN") return;
+
       idParaExcluir = parseInt(deleteBtn.dataset.id, 10);
       openModal(modalConfirmando);
     }
@@ -491,14 +501,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (idParaExcluir !== null) {
       try {
         await excluirLivro(idParaExcluir);
+
+        textModal.textContent = "Livro excluído!";
+        iconModal.textContent = "check_circle";
+        iconModal.style.color = "rgb(24, 209, 24)";
+
         closeModal(modalConfirmando);
         openModal(modalDeletando);
         setTimeout(() => closeModal(modalDeletando), 1500);
         await carregarLivros();
         searchInput.value = "";
       } catch (error) {
-        console.error("Erro ao excluir livro:", error);
-        alert(error.message || "Erro ao excluir livro.");
+        textModal.textContent = "Livro vinculado.";
+        iconModal.textContent = "cancel";
+        iconModal.style.color = "red";
+
+        closeModal(modalConfirmando);
+        openModal(modalDeletando);
       }
     }
   });
