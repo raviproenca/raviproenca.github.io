@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aluguéis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=social_leaderboard"
+    />
+    <script type="module" crossorigin src="/assets/dashboard-iT9dj5wP.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/index-C1WVuFIU.js">
+    <link rel="stylesheet" crossorigin href="/assets/dashboard-Di8geTcX.css">
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <body>
+    <header>
+      <div id="toggle-nav">
+        <span class="material-icons-outlined">dehaze</span>
+      </div>
+      <h1>Locadora de livros</h1>
+      <div class="profile-wrapper">
+        <div id="header-user">
+          <span id="profile-button" class="material-icons-outlined"
+            >person</span
+          >
+        </div>
+        <div id="profile-modal">
+          <p class="name"></p>
+          <p class="email"></p>
+          <p class="role"></p>
+          <a id="logout-button">Log Out</a>
+        </div>
+      </div>
+    </header>
+    <nav id="navbar">
+      <img src="/assets/WDA%20GROUP%20LOGO-CZZAchWQ.png" alt="" />
+      <ul>
+        <li>
+          <a href="#" class="nav-item active" data-title="Relatório geral"
+            ><span class="material-icons-outlined">grid_view</span> Relatório
+            geral</a
+          >
+        </li>
+        <li>
+          <a href="usuarios.html" class="nav-item" data-title="Usuários"
+            ><span class="material-icons-outlined">group</span> Usuários</a
+          >
+        </li>
+        <li>
+          <a
+            href="editoras.html"
+            id="editoras-btn"
+            class="nav-item"
+            data-title="Editoras"
+            ><span class="material-icons-outlined">import_contacts</span>
+            Editoras</a
+          >
+        </li>
+        <li>
+          <a href="livros.html" class="nav-item" data-title="Livros"
+            ><span class="material-icons-outlined">library_books</span>
+            Livros</a
+          >
+        </li>
+        <li>
+          <a href="locatarios.html" class="nav-item" data-title="Locatários"
+            ><span class="material-icons-outlined">person_add</span>
+            Locatários</a
+          >
+        </li>
+        <li>
+          <a href="alugueis.html" class="nav-item" data-title="Aluguéis"
+            ><span class="material-icons-outlined">bookmark</span> Aluguéis</a
+          >
+        </li>
+      </ul>
+    </nav>
+    <main>
+      <section>
+        <div id="livros-data">
+          <div id="livro-mais-alugado">
+            <p id="livro-mais-alugado-title">Livros mais alugados</p>
+            <div class="mais-alugado">
+              <span id="mais-alugado-span" class="material-icons ranking-icon"
+                >emoji_events</span
+              >
+              <h2 id="mais-alugado"></h2>
+              <p id="mais-alugado-number"></p>
+            </div>
+            <div class="mais-alugado">
+              <span
+                id="segundo-mais-alugado-span"
+                class="material-icons ranking-icon"
+                >workspace_premium</span
+              >
+              <h3 id="segundo-mais-alugado"></h3>
+              <p id="segundo-mais-alugado-number"></p>
+            </div>
+            <div class="mais-alugado">
+              <span
+                id="terceiro-mais-alugado-span"
+                class="material-icons ranking-icon"
+                >military_tech</span
+              >
+              <h4 id="terceiro-mais-alugado"></h4>
+              <p id="terceiro-mais-alugado-number"></p>
+            </div>
+          </div>
+          <div id="livro-emprestado" class="livro-div">
+            <div class="livro-info-div">
+              <span class="material-icons-outlined">library_add_check</span>
+              <p id="emprestado-number"></p>
+            </div>
+            <p>Livros alugados no último mês</p>
+          </div>
+          <div id="livro-atrasado" class="livro-div">
+            <div class="livro-info-div">
+              <span class="material-icons-outlined">schedule</span>
+              <p id="atrasado-number"></p>
+            </div>
+            <p>Livros atrasados no momento</p>
+          </div>
+        </div>
+        <div id="locatarios-data">
+          <div id="locatarios-header">
+            <p>
+              Locatário:
+              <select id="register-locatario">
+                <option>selecione</option>
+              </select>
+            </p>
+          </div>
+          <div id="locatarios-container">
+            <canvas id="locatarios-chart-pie"></canvas>
+          </div>
+        </div>
+        <div id="livros-chart">
+          <div id="chart-container">
+            <canvas id="livros-chart-bar"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
