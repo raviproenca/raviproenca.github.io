@@ -12,6 +12,9 @@ let todasAsEditoras = [];
 let idEditoraEditando = null;
 let idParaExcluir = null;
 
+// NOVO: Estado para controlar a ordenação da tabela
+let sortState = { key: null, asc: true };
+
 const getRole = () => localStorage.getItem("roleUser");
 
 // --- Seleção de Elementos do DOM ---
@@ -50,6 +53,66 @@ const role = document.querySelector(".role");
 const logoutButton = document.getElementById("logout-button");
 const iconModal = document.getElementById("icon_modal");
 const textModal = document.getElementById("text_modal");
+const sortableHeaders = document.querySelectorAll(
+  "#users-table thead th[data-key]"
+);
+const sortSelect = document.getElementById("sort-select");
+const sortDirectionToggle = document.getElementById("sort-direction-toggle");
+
+// --- Funções de Ordenação e UI ---
+const updateHeaderUI = () => {
+  sortableHeaders.forEach((header) => {
+    header.classList.remove("sort-asc", "sort-desc");
+    if (header.dataset.key === sortState.key) {
+      header.classList.add(sortState.asc ? "sort-asc" : "sort-desc");
+    }
+  });
+};
+
+const updateMobileSortUI = () => {
+  sortSelect.value = sortState.key;
+
+  const icon = sortDirectionToggle.querySelector("span");
+  icon.textContent = sortState.asc ? "arrow_upward" : "arrow_downward";
+};
+
+const aplicarFiltroEOrdenacao = () => {
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  let editorasFiltradas = todasAsEditoras;
+
+  // 1. Aplica o filtro de busca
+  if (searchTerm) {
+    editorasFiltradas = todasAsEditoras.filter((editora) => {
+      return (
+        editora.name.toLowerCase().includes(searchTerm) ||
+        editora.email.toLowerCase().includes(searchTerm) ||
+        editora.telephone.toLowerCase().includes(searchTerm) ||
+        editora.site.toLowerCase().includes(searchTerm)
+      );
+    });
+  }
+
+  // 2. Aplica a ordenação
+  if (sortState.key) {
+    const { key, asc } = sortState;
+    editorasFiltradas.sort((a, b) => {
+      const valA = a[key] || "";
+      const valB = b[key] || "";
+      const comparison = String(valA).localeCompare(String(valB), undefined, {
+        numeric: true,
+      });
+      return asc ? comparison : -comparison;
+    });
+  }
+
+  // 3. Renderiza a tabela e atualiza as UIs
+  paginaAtual = 1;
+  renderTable(editorasFiltradas, paginaAtual);
+  updateHeaderUI();
+  updateMobileSortUI();
+};
+
+// --- Funções de Renderização ---
 
 const renderTable = (editorasParaExibir, pagina = 1) => {
   tableBody.innerHTML = "";
@@ -68,9 +131,13 @@ const renderTable = (editorasParaExibir, pagina = 1) => {
     const tr = tableBody.insertRow();
     tr.innerHTML = `
         <td data-label="Nome">${editora.name}</td>
-        <td data-label="Email"><div class="editable-cell" contenteditable="true">${editora.email}</div></td>
+        <td data-label="Email"><div class="editable-cell" contenteditable="true">${
+          editora.email
+        }</div></td>
         <td data-label="Telefone">${editora.telephone}</td>
-        <td data-label="Site"><div class="editable-cell" contenteditable="true">${editora.site}</div></td>
+        <td data-label="Site"><div class="editable-cell" contenteditable="true">${
+          editora.site || "N/A"
+        }</div></td>
         <td data-label="Ações">
           <button class="action-btn edit-btn" data-id="${editora.id}">
             <span class="material-icons-outlined">edit</span>
@@ -147,7 +214,7 @@ const closeModal = (modalElement) => {
 const carregarEditoras = async () => {
   try {
     todasAsEditoras = await fetchPublishers();
-    renderTable(todasAsEditoras, paginaAtual);
+    aplicarFiltroEOrdenacao();
   } catch (error) {
     console.error("Erro ao buscar editoras:", error);
     mensagemErro.style.display = "block";
@@ -164,18 +231,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     ? (role.textContent = "Usuário Editor")
     : (role.textContent = "Usuário Leitor");
 
-  searchInput.addEventListener("input", () => {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const filteredEditoras = todasAsEditoras.filter((editora) => {
-      return (
-        editora.name.toLowerCase().includes(searchTerm) ||
-        editora.email.toLowerCase().includes(searchTerm) ||
-        editora.telephone.toLowerCase().includes(searchTerm) ||
-        editora.site.toLowerCase().includes(searchTerm)
-      );
+  searchInput.addEventListener("input", aplicarFiltroEOrdenacao);
+
+  sortableHeaders.forEach((header) => {
+    header.addEventListener("click", () => {
+      const key = header.dataset.key;
+      if (sortState.key === key) {
+        sortState.asc = !sortState.asc;
+      } else {
+        sortState.key = key;
+        sortState.asc = true;
+      }
+      aplicarFiltroEOrdenacao();
     });
-    paginaAtual = 1;
-    renderTable(filteredEditoras, paginaAtual);
+  });
+
+  sortSelect.addEventListener("change", (event) => {
+    sortState.key = event.target.value;
+    sortState.asc = true;
+    aplicarFiltroEOrdenacao();
+  });
+
+  sortDirectionToggle.addEventListener("click", () => {
+    sortState.asc = !sortState.asc;
+    aplicarFiltroEOrdenacao();
   });
 
   logoutButton.addEventListener("click", (event) => {

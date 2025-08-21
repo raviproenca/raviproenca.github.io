@@ -294,6 +294,53 @@ main #users-table th {
   white-space: nowrap;
 }
 
+main #users-table th[data-key] > span {
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+main #users-table th[data-key] > span:hover {
+  transform: scale(1.1);
+}
+
+.sort-asc::after {
+  content: " ▲";
+}
+.sort-desc::after {
+  content: " ▼";
+}
+
+.mobile-sort-controls {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mobile-sort-controls select,
+.mobile-sort-controls button {
+  padding: 0.2rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  font-size: 0.8rem;
+}
+
+.mobile-sort-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#sort-direction-toggle span {
+  font-size: 1rem;
+}
+
 main #users-table tbody tr {
   border-bottom: 1px solid #b1b1b1;
 }
@@ -784,6 +831,10 @@ main .returned-btn.active {
 
   #table-container {
     margin-top: clamp(1rem, 2.8vh, 2rem);
+  }
+
+  .mobile-sort-controls {
+    display: flex;
   }
 
   main #mensagem-erro {

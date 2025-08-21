@@ -90,15 +90,26 @@
               >search</span
             >
           </div>
+          <div class="mobile-sort-controls">
+            <label for="sort-select">Ordenar por:</label>
+            <select id="sort-select">
+              <option value="name">Nome</option>
+              <option value="email">Email</option>
+              <option value="role">Permissão</option>
+            </select>
+            <button id="sort-direction-toggle" title="Alternar direção">
+              <span class="material-icons-outlined">arrow_upward</span>
+            </button>
+          </div>
         </div>
         <div id="table-container">
           <table id="users-table">
             <thead>
               <tr>
-                <th>Nome</th>
-                <th>Email</th>
-                <th>Permissão</th>
-                <th>Ações</th>
+                <th data-key="name"><span>Nome</span></th>
+                <th data-key="email"><span>Email</span></th>
+                <th data-key="role"><span>Permissão</span></th>
+                <th><span>Ações</span></th>
               </tr>
             </thead>
             <tbody></tbody>

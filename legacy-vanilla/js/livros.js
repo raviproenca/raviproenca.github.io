@@ -15,6 +15,8 @@ let idLivroEditando = null;
 let idParaExcluir = null;
 let editorasDisponiveis = [];
 
+let sortState = { key: null, asc: true };
+
 const getRole = () => localStorage.getItem("roleUser");
 
 // --- Seleção de Elementos do DOM ---
@@ -55,6 +57,69 @@ const role = document.querySelector(".role");
 const logoutButton = document.getElementById("logout-button");
 const iconModal = document.getElementById("icon_modal");
 const textModal = document.getElementById("text_modal");
+const sortableHeaders = document.querySelectorAll(
+  "#users-table thead th[data-key]"
+);
+const sortSelect = document.getElementById("sort-select");
+const sortDirectionToggle = document.getElementById("sort-direction-toggle");
+
+// --- Funções de Ordenação e UI ---
+const updateHeaderUI = () => {
+  sortableHeaders.forEach((header) => {
+    header.classList.remove("sort-asc", "sort-desc");
+    if (header.dataset.key === sortState.key) {
+      header.classList.add(sortState.asc ? "sort-asc" : "sort-desc");
+    }
+  });
+};
+
+const updateMobileSortUI = () => {
+  sortSelect.value = sortState.key;
+
+  const icon = sortDirectionToggle.querySelector("span");
+  icon.textContent = sortState.asc ? "arrow_upward" : "arrow_downward";
+};
+
+const aplicarFiltroEOrdenacao = () => {
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  let livrosFiltrados = todosOsLivros;
+
+  // 1. Aplica o filtro de busca
+  if (searchTerm) {
+    livrosFiltrados = todosOsLivros.filter((book) => {
+      const launchDateFormatted = new Date(book.launchDate).toLocaleDateString(
+        "pt-BR",
+        { timeZone: "UTC" }
+      );
+      return (
+        book.name.toLowerCase().includes(searchTerm) ||
+        book.author.toLowerCase().includes(searchTerm) ||
+        launchDateFormatted.includes(searchTerm) ||
+        String(book.totalQuantity).includes(searchTerm) ||
+        book.publisher.name.toLowerCase().includes(searchTerm)
+      );
+    });
+  }
+
+  // 2. Aplica a ordenação
+  if (sortState.key) {
+    const { key, asc } = sortState;
+    livrosFiltrados.sort((a, b) => {
+      const valA = a[key] || "";
+      const valB = b[key] || "";
+      const comparison = String(valA).localeCompare(String(valB), undefined, {
+        numeric: true,
+      });
+      return asc ? comparison : -comparison;
+    });
+  }
+
+  // 3. Renderiza a tabela e atualiza as UIs
+  paginaAtual = 1;
+  renderTable(livrosFiltrados, paginaAtual);
+  updateHeaderUI();
+  updateMobileSortUI();
+};
 
 // --- Funções de Renderização ---
 const renderTable = (livrosParaExibir, pagina = 1) => {
@@ -157,7 +222,7 @@ const renderEditorasNoSelect = (selectElement) => {
 const carregarLivros = async () => {
   try {
     todosOsLivros = await fetchBooks();
-    renderTable(todosOsLivros, paginaAtual);
+    aplicarFiltroEOrdenacao();
   } catch (error) {
     console.error("Erro ao buscar livros:", error);
     mensagemErro.style.display = "block";
@@ -201,23 +266,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     ? (role.textContent = "Usuário Editor")
     : (role.textContent = "Usuário Leitor");
 
-  searchInput.addEventListener("input", () => {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const filteredBooks = todosOsLivros.filter((book) => {
-      const launchDateFormatted = new Date(book.launchDate).toLocaleDateString(
-        "pt-BR",
-        { timeZone: "UTC" }
-      );
-      return (
-        book.name.toLowerCase().includes(searchTerm) ||
-        book.author.toLowerCase().includes(searchTerm) ||
-        launchDateFormatted.includes(searchTerm) ||
-        String(book.totalQuantity).includes(searchTerm) ||
-        book.publisher.name.toLowerCase().includes(searchTerm)
-      );
+  searchInput.addEventListener("input", aplicarFiltroEOrdenacao);
+
+  sortableHeaders.forEach((header) => {
+    header.addEventListener("click", () => {
+      const key = header.dataset.key;
+      if (sortState.key === key) {
+        sortState.asc = !sortState.asc;
+      } else {
+        sortState.key = key;
+        sortState.asc = true;
+      }
+      aplicarFiltroEOrdenacao();
     });
-    paginaAtual = 1;
-    renderTable(filteredBooks, paginaAtual);
+  });
+
+  sortSelect.addEventListener("change", (event) => {
+    sortState.key = event.target.value;
+    sortState.asc = true;
+    aplicarFiltroEOrdenacao();
+  });
+
+  sortDirectionToggle.addEventListener("click", () => {
+    sortState.asc = !sortState.asc;
+    aplicarFiltroEOrdenacao();
   });
 
   logoutButton.addEventListener("click", (event) => {

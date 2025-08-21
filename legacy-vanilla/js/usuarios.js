@@ -12,6 +12,8 @@ let todosOsUsuarios = [];
 let idUsuarioEditando = null;
 let idParaExcluir = null;
 
+let sortState = { key: null, asc: true };
+
 const getRole = () => localStorage.getItem("roleUser");
 
 // --- Seleção de Elementos do DOM ---
@@ -50,6 +52,65 @@ const role = document.querySelector(".role");
 const logoutButton = document.getElementById("logout-button");
 const iconModal = document.getElementById("icon_modal");
 const textModal = document.getElementById("text_modal");
+const sortableHeaders = document.querySelectorAll(
+  "#users-table thead th[data-key]"
+);
+const sortSelect = document.getElementById("sort-select");
+const sortDirectionToggle = document.getElementById("sort-direction-toggle");
+
+// --- Funções de Ordenação ---
+const updateHeaderUI = () => {
+  sortableHeaders.forEach((header) => {
+    header.classList.remove("sort-asc", "sort-desc");
+    if (header.dataset.key === sortState.key) {
+      header.classList.add(sortState.asc ? "sort-asc" : "sort-desc");
+    }
+  });
+};
+
+const updateMobileSortUI = () => {
+  sortSelect.value = sortState.key;
+
+  const icon = sortDirectionToggle.querySelector("span");
+  icon.textContent = sortState.asc ? "arrow_upward" : "arrow_downward";
+};
+
+const aplicarFiltroEOrdenacao = () => {
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  let usuariosFiltrados = todosOsUsuarios;
+
+  // 1. Aplica o filtro de busca
+  if (searchTerm) {
+    usuariosFiltrados = todosOsUsuarios.filter((user) => {
+      const roleFormatted =
+        user.role === "ADMIN" ? "Usuário Editor" : "Usuário Leitor";
+      return (
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.email.toLowerCase().includes(searchTerm) ||
+        roleFormatted.toLowerCase().includes(searchTerm)
+      );
+    });
+  }
+
+  // 2. Aplica a ordenação
+  if (sortState.key) {
+    const { key, asc } = sortState;
+    usuariosFiltrados.sort((a, b) => {
+      const valA = a[key];
+      const valB = b[key];
+      const comparison = String(valA).localeCompare(String(valB), undefined, {
+        numeric: true,
+      });
+      return asc ? comparison : -comparison;
+    });
+  }
+
+  // 3. Renderiza a tabela com os dados processados
+  paginaAtual = 1;
+  renderTable(usuariosFiltrados, paginaAtual);
+  updateHeaderUI();
+  updateMobileSortUI();
+};
 
 // --- Funções de Renderização ---
 const renderTable = (usuariosParaExibir, pagina = 1) => {
@@ -164,7 +225,7 @@ const carregarUsuarios = async () => {
       localStorage.setItem("roleUser", usuarioLogin.role);
     }
 
-    renderTable(todosOsUsuarios, paginaAtual);
+    aplicarFiltroEOrdenacao();
   } catch (error) {
     console.error("Erro ao buscar usuários:", error);
     mensagemErro.style.display = "block";
@@ -182,19 +243,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     ? (role.textContent = "Usuário Editor")
     : (role.textContent = "Usuário Leitor");
 
-  searchInput.addEventListener("input", () => {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const filteredUsers = todosOsUsuarios.filter((user) => {
-      const roleFormatted =
-        user.role === "ADMIN" ? "Usuário Editor" : "Usuário Leitor";
-      return (
-        user.name.toLowerCase().includes(searchTerm) ||
-        user.email.toLowerCase().includes(searchTerm) ||
-        roleFormatted.toLowerCase().includes(searchTerm)
-      );
+  searchInput.addEventListener("input", aplicarFiltroEOrdenacao);
+
+  // MODIFICADO: Implementação da lógica de ordenação no clique do header
+  sortableHeaders.forEach((header) => {
+    header.addEventListener("click", () => {
+      const key = header.dataset.key;
+      if (sortState.key === key) {
+        // Se já está ordenando por essa chave, inverte a direção
+        sortState.asc = !sortState.asc;
+      } else {
+        // Se é uma nova chave, define a ordenação para ela
+        sortState.key = key;
+        sortState.asc = true;
+      }
+      aplicarFiltroEOrdenacao();
     });
-    paginaAtual = 1;
-    renderTable(filteredUsers, paginaAtual);
+  });
+
+  sortSelect.addEventListener("change", (event) => {
+    sortState.key = event.target.value;
+    sortState.asc = true;
+    aplicarFiltroEOrdenacao();
+  });
+
+  sortDirectionToggle.addEventListener("click", () => {
+    sortState.asc = !sortState.asc;
+    aplicarFiltroEOrdenacao();
   });
 
   logoutButton.addEventListener("click", (event) => {
