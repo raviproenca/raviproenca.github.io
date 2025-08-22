@@ -94,9 +94,10 @@ const aplicarFiltroEOrdenacao = () => {
       return (
         book.name.toLowerCase().includes(searchTerm) ||
         book.author.toLowerCase().includes(searchTerm) ||
+        book.publisher.name.toLowerCase().includes(searchTerm) ||
         launchDateFormatted.includes(searchTerm) ||
         String(book.totalQuantity).includes(searchTerm) ||
-        book.publisher.name.toLowerCase().includes(searchTerm)
+        String(book.totalInUse).includes(searchTerm)
       );
     });
   }
@@ -105,11 +106,32 @@ const aplicarFiltroEOrdenacao = () => {
   if (sortState.key) {
     const { key, asc } = sortState;
     livrosFiltrados.sort((a, b) => {
-      const valA = a[key] || "";
-      const valB = b[key] || "";
-      const comparison = String(valA).localeCompare(String(valB), undefined, {
-        numeric: true,
-      });
+      let valA, valB;
+
+      switch (key) {
+        case "publisher":
+          valA = a.publisher.name;
+          valB = b.publisher.name;
+          break;
+        case "launchDate":
+          valA = new Date(a.launchDate);
+          valB = new Date(b.launchDate);
+          break;
+        default:
+          valA = a[key];
+          valB = b[key];
+          break;
+      }
+
+      let comparison = 0;
+      if (typeof valA === "number" && typeof valB === "number") {
+        comparison = valA - valB; // Comparação numérica direta
+      } else if (valA instanceof Date && valB instanceof Date) {
+        comparison = valA - valB; // Comparação de datas
+      } else {
+        comparison = String(valA || "").localeCompare(String(valB || "")); // Comparação de texto
+      }
+
       return asc ? comparison : -comparison;
     });
   }
@@ -257,14 +279,27 @@ const closeModal = (modal) => {
 
 // --- Event Listeners ---
 document.addEventListener("DOMContentLoaded", async () => {
-  await carregarEditoras();
-  await carregarLivros();
+  try {
+    const allPromises = [fetchPublishers(), fetchBooks()];
+    const allResults = await Promise.all(allPromises);
 
-  name.textContent = localStorage.getItem("nameUser");
-  email.textContent = localStorage.getItem("emailUser");
-  getRole() === "ADMIN"
-    ? (role.textContent = "Usuário Editor")
-    : (role.textContent = "Usuário Leitor");
+    [editorasDisponiveis, todosOsLivros] = allResults;
+
+    name.textContent = localStorage.getItem("nameUser");
+    email.textContent = localStorage.getItem("emailUser");
+    getRole() === "ADMIN"
+      ? (role.textContent = "Usuário Editor")
+      : (role.textContent = "Usuário Leitor");
+
+    renderEditorasNoSelect(registerPublisherInput);
+    renderEditorasNoSelect(updatePublisherInput);
+
+    aplicarFiltroEOrdenacao();
+  } catch (error) {
+    console.error("Erro no carregamento inicial da página:", error);
+    mensagemErro.style.display = "block";
+    mensagemErro.textContent = "Erro ao carregar dados. Tente novamente.";
+  }
 
   searchInput.addEventListener("input", aplicarFiltroEOrdenacao);
 

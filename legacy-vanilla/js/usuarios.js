@@ -245,15 +245,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   searchInput.addEventListener("input", aplicarFiltroEOrdenacao);
 
-  // MODIFICADO: Implementação da lógica de ordenação no clique do header
   sortableHeaders.forEach((header) => {
     header.addEventListener("click", () => {
       const key = header.dataset.key;
       if (sortState.key === key) {
-        // Se já está ordenando por essa chave, inverte a direção
         sortState.asc = !sortState.asc;
       } else {
-        // Se é uma nova chave, define a ordenação para ela
         sortState.key = key;
         sortState.asc = true;
       }

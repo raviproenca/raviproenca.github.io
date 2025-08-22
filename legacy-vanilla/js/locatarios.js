@@ -13,6 +13,8 @@ let todosOsLocatarios = [];
 let idLocatarioEditando = null;
 let idParaExcluir = null;
 
+let sortState = { key: null, asc: true };
+
 const getRole = () => localStorage.getItem("roleUser");
 
 // --- Seleção de Elementos do DOM ---
@@ -53,6 +55,62 @@ const role = document.querySelector(".role");
 const logoutButton = document.getElementById("logout-button");
 const iconModal = document.getElementById("icon_modal");
 const textModal = document.getElementById("text_modal");
+const sortableHeaders = document.querySelectorAll(
+  "#users-table thead th[data-key]"
+);
+const sortSelect = document.getElementById("sort-select");
+const sortDirectionToggle = document.getElementById("sort-direction-toggle");
+
+// --- Funções de Ordenação e UI ---
+const updateHeaderUI = () => {
+  sortableHeaders.forEach((header) => {
+    header.classList.remove("sort-asc", "sort-desc");
+    if (header.dataset.key === sortState.key) {
+      header.classList.add(sortState.asc ? "sort-asc" : "sort-desc");
+    }
+  });
+};
+
+const updateMobileSortUI = () => {
+  sortSelect.value = sortState.key;
+
+  const icon = sortDirectionToggle.querySelector("span");
+  icon.textContent = sortState.asc ? "arrow_upward" : "arrow_downward";
+};
+
+const aplicarFiltroEOrdenacao = () => {
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  let locatariosFiltrados = todosOsLocatarios;
+
+  if (searchTerm) {
+    locatariosFiltrados = todosOsLocatarios.filter((locatario) => {
+      return (
+        locatario.name.toLowerCase().includes(searchTerm) ||
+        locatario.email.toLowerCase().includes(searchTerm) ||
+        locatario.telephone.toLowerCase().includes(searchTerm) ||
+        locatario.address.toLowerCase().includes(searchTerm) ||
+        locatario.cpf.toLowerCase().includes(searchTerm)
+      );
+    });
+  }
+
+  if (sortState.key) {
+    const { key, asc } = sortState;
+    locatariosFiltrados.sort((a, b) => {
+      const valA = a[key];
+      const valB = b[key];
+      const comparison = String(valA).localeCompare(String(valB), undefined, {
+        numeric: true,
+      });
+      return asc ? comparison : -comparison;
+    });
+  }
+
+  paginaAtual = 1;
+  renderTable(locatariosFiltrados, paginaAtual);
+  updateHeaderUI();
+  updateMobileSortUI();
+};
 
 // --- Funções de Renderização ---
 const renderTable = (locatariosParaExibir, pagina = 1) => {
@@ -72,7 +130,7 @@ const renderTable = (locatariosParaExibir, pagina = 1) => {
     const tr = tableBody.insertRow();
     tr.innerHTML = `
       <td data-label="Nome">${locatario.name}</td>
-      <td data-label="Email"><div class="editable-cell" contenteditable="true">${locatario.email}</div></td>
+      <td data-label="Email"><div class="editable-cell" contenteditable="false">${locatario.email}</div></td>
       <td data-label="Celular">${locatario.telephone}</td>
       <td data-label="Endereço">${locatario.address}</td>
       <td data-label="CPF">${locatario.cpf}</td>
@@ -153,7 +211,7 @@ const closeModal = (modal) => {
 const carregarLocatarios = async () => {
   try {
     todosOsLocatarios = await fetchRenters();
-    renderTable(todosOsLocatarios, paginaAtual);
+    aplicarFiltroEOrdenacao();
   } catch (error) {
     console.error("Erro ao carregar locatários:", error);
     mensagemErro.style.display = "block";
@@ -171,19 +229,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     ? (role.textContent = "Usuário Editor")
     : (role.textContent = "Usuário Leitor");
 
-  searchInput.addEventListener("input", () => {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const filteredLocatarios = todosOsLocatarios.filter((locatario) => {
-      return (
-        locatario.name.toLowerCase().includes(searchTerm) ||
-        locatario.email.toLowerCase().includes(searchTerm) ||
-        locatario.telephone.toLowerCase().includes(searchTerm) ||
-        locatario.address.toLowerCase().includes(searchTerm) ||
-        locatario.cpf.toLowerCase().includes(searchTerm)
-      );
+  searchInput.addEventListener("input", aplicarFiltroEOrdenacao);
+
+  sortableHeaders.forEach((header) => {
+    header.addEventListener("click", () => {
+      const key = header.dataset.key;
+      if (sortState.key === key) {
+        sortState.asc = !sortState.asc;
+      } else {
+        sortState.key = key;
+        sortState.asc = true;
+      }
+      aplicarFiltroEOrdenacao();
     });
-    paginaAtual = 1;
-    renderTable(filteredLocatarios, paginaAtual);
+  });
+
+  sortSelect.addEventListener("change", (event) => {
+    sortState.key = event.target.value;
+    sortState.asc = true;
+    aplicarFiltroEOrdenacao();
+  });
+
+  sortDirectionToggle.addEventListener("click", () => {
+    sortState.asc = !sortState.asc;
+    aplicarFiltroEOrdenacao();
   });
 
   logoutButton.addEventListener("click", (event) => {

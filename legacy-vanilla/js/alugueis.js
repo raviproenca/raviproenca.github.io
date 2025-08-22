@@ -17,6 +17,8 @@ let idParaExcluir = null;
 let livrosDisponiveis = [];
 let locatariosDisponiveis = [];
 
+let sortState = { key: null, asc: true };
+
 const getRole = () => localStorage.getItem("roleUser");
 
 // --- Seleção de Elementos do DOM ---
@@ -53,6 +55,111 @@ const name = document.querySelector(".name");
 const email = document.querySelector(".email");
 const role = document.querySelector(".role");
 const logoutButton = document.getElementById("logout-button");
+const sortableHeaders = document.querySelectorAll(
+  "#users-table thead th[data-key]"
+);
+const sortSelect = document.getElementById("sort-select");
+const sortDirectionToggle = document.getElementById("sort-direction-toggle");
+
+// --- Funções de Ordenação e UI ---
+const updateHeaderUI = () => {
+  sortableHeaders.forEach((header) => {
+    header.classList.remove("sort-asc", "sort-desc");
+    if (header.dataset.key === sortState.key) {
+      header.classList.add(sortState.asc ? "sort-asc" : "sort-desc");
+    }
+  });
+};
+
+const updateMobileSortUI = () => {
+  sortSelect.value = sortState.key;
+
+  const icon = sortDirectionToggle.querySelector("span");
+  icon.textContent = sortState.asc ? "arrow_upward" : "arrow_downward";
+};
+
+const aplicarFiltroEOrdenacao = () => {
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  let alugueisFiltrados = todosOsAlugueis;
+
+  if (searchTerm) {
+    alugueisFiltrados = todosOsAlugueis.filter((aluguel) => {
+      const statusFormatted =
+        aluguel.status === "LATE"
+          ? "Atrasado"
+          : aluguel.status === "DELIVERED_WITH_DELAY"
+          ? "Devolvido com atraso"
+          : aluguel.status === "IN_TIME"
+          ? "Devolvido no prazo"
+          : "Em dia";
+      const rentDateFormatted = new Date(aluguel.rentDate).toLocaleDateString(
+        "pt-BR",
+        { timeZone: "UTC" }
+      );
+      const devolutionDateFormatted = aluguel.devolutionDate
+        ? new Date(aluguel.devolutionDate).toLocaleDateString("pt-BR", {
+            timeZone: "UTC",
+          })
+        : "";
+      return (
+        aluguel.book.name.toLowerCase().includes(searchTerm) ||
+        aluguel.renter.name.toLowerCase().includes(searchTerm) ||
+        rentDateFormatted.includes(searchTerm) ||
+        devolutionDateFormatted.includes(searchTerm) ||
+        statusFormatted.toLowerCase().includes(searchTerm)
+      );
+    });
+  }
+
+  if (sortState.key) {
+    const { key, asc } = sortState;
+    alugueisFiltrados.sort((a, b) => {
+      let valA, valB;
+
+      switch (key) {
+        case "name":
+          valA = a.book.name;
+          valB = b.book.name;
+          break;
+        case "renter":
+          valA = a.renter.name;
+          valB = b.renter.name;
+          break;
+        case "rentDate":
+          valA = new Date(a.rentDate);
+          valB = new Date(b.rentDate);
+          break;
+        case "devolutionDate":
+          a.devolutionDate === Date
+            ? (valA = new Date(a.devolutionDate))
+            : (valA = a.devolutionDate);
+
+          b.devolutionDate === Date
+            ? (valB = new Date(b.devolutionDate))
+            : (valB = b.devolutionDate);
+          break;
+        default:
+          valA = a[key];
+          valB = b[key];
+          break;
+      }
+
+      let comparison = 0;
+      if (valA instanceof Date && valB instanceof Date) {
+        comparison = valA - valB; // Comparação de datas
+      } else {
+        comparison = String(valA || "").localeCompare(String(valB || "")); // Comparação de texto
+      }
+
+      return asc ? comparison : -comparison;
+    });
+  }
+
+  paginaAtual = 1;
+  renderTable(alugueisFiltrados, paginaAtual);
+  updateHeaderUI();
+  updateMobileSortUI();
+};
 
 // --- Funções de Renderização ---
 const renderTable = (alugueis, pagina = 1) => {
@@ -181,31 +288,11 @@ const renderLocatariosNoSelect = (selectElement) => {
 const carregarAlugueis = async () => {
   try {
     todosOsAlugueis = await fetchRents();
-    renderTable(todosOsAlugueis, paginaAtual);
+    aplicarFiltroEOrdenacao();
   } catch (error) {
     console.error("Erro ao carregar aluguéis:", error);
     mensagemErro.style.display = "block";
     mensagemErro.textContent = "Erro ao carregar aluguéis.";
-  }
-};
-
-const carregarLivros = async () => {
-  try {
-    livrosDisponiveis = await fetchBooks();
-    renderLivrosNoSelect(registerLivroInput);
-    renderLivrosNoSelect(updateLivroInput);
-  } catch (error) {
-    console.error("Erro ao carregar livros:", error);
-  }
-};
-
-const carregarLocatarios = async () => {
-  try {
-    locatariosDisponiveis = await fetchRenters();
-    renderLocatariosNoSelect(registerLocatarioInput);
-    renderLocatariosNoSelect(updateLocatarioInput);
-  } catch (error) {
-    console.error("Erro ao carregar locatários:", error);
   }
 };
 
@@ -226,46 +313,54 @@ const closeModal = (modal) => {
 
 // --- Event Listeners ---
 document.addEventListener("DOMContentLoaded", async () => {
-  await carregarLivros();
-  await carregarLocatarios();
-  await carregarAlugueis();
+  try {
+    const allPromises = [fetchBooks(), fetchRenters(), fetchRents()];
+    const allResults = await Promise.all(allPromises);
 
-  name.textContent = localStorage.getItem("nameUser");
-  email.textContent = localStorage.getItem("emailUser");
-  getRole() === "ADMIN"
-    ? (role.textContent = "Usuário Editor")
-    : (role.textContent = "Usuário Leitor");
+    [livrosDisponiveis, locatariosDisponiveis, todosOsAlugueis] = allResults;
 
-  searchInput.addEventListener("input", () => {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    const filteredAlugueis = todosOsAlugueis.filter((aluguel) => {
-      const statusFormatted =
-        aluguel.status === "LATE"
-          ? "Atrasado"
-          : aluguel.status === "DELIVERED_WITH_DELAY"
-          ? "Devolvido com atraso"
-          : aluguel.status === "IN_TIME"
-          ? "Devolvido no prazo"
-          : "Em dia";
-      const rentDateFormatted = new Date(aluguel.rentDate).toLocaleDateString(
-        "pt-BR",
-        { timeZone: "UTC" }
-      );
-      const devolutionDateFormatted = aluguel.devolutionDate
-        ? new Date(aluguel.devolutionDate).toLocaleDateString("pt-BR", {
-            timeZone: "UTC",
-          })
-        : "";
-      return (
-        aluguel.book.name.toLowerCase().includes(searchTerm) ||
-        aluguel.renter.name.toLowerCase().includes(searchTerm) ||
-        rentDateFormatted.includes(searchTerm) ||
-        devolutionDateFormatted.includes(searchTerm) ||
-        statusFormatted.toLowerCase().includes(searchTerm)
-      );
+    name.textContent = localStorage.getItem("nameUser");
+    email.textContent = localStorage.getItem("emailUser");
+    getRole() === "ADMIN"
+      ? (role.textContent = "Usuário Editor")
+      : (role.textContent = "Usuário Leitor");
+
+    renderLivrosNoSelect(registerLivroInput);
+    renderLivrosNoSelect(updateLivroInput);
+    renderLocatariosNoSelect(registerLocatarioInput);
+    renderLocatariosNoSelect(updateLocatarioInput);
+
+    aplicarFiltroEOrdenacao();
+  } catch (error) {
+    console.error("Erro no carregamento inicial da página:", error);
+    mensagemErro.style.display = "block";
+    mensagemErro.textContent = "Erro ao carregar dados. Tente novamente.";
+  }
+
+  searchInput.addEventListener("input", aplicarFiltroEOrdenacao);
+
+  sortableHeaders.forEach((header) => {
+    header.addEventListener("click", () => {
+      const key = header.dataset.key;
+      if (sortState.key === key) {
+        sortState.asc = !sortState.asc;
+      } else {
+        sortState.key = key;
+        sortState.asc = true;
+      }
+      aplicarFiltroEOrdenacao();
     });
-    paginaAtual = 1;
-    renderTable(filteredAlugueis, paginaAtual);
+  });
+
+  sortSelect.addEventListener("change", (event) => {
+    sortState.key = event.target.value;
+    sortState.asc = true;
+    aplicarFiltroEOrdenacao();
+  });
+
+  sortDirectionToggle.addEventListener("click", () => {
+    sortState.asc = !sortState.asc;
+    aplicarFiltroEOrdenacao();
   });
 
   logoutButton.addEventListener("click", (event) => {

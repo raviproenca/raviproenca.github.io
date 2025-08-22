@@ -89,16 +89,30 @@
               >search</span
             >
           </div>
+          <div class="mobile-sort-controls">
+            <label for="sort-select">Ordenar por:</label>
+            <select id="sort-select">
+              <option value="name">Nome</option>
+              <option value="renter">Locatário</option>
+              <option value="rentDate">Data de Locação</option>
+              <option value="devolutionDate">Data de Devolução</option>
+            </select>
+            <button id="sort-direction-toggle" title="Alternar direção">
+              <span class="material-icons-outlined">arrow_upward</span>
+            </button>
+          </div>
         </div>
         <div id="table-container">
           <table id="users-table">
             <thead>
               <tr>
-                <th>Livro</th>
-                <th>Locatário</th>
-                <th>Data de Locação</th>
-                <th>Data de Devolução</th>
-                <th>Status</th>
+                <th data-key="name"><span>Livro</span></th>
+                <th data-key="renter"><span>Locatário</span></th>
+                <th data-key="rentDate"><span>Data de Locação</span></th>
+                <th data-key="devolutionDate">
+                  <span>Data de Devolução</span>
+                </th>
+                <th data-key="status"><span>Status</span></th>
                 <th>Ações</th>
               </tr>
             </thead>

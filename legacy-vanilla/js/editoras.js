@@ -12,7 +12,6 @@ let todasAsEditoras = [];
 let idEditoraEditando = null;
 let idParaExcluir = null;
 
-// NOVO: Estado para controlar a ordenação da tabela
 let sortState = { key: null, asc: true };
 
 const getRole = () => localStorage.getItem("roleUser");
@@ -83,11 +82,13 @@ const aplicarFiltroEOrdenacao = () => {
   // 1. Aplica o filtro de busca
   if (searchTerm) {
     editorasFiltradas = todasAsEditoras.filter((editora) => {
+      const hasSite =
+        editora.site && editora.site.toLowerCase().includes(searchTerm);
       return (
         editora.name.toLowerCase().includes(searchTerm) ||
         editora.email.toLowerCase().includes(searchTerm) ||
         editora.telephone.toLowerCase().includes(searchTerm) ||
-        editora.site.toLowerCase().includes(searchTerm)
+        hasSite
       );
     });
   }
@@ -131,12 +132,12 @@ const renderTable = (editorasParaExibir, pagina = 1) => {
     const tr = tableBody.insertRow();
     tr.innerHTML = `
         <td data-label="Nome">${editora.name}</td>
-        <td data-label="Email"><div class="editable-cell" contenteditable="true">${
+        <td data-label="Email"><div class="editable-cell" contenteditable="false">${
           editora.email
         }</div></td>
         <td data-label="Telefone">${editora.telephone}</td>
-        <td data-label="Site"><div class="editable-cell" contenteditable="true">${
-          editora.site || "N/A"
+        <td data-label="Site"><div class="editable-cell" contenteditable="false">${
+          editora.site || "-"
         }</div></td>
         <td data-label="Ações">
           <button class="action-btn edit-btn" data-id="${editora.id}">
