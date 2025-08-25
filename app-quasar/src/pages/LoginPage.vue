@@ -1,7 +1,6 @@
 <template>
   <q-page
-    class="column items-center justify-center q-pa-md"
-    style="background: linear-gradient(to left, #2aa9b5 35%, #c4faff)"
+    class="column items-center justify-center q-pa-md background-color"
   >
     <div class="column items-center" style="width: 100%; max-width: 500px">
       <div class="row justify-between items-center full-width q-pl-md q-pr-md">
@@ -11,11 +10,11 @@
           dense
           no-caps
           label="Esqueci minha senha"
-          class="text-white text-weight-bolder text-with-shadow"
+          class="text-white text-weight-bolder text-with-shadow text-subtitle1"
         />
       </div>
 
-      <q-card class="full-width" style="border-radius: 30px">
+      <q-card class="full-width shadow-4" style="border-radius: 30px">
         <q-form @submit="handleLogin">
           <q-card-section class="q-gutter-y-lg q-pa-xl">
             <q-input
@@ -61,9 +60,13 @@
   </q-page>
 </template>
 
-<style>
+<style scoped>
 .text-with-shadow {
   text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.input-style:deep(.q-field__control) {
+  border-radius: 15px;
+  box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.25);
 }
 </style>
 
@@ -77,7 +80,7 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 
-const $q = useQuasar()
+const quasarInstance = useQuasar()
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -89,9 +92,9 @@ const handleLogin = async () => {
       password: password.value,
     })
 
-    router.push('/usuarios')
+    router.push('/app/usuarios')
   } catch (error) {
-    $q.notify({
+    quasarInstance.notify({
       color: 'negative',
       position: 'top',
       message: error.message || 'Erro ao fazer login. Tente novamente.',

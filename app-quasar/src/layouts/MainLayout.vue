@@ -1,12 +1,12 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
+  <q-layout view="lHh Lpr lFf" class="background-color">
+    <q-header elevated class="header-color">
+      <q-toolbar class="row justify-between">
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-toolbar-title class="q-pl-md"> Locadora de Livros </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn dense round icon="o_person" color="white" text-color="black"/>
       </q-toolbar>
     </q-header>
 

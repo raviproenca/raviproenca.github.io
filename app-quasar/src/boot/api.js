@@ -1,8 +1,10 @@
 import { defineBoot } from '#q-app/wrappers'
 import axios from 'axios'
 
+console.log(`TESTANDOOOOO: ${process.env.VITE_API_BASE_URL}`)
+
 const api = axios.create({
-  baseURL: process.env.API_BASE_URL,
+  baseURL: process.env.VITE_API_BASE_URL,
 })
 
 export { api }
