@@ -1,3 +1,3 @@
 <template>
-  <h1>Usuarios</h1>
+  <h1>Livros</h1>
 </template>

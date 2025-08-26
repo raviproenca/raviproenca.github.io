@@ -1,3 +1,3 @@
 <template>
-  <h1>Usuarios</h1>
+  <h1>Alugueis</h1>
 </template>

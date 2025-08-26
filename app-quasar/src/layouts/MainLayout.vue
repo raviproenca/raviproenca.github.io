@@ -6,15 +6,16 @@
 
         <q-toolbar-title class="q-pl-md"> Locadora de Livros </q-toolbar-title>
 
-        <q-btn dense round icon="o_person" color="white" text-color="black"/>
+        <q-btn dense round icon="o_person" color="white" text-color="black" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer v-model="leftDrawerOpen" show-if-above class="nav-color">
+      <div class="flex flex-center q-pa-md">
+        <q-img src="src/assets/WDA GROUP LOGO.png" style="width: 100px" />
+      </div>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
-
-        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
+        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" class="q-mt-lg" />
       </q-list>
     </q-drawer>
 
@@ -30,46 +31,40 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 const linksList = [
   {
-    title: 'Docs',
+    title: 'Dashboard',
     caption: 'quasar.dev',
     icon: 'school',
-    link: 'https://quasar.dev',
+    link: '/app/dashboard',
   },
   {
-    title: 'Github',
+    title: 'Usuários',
     caption: 'github.com/quasarframework',
     icon: 'code',
-    link: 'https://github.com/quasarframework',
+    link: '/app/usuarios',
   },
   {
-    title: 'Discord Chat Channel',
+    title: 'Editoras',
     caption: 'chat.quasar.dev',
     icon: 'chat',
-    link: 'https://chat.quasar.dev',
+    link: '/app/editoras',
   },
   {
-    title: 'Forum',
+    title: 'Livros',
     caption: 'forum.quasar.dev',
     icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
+    link: '/app/livros',
   },
   {
-    title: 'Twitter',
+    title: 'Locatários',
     caption: '@quasarframework',
     icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
+    link: '/app/locatarios',
   },
   {
-    title: 'Facebook',
+    title: 'Aluguéis',
     caption: '@QuasarFramework',
     icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
+    link: '/app/alugueis',
   },
 ]
 

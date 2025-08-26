@@ -13,7 +13,12 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', redirect: 'app/usuarios' },
+      { path: 'dashboard', component: () => import('pages/DashboardPage.vue') },
       { path: 'usuarios', component: () => import('pages/UsuariosPage.vue') },
+      { path: 'editoras', component: () => import('pages/EditorasPage.vue') },
+      { path: 'livros', component: () => import('pages/LivrosPage.vue') },
+      { path: 'locatarios', component: () => import('pages/LocatariosPage.vue') },
+      { path: 'alugueis', component: () => import('pages/AlugueisPage.vue') },
     ],
   },
 
