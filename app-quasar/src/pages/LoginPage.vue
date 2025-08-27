@@ -1,7 +1,5 @@
 <template>
-  <q-page
-    class="column items-center justify-center q-pa-md background-color"
-  >
+  <q-page class="column items-center justify-center q-pa-md background-color">
     <div class="column items-center" style="width: 100%; max-width: 500px">
       <div class="row justify-between items-center full-width q-pl-md q-pr-md">
         <h1 class="text-h4 text-white text-weight-bolder text-with-shadow">LOGIN</h1>
