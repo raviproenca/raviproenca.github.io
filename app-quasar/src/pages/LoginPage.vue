@@ -14,13 +14,14 @@
 
       <q-card class="full-width shadow-4" style="border-radius: 30px">
         <q-form @submit="handleLogin">
-          <q-card-section class="q-gutter-y-lg q-pa-xl">
+          <q-card-section class="q-gutter-y-lg q-pl-xl q-pr-xl q-pt-xl">
             <q-input
               v-model="email"
               type="email"
               placeholder="Digite seu email"
               outlined
               class="input-style"
+              rounded
             >
               <template v-slot:prepend>
                 <q-icon name="o_mail" />
@@ -33,6 +34,7 @@
               placeholder="Digite sua senha"
               outlined
               class="input-style"
+              rounded
             >
               <template v-slot:prepend>
                 <q-icon name="o_lock" />
@@ -40,7 +42,7 @@
             </q-input>
           </q-card-section>
 
-          <q-card-actions align="center" class="q-pb-xl">
+          <q-card-actions align="center" class="q-mb-xl q-mt-sm">
             <q-btn
               label="Entrar"
               type="submit"
@@ -59,11 +61,7 @@
 </template>
 
 <style scoped>
-.text-with-shadow {
-  text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.25);
-}
 .input-style:deep(.q-field__control) {
-  border-radius: 15px;
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.25);
 }
 </style>

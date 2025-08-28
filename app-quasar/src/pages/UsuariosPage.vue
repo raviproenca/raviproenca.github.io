@@ -1,5 +1,5 @@
 <template>
-  <TableComponent title="Usuários" :columns="usuariosth" :rows="usuariostd" />
+  <TableComponent :columns="usuariosth" :rows="usuariostd" />
 </template>
 
 <script setup>
