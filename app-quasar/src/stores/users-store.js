@@ -13,7 +13,6 @@ export const useUsersStore = defineStore('users', () => {
     try {
       const response = await api.get('/user')
       users.value = response.data
-      console.log(users)
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err

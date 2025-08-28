@@ -8,9 +8,9 @@ import { useUsersStore } from 'src/stores/users-store'
 import TableComponent from 'src/components/TableComponent.vue'
 
 const usuariosth = [
-  { name: 'nome', label: 'Nome Completo', field: 'nome', sortable: true },
-  { name: 'email', label: 'Email', field: 'email', sortable: true },
-  { name: 'permissao', label: 'Permissão', field: 'permissao' },
+  { name: 'name', label: 'Nome', field: 'name'},
+  { name: 'email', label: 'Email', field: 'email'},
+  { name: 'role', label: 'Permissão', field: 'role' },
 ]
 
 const usuariostd = ref([])
