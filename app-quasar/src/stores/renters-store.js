@@ -1,0 +1,30 @@
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { api } from 'boot/api'
+
+export const useRentersStore = defineStore('renters', () => {
+  const renters = ref([])
+  const loading = ref(false)
+  const error = ref(null)
+
+  const fetchRenters = async () => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await api.get('/renter')
+      renters.value = response.data
+    } catch (err) {
+      error.value = err.response ? err.response.data.message : 'Erro ao buscar locatários.'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    renters,
+    loading,
+    error,
+    fetchRenters,
+  }
+})

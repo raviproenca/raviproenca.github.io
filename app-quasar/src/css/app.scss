@@ -2,6 +2,14 @@
   background: linear-gradient(to left, #2aa9b5 35%, #c4faff);
 }
 
+.background-color2 {
+  background: linear-gradient(to top left, #55bfc9, #16696d);
+}
+
+.modal-color {
+  background: linear-gradient(to left, #006670, #00a1b1);
+}
+
 .header-color {
   background: linear-gradient(to right, #004147, #009ead);
 }
@@ -14,3 +22,6 @@
   text-shadow: 2px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
+.border-radius {
+  border-radius: 15px;
+}

@@ -3,17 +3,20 @@
     <q-header elevated class="header-color q-py-md q-px-sm">
       <q-toolbar class="row justify-between">
         <q-btn
-          flat
           dense
-          round
-          size="lg"
-          class="q-mr-sm"
+          size="md"
+          class="q-mr-sm background-color2"
+          text-color="black"
           icon="menu"
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title class="q-pl-md text-h4 text-weight-medium text-with-shadow">
+        <q-toolbar-title class="q-pl-md gt-xs text-h4 text-weight-medium text-with-shadow">
+          Locadora de Livros
+        </q-toolbar-title>
+
+        <q-toolbar-title class="q-pl-md lt-sm text-h5 text-weight-medium text-with-shadow">
           Locadora de Livros
         </q-toolbar-title>
 
@@ -44,7 +47,7 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container >
       <router-view />
     </q-page-container>
   </q-layout>
