@@ -30,7 +30,7 @@
       </div>
       <q-list>
         <q-item
-          class="q-pa-lg q-mt-lg shadow-1"
+          class="q-pa-lg q-mt-sm shadow-1"
           v-for="link in linksList"
           :key="link.title"
           clickable

@@ -206,7 +206,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import biggestModal from './biggestModal.vue'
+import biggestModal from './ModalComponent.vue'
 
 const props = defineProps({
   rows: {
