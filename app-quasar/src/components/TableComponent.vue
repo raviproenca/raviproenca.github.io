@@ -4,22 +4,27 @@
       <h4 class="text-white text-center text-weight-bold text-with-shadow q-mt-md q-mb-lg">
         <slot></slot>
       </h4>
-      <q-input
-        v-model="filter"
-        outlined
-        :placeholder="placeholder"
-        bg-color="white"
-        class="q-mb-lg input-style"
-        rounded
-        dense
-      >
-        <template v-slot:append>
-          <q-icon name="search" />
-        </template>
-      </q-input>
+
+      <div class="row q-mb-lg">
+        <q-input
+          v-model="filter"
+          outlined
+          :placeholder="placeholder"
+          bg-color="white"
+          class="input-style col-grow q-mr-md"
+          rounded
+          dense
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+        <q-btn round size="md" color="teal-10" icon="add" @click="showModalFunction"></q-btn>
+      </div>
+
       <q-table
         class="col"
-        :rows="rows"
+        :rows="filteredRows"
         :columns="columns"
         row-key="id"
         :grid="$q.screen.lt.md"
@@ -62,10 +67,10 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item v-if="props.row.site">
+                  <q-item v-if="props.row.site || props.row.site === ''">
                     <q-item-section>
                       <q-item-label caption>Site</q-item-label>
-                      <q-item-label>{{ props.row.site }}</q-item-label>
+                      <q-item-label>{{ props.row.site || 'N/A' }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
@@ -139,10 +144,10 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item v-if="props.row.devolutionDate">
+                  <q-item v-if="'devolutionDate' in props.row">
                     <q-item-section>
                       <q-item-label caption>Data de Devolução</q-item-label>
-                      <q-item-label>{{ props.row.devolutionDate }}</q-item-label>
+                      <q-item-label>{{ props.row.devolutionDate || 'N/A' }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
@@ -168,8 +173,8 @@
               <q-separator />
 
               <q-card-actions align="center">
-                <q-btn flat round dense icon="o_edit" color="green" @click="editUser" />
-                <q-btn flat round dense icon="o_delete" color="red" @click="deleteUser" />
+                <q-btn flat round dense icon="o_edit" color="green" @click="showModalFunction" />
+                <q-btn flat round dense icon="o_delete" color="red" @click="showModalFunction" />
               </q-card-actions>
             </q-card>
           </div>
@@ -179,7 +184,7 @@
           <div class="row justify-center q-mt-md" style="width: 100%">
             <q-pagination
               v-model="pagination.page"
-              color="black"
+              color="teal-10"
               :max="pagesNumber"
               :max-pages="6"
               boundary-numbers
@@ -191,7 +196,7 @@
 
       <template>
         <q-dialog v-model="showModal">
-          <biggest-modal @close-modal="showModal = false" />
+          <ModalComponent @close-modal="showModal = false" />
         </q-dialog>
       </template>
     </div>
@@ -200,13 +205,13 @@
 
 <style scoped>
 .input-style:deep(.q-field__control) {
-  box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.25);
+  box-shadow: 1px 2px 6px rgba(63, 56, 56, 0.25);
 }
 </style>
 
 <script setup>
 import { ref, computed } from 'vue'
-import biggestModal from './ModalComponent.vue'
+import ModalComponent from './ModalComponent.vue'
 
 const props = defineProps({
   rows: {
@@ -223,26 +228,63 @@ const props = defineProps({
   },
 })
 
+// Filtro
 const filter = ref('')
 
-const showModal = ref(false)
+const filteredRows = computed(() => {
+  const q = filter.value.trim().toLowerCase()
+  if (!q) return props.rows
 
+  return props.rows.filter((row) => {
+    const searchableContent = [
+      row.name,
+      row.email,
+      row.role === 'USER' ? 'Leitor' : 'Editor',
+      row.telephone,
+      row.site,
+      row.author,
+      row.publisher?.name,
+      row.launchDate,
+      row.totalQuantity,
+      row.totalInUse,
+      row.address,
+      row.cpf,
+      row.book?.name,
+      row.renter?.name,
+      row.rentDate,
+      row.devolutionDate,
+      row.status === 'RENTED'
+        ? 'Alugado'
+        : row.status === 'IN_TIME'
+          ? 'Devolvido no prazo'
+          : row.status === 'LATE'
+            ? 'Atrasado'
+            : row.status === 'DELIVERED_WITH_DELAY'
+              ? 'Devolvido com atraso'
+              : '',
+    ]
+      .join(' ')
+      .toLowerCase()
+
+    return searchableContent.includes(q)
+  })
+})
+
+// Paginação
 const pagination = ref({
   sortBy: 'name',
   descending: true,
   page: 1,
   rowsPerPage: 10,
 })
-
 const pagesNumber = computed(() => {
   return Math.ceil(props.rows.length / pagination.value.rowsPerPage)
 })
 
-// Supondo que você tenha essas funções
-const editUser = () => {
+// Ações
+const showModal = ref(false)
+
+const showModalFunction = () => {
   showModal.value = true
-}
-const deleteUser = (id) => {
-  console.log('Delete user:', id)
 }
 </script>

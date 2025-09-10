@@ -21,10 +21,52 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
+  const registerUser = async (userData) => {
+    loading.value = true
+    error.value = null
+    try {
+      await api.post('/user', userData)
+    } catch (err) {
+      error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const editUser = async (userId, userData) => {
+    loading.value = true
+    error.value = null
+    try {
+      await api.put(`/user/${userId}`, userData)
+    } catch (err) {
+      error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const deleteUser = async (userId) => {
+    loading.value = true
+    error.value = null
+    try {
+      await api.delete(`/user/${userId}`)
+    } catch (err) {
+      error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     users,
     loading,
     error,
     fetchUsers,
+    registerUser,
+    editUser,
+    deleteUser
   }
 })
