@@ -6,46 +6,87 @@
           <q-btn flat dense label="X" color="white" @click="$emit('close-modal')" />
         </q-card-actions>
 
-        <q-item>
-          <q-item-section>
-            <q-item-label caption>Nome</q-item-label>
-            <q-input
-              type="text"
-              placeholder="Digite o nome"
-              outlined
-              dense
-              class="input-style"
-              rounded
-            ></q-input>
-          </q-item-section>
-        </q-item>
+        <!-- CREATE mode -->
+        <div v-if="mode === 'create' || mode === 'edit'">
+          <q-item v-for="column in columns" :key="column.name">
+            <q-item-section v-if="column.name !== 'actions'">
+              <q-item-label caption>{{ column.label }}</q-item-label>
+              <q-input
+                v-model="localRow[column.field]"
+                :placeholder="`Digite o ${column.label.toLowerCase()}`"
+                outlined
+                dense
+                rounded
+              />
+            </q-item-section>
+          </q-item>
 
-        <q-item>
-          <q-item-section>
-            <q-item-label caption>Email</q-item-label>
-            <q-input
-              type="email"
-              placeholder="Digite o email"
-              outlined
-              dense
-              class="input-style"
-              rounded
-            ></q-input>
-          </q-item-section>
-        </q-item>
+          <!-- botões salvar/cancelar -->
+          <q-card-actions align="right">
+            <q-btn flat label="Cancelar" color="white" @click="$emit('close-modal')" />
+            <q-btn label="Salvar" @click="save" />
+          </q-card-actions>
+        </div>
 
-        <q-item>
-          <q-item-section>
-            <q-item-label caption>Permissão</q-item-label>
-            <q-select label="Selecione" outlined rounded stack-label dense options-dense />
-          </q-item-section>
-        </q-item>
+        <!-- DELETE confirmation -->
+        <div v-else-if="mode === 'delete'">
+          <q-item>
+            <q-item-section>
+              <q-item-label caption>Confirma exclusão?</q-item-label>
+              <q-item-label>{{ row?.name || row?.id }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-card-actions align="right">
+            <q-btn flat label="Cancelar" @click="$emit('close-modal')" />
+            <q-btn label="Excluir" color="negative" @click="remove" />
+          </q-card-actions>
+        </div>
       </q-list>
     </q-card-section>
   </q-card>
 </template>
 
 <script setup>
+import { ref, watch } from 'vue'
+
 const emit = defineEmits(['close-modal'])
-console.log(emit)
+
+const props = defineProps({
+  row: { type: Object, default: null },
+  mode: { type: String, default: 'create' },
+  columns: { type: Array },
+})
+
+const localRow = ref({})
+
+watch(
+  () => props.row,
+  (r) => {
+    localRow.value = r
+      ? { ...r }
+      : {
+          name: '',
+          email: '',
+          role: '',
+          telephone: '',
+          site: '',
+          author: '',
+          publisher: '',
+          launchDate: '',
+          totalQuantity: '',
+          totalInUse: '',
+        } // inicializa campos
+  },
+  { immediate: true },
+)
+
+function save() {
+  // validações aqui...
+  // emitir para o pai — pode enviar localRow ou chamar API aqui
+  emit('saved', localRow.value)
+}
+
+function remove() {
+  emit('deleted', props.row)
+}
 </script>

@@ -19,7 +19,13 @@
             <q-icon name="search" />
           </template>
         </q-input>
-        <q-btn round size="md" color="teal-10" icon="add" @click="showModalFunction"></q-btn>
+        <q-btn
+          round
+          size="md"
+          color="teal-10"
+          icon="add"
+          @click="openCreateModal()"
+        ></q-btn>
       </div>
 
       <q-table
@@ -173,8 +179,22 @@
               <q-separator />
 
               <q-card-actions align="center">
-                <q-btn flat round dense icon="o_edit" color="green" @click="showModalFunction" />
-                <q-btn flat round dense icon="o_delete" color="red" @click="showModalFunction" />
+                <q-btn
+                  flat
+                  round
+                  dense
+                  icon="o_edit"
+                  color="green"
+                  @click="openEditModal(props.row)"
+                />
+                <q-btn
+                  flat
+                  round
+                  dense
+                  icon="o_delete"
+                  color="red"
+                  @click="openDeleteModal(props.row)"
+                />
               </q-card-actions>
             </q-card>
           </div>
@@ -196,7 +216,13 @@
 
       <template>
         <q-dialog v-model="showModal">
-          <ModalComponent @close-modal="showModal = false" />
+          <ModalComponent
+            :row="selectedRow"
+            :mode="modalMode"
+            :columns="columns"
+            @close-modal="closeModal"
+            @saved="onSaved"
+          />
         </q-dialog>
       </template>
     </div>
@@ -278,13 +304,35 @@ const pagination = ref({
   rowsPerPage: 10,
 })
 const pagesNumber = computed(() => {
-  return Math.ceil(props.rows.length / pagination.value.rowsPerPage)
+  return Math.ceil(filteredRows.value.length / pagination.value.rowsPerPage)
 })
 
 // Ações
 const showModal = ref(false)
+const selectedRow = ref(null)
+const modalMode = ref('create')
 
-const showModalFunction = () => {
+function openCreateModal() {
+  selectedRow.value = null
+  modalMode.value = 'create'
   showModal.value = true
+}
+
+function openEditModal(row) {
+  selectedRow.value = row
+  modalMode.value = 'edit'
+  showModal.value = true
+}
+
+function openDeleteModal(row) {
+  selectedRow.value = row
+  modalMode.value = 'delete'
+  showModal.value = true
+}
+
+function closeModal() {
+  showModal.value = false
+  selectedRow.value = null
+  modalMode.value = 'create'
 }
 </script>
