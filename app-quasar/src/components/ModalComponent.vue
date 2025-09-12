@@ -1,7 +1,7 @@
 <template>
-  <q-card class="q-pa-sm q-pb-xl q-pl-md q-pr-md shadow-4 modal-color">
-    <q-card-section style="padding: 0">
-      <q-list dense>
+  <q-card class="shadow-4 modal-color border-radius" style="width: 80%; max-width: 600px">
+    <q-card-section>
+      <q-list>
         <q-card-actions align="right">
           <q-btn flat dense label="X" color="white" @click="$emit('close-modal')" />
         </q-card-actions>
@@ -12,9 +12,20 @@
             <q-item-section v-if="column.name !== 'actions'">
               <q-item-label caption>{{ column.label }}</q-item-label>
               <q-input
+                v-if="column.name !== 'role'"
+                dark
+                color="amber-1"
                 v-model="localRow[column.field]"
-                :placeholder="`Digite o ${column.label.toLowerCase()}`"
-                outlined
+                :placeholder="`Digitar ${column.label.toLowerCase()}`"
+                dense
+                rounded
+              />
+              <q-select
+                v-if="column.name === 'role'"
+                dark
+                color="amber-1"
+                v-model="localRow[column.field]"
+                :options="options"
                 dense
                 rounded
               />
@@ -22,9 +33,10 @@
           </q-item>
 
           <!-- botões salvar/cancelar -->
-          <q-card-actions align="right">
+          <q-card-actions align="right" class="q-pa-md q-mt-lg">
             <q-btn flat label="Cancelar" color="white" @click="$emit('close-modal')" />
-            <q-btn label="Salvar" @click="save" />
+            <q-btn v-if="mode === 'create'" label="Cadastrar" color="green" @click="save()" />
+            <q-btn v-if="mode === 'edit'" label="Atualizar" color="blue" @click="edit()" />
           </q-card-actions>
         </div>
 
@@ -32,12 +44,12 @@
         <div v-else-if="mode === 'delete'">
           <q-item>
             <q-item-section>
-              <q-item-label caption>Confirma exclusão?</q-item-label>
+              <q-item-label class="text-h5">Confirma exclusão?</q-item-label>
               <q-item-label>{{ row?.name || row?.id }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-card-actions align="right">
-            <q-btn flat label="Cancelar" @click="$emit('close-modal')" />
+            <q-btn flat label="Cancelar" color="white" @click="$emit('close-modal')" />
             <q-btn label="Excluir" color="negative" @click="remove" />
           </q-card-actions>
         </div>
@@ -48,14 +60,19 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useUsersStore } from 'src/stores/users-store'
+import { usePublishersStore } from 'src/stores/publishers-store'
 
 const emit = defineEmits(['close-modal'])
 
 const props = defineProps({
   row: { type: Object, default: null },
   mode: { type: String, default: 'create' },
+  area: { type: String, default: '' },
   columns: { type: Array },
 })
+
+const options = ['USER', 'ADMIN']
 
 const localRow = ref({})
 
@@ -80,10 +97,49 @@ watch(
   { immediate: true },
 )
 
-function save() {
-  // validações aqui...
-  // emitir para o pai — pode enviar localRow ou chamar API aqui
-  emit('saved', localRow.value)
+const save = async () => {
+  const payload = {}
+
+  props.columns.forEach((column) => {
+    if (column.field && Object.prototype.hasOwnProperty.call(localRow.value, column.field)) {
+      payload[column.field] = localRow.value[column.field]
+    }
+  })
+
+  if (props.area === 'users') {
+    console.log(payload)
+    const userStore = useUsersStore()
+    await userStore.registerUser(props.row.id, payload)
+  } else if (props.area === 'publishers') {
+    console.log(payload)
+    const publisherStore = usePublishersStore()
+    await publisherStore.registerPublisher(props.row.id, payload)
+  } else {
+    console.log('ERRO!!')
+  }
+  emit('close-modal')
+}
+
+const edit = async () => {
+  const payload = {}
+
+  props.columns.forEach((column) => {
+    if (column.field && Object.prototype.hasOwnProperty.call(localRow.value, column.field)) {
+      payload[column.field] = localRow.value[column.field]
+    }
+  })
+
+  if (props.area === 'users') {
+    console.log(payload)
+    const userStore = useUsersStore()
+    await userStore.editUser(payload)
+  } else if (props.area === 'publishers') {
+    console.log(payload)
+    const publisherStore = usePublishersStore()
+    await publisherStore.editPublisher(payload)
+  } else {
+    console.log('ERRO!!')
+  }
 }
 
 function remove() {

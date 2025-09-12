@@ -1,5 +1,11 @@
 <template>
-  <TableComponent :columns="usersth" :rows="userstd" :placeholder="'Pesquisar usuários'">Usuários</TableComponent>
+  <TableComponent
+    :columns="usersth"
+    :rows="userstd"
+    :placeholder="'Pesquisar usuários'"
+    :area-type="'users'"
+    >Usuários</TableComponent
+  >
 </template>
 
 <script setup>
@@ -10,6 +16,7 @@ import TableComponent from 'src/components/TableComponent.vue'
 const usersth = [
   { name: 'name', label: 'Nome', field: 'name' },
   { name: 'email', label: 'Email', field: 'email' },
+  { name: 'password', label: 'Senha', field: 'password' },
   { name: 'role', label: 'Permissão', field: 'role' },
 ]
 

@@ -19,13 +19,7 @@
             <q-icon name="search" />
           </template>
         </q-input>
-        <q-btn
-          round
-          size="md"
-          color="teal-10"
-          icon="add"
-          @click="openCreateModal()"
-        ></q-btn>
+        <q-btn round size="md" color="teal-10" icon="add" @click="openCreateModal()"></q-btn>
       </div>
 
       <q-table
@@ -219,6 +213,7 @@
           <ModalComponent
             :row="selectedRow"
             :mode="modalMode"
+            :area="areaType"
             :columns="columns"
             @close-modal="closeModal"
             @saved="onSaved"
@@ -249,6 +244,10 @@ const props = defineProps({
     required: true,
   },
   placeholder: {
+    type: String,
+    required: true,
+  },
+  areaType: {
     type: String,
     required: true,
   },

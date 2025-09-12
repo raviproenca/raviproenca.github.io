@@ -26,6 +26,7 @@ export const useUsersStore = defineStore('users', () => {
     error.value = null
     try {
       await api.post('/user', userData)
+      await fetchUsers()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -39,6 +40,7 @@ export const useUsersStore = defineStore('users', () => {
     error.value = null
     try {
       await api.put(`/user/${userId}`, userData)
+      await fetchUsers()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -52,6 +54,7 @@ export const useUsersStore = defineStore('users', () => {
     error.value = null
     try {
       await api.delete(`/user/${userId}`)
+      await fetchUsers()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -67,6 +70,6 @@ export const useUsersStore = defineStore('users', () => {
     fetchUsers,
     registerUser,
     editUser,
-    deleteUser
+    deleteUser,
   }
 })

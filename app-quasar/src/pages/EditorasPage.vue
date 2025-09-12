@@ -3,7 +3,9 @@
     :columns="publishersth"
     :rows="publisherstd"
     :placeholder="'Pesquisar editoras'"
-  >Editoras</TableComponent>
+    :area-type="'publishers'"
+    >Editoras</TableComponent
+  >
 </template>
 
 <script setup>
