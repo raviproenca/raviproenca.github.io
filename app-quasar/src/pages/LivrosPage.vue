@@ -1,5 +1,11 @@
 <template>
-  <TableComponent :columns="booksth" :rows="bookstd" :placeholder="'Pesquisar livros'">Livros</TableComponent>
+  <TableComponent
+    :columns="booksth"
+    :rows="bookstd"
+    :placeholder="'Pesquisar livros'"
+    area-type="books"
+    >Livros</TableComponent
+  >
 </template>
 
 <script setup>

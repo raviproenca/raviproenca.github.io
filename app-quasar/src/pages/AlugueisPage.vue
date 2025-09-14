@@ -1,5 +1,11 @@
 <template>
-  <TableComponent :columns="rentsth" :rows="rentstd" :placeholder="'Pesquisar aluguéis'">Aluguéis</TableComponent>
+  <TableComponent
+    :columns="rentsth"
+    :rows="rentstd"
+    :placeholder="'Pesquisar aluguéis'"
+    area-type="rents"
+    >Aluguéis</TableComponent
+  >
 </template>
 
 <script setup>

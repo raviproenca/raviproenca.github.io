@@ -21,10 +21,52 @@ export const useBooksStore = defineStore('books', () => {
     }
   }
 
+  const registerBook = async (bookData) => {
+    loading.value = true
+    error.value = null
+    try {
+      await api.post('/book', bookData)
+    } catch (err) {
+      error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const editBook = async (bookId, bookData) => {
+    loading.value = true
+    error.value = null
+    try {
+      await api.put(`/book/${bookId}`, bookData)
+    } catch (err) {
+      error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const deleteBook = async (bookId) => {
+    loading.value = true
+    error.value = null
+    try {
+      await api.delete(`/book/${bookId}`)
+    } catch (err) {
+      error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     books,
     loading,
     error,
     fetchBooks,
+    registerBook,
+    editBook,
+    deleteBook,
   }
 })

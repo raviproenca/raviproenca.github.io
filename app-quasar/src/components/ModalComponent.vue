@@ -25,7 +25,11 @@
                 dark
                 color="amber-1"
                 v-model="localRow[column.field]"
-                :options="options"
+                :options="roleOptions"
+                option-value="value"
+                option-label="label"
+                emit-value
+                map-options
                 dense
                 rounded
               />
@@ -62,6 +66,9 @@
 import { ref, watch } from 'vue'
 import { useUsersStore } from 'src/stores/users-store'
 import { usePublishersStore } from 'src/stores/publishers-store'
+import { useBooksStore } from 'src/stores/books-store'
+import { useRentersStore } from 'src/stores/renters-store'
+import { useRentsStore } from 'src/stores/rents-store'
 
 const emit = defineEmits(['close-modal'])
 
@@ -72,7 +79,10 @@ const props = defineProps({
   columns: { type: Array },
 })
 
-const options = ['USER', 'ADMIN']
+const roleOptions = [
+  { value: 'USER', label: 'Leitor' },
+  { value: 'ADMIN', label: 'Editor' },
+]
 
 const localRow = ref({})
 
@@ -92,6 +102,13 @@ watch(
           launchDate: '',
           totalQuantity: '',
           totalInUse: '',
+          address: '',
+          cpf: '',
+          book: '',
+          renter: '',
+          rentDate: '',
+          devolutionDate: '',
+          status: '',
         } // inicializa campos
   },
   { immediate: true },
@@ -107,13 +124,20 @@ const save = async () => {
   })
 
   if (props.area === 'users') {
-    console.log(payload)
     const userStore = useUsersStore()
-    await userStore.registerUser(props.row.id, payload)
+    await userStore.registerUser(payload)
   } else if (props.area === 'publishers') {
-    console.log(payload)
     const publisherStore = usePublishersStore()
-    await publisherStore.registerPublisher(props.row.id, payload)
+    await publisherStore.registerPublisher(payload)
+  } else if (props.area === 'books') {
+    const bookStore = useBooksStore()
+    await bookStore.registerBook(payload)
+  } else if (props.area === 'renters') {
+    const renterStore = useRentersStore()
+    await renterStore.registerRenter(payload)
+  } else if (props.area === 'rents') {
+    const rentStore = useRentsStore()
+    await rentStore.registerRent(payload)
   } else {
     console.log('ERRO!!')
   }
@@ -130,19 +154,43 @@ const edit = async () => {
   })
 
   if (props.area === 'users') {
-    console.log(payload)
     const userStore = useUsersStore()
-    await userStore.editUser(payload)
+    await userStore.editUser(props.row.id, payload)
   } else if (props.area === 'publishers') {
-    console.log(payload)
     const publisherStore = usePublishersStore()
-    await publisherStore.editPublisher(payload)
+    await publisherStore.editPublisher(props.row.id, payload)
+  } else if (props.area === 'books') {
+    const bookStore = useBooksStore()
+    await bookStore.editBook(props.row.id, payload)
+  } else if (props.area === 'renters') {
+    const renterStore = useRentersStore()
+    await renterStore.editRenter(props.row.id, payload)
+  } else if (props.area === 'rents') {
+    const rentStore = useRentsStore()
+    await rentStore.editRent(props.row.id, payload)
   } else {
     console.log('ERRO!!')
   }
 }
 
-function remove() {
-  emit('deleted', props.row)
+const remove = async () => {
+  if (props.area === 'users') {
+    const userStore = useUsersStore()
+    await userStore.deleteUser(props.row.id)
+  } else if (props.area === 'publishers') {
+    const publisherStore = usePublishersStore()
+    await publisherStore.deletePublisher(props.row.id)
+  } else if (props.area === 'books') {
+    const bookStore = useBooksStore()
+    await bookStore.deleteBook(props.row.id)
+  } else if (props.area === 'renters') {
+    const renterStore = useRentersStore()
+    await renterStore.deleteRenter(props.row.id)
+  } else if (props.area === 'rents') {
+    const rentStore = useRentsStore()
+    await rentStore.deleteRent(props.row.id)
+  } else {
+    console.log('ERRO!!')
+  }
 }
 </script>
