@@ -215,6 +215,7 @@
             :mode="modalMode"
             :area="areaType"
             :columns="columns"
+            :existingItems="rows"
             @close-modal="closeModal"
             @saved="onSaved"
           />

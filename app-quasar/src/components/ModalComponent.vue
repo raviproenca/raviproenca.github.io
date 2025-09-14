@@ -1,103 +1,103 @@
 <template>
-  <q-card class="shadow-4 modal-color border-radius" style="width: 80%; max-width: 600px">
-    <q-card-section>
-      <q-list>
-        <q-card-actions align="right">
-          <q-btn
-            flat
-            dense
-            label="X"
-            color="white"
-            @click="$emit('close-modal')"
-            :disable="isLoading"
-          />
-        </q-card-actions>
+  <q-card class="shadow-4 modal-color border-radius q-pa-md" style="width: 80%; max-width: 600px">
+    <q-card-actions align="right" class="q-pa-xs">
+      <q-btn
+        flat
+        round
+        dense
+        icon="close"
+        color="white"
+        @click="$emit('close-modal')"
+        :disable="isLoading"
+      />
+    </q-card-actions>
 
-        <!-- CREATE mode -->
-        <div v-if="mode === 'create' || mode === 'edit'">
-          <q-item v-for="column in columns" :key="column.name">
-            <q-item-section v-if="column.name !== 'actions'">
-              <q-item-label caption>{{ column.label }}</q-item-label>
-              <q-input
-                v-if="column.name !== 'role'"
-                dark
-                color="amber-1"
-                v-model="localRow[column.field]"
-                :placeholder="`Digitar ${column.label.toLowerCase()}`"
-                dense
-                rounded
-              />
-              <q-select
-                v-if="column.name === 'role'"
-                dark
-                color="amber-1"
-                v-model="localRow[column.field]"
-                :options="roleOptions"
-                option-value="value"
-                option-label="label"
-                emit-value
-                map-options
-                dense
-                rounded
-              />
-            </q-item-section>
-          </q-item>
-
-          <!-- botões salvar/cancelar -->
-          <q-card-actions align="right" class="q-pa-md q-mt-lg">
-            <q-btn
-              flat
-              label="Cancelar"
-              color="white"
-              @click="$emit('close-modal')"
-              :disable="isLoading"
+    <q-form v-if="mode === 'create' || mode === 'edit'" ref="myForm" @submit.prevent="handleSubmit">
+      <q-card-section class="q-gutter-y-sm">
+        <div v-for="column in columns" :key="column.name">
+          <div v-if="column.name !== 'actions'">
+            <q-item-label caption>{{ column.label }}</q-item-label>
+            <q-input
+              v-if="column.name !== 'role'"
+              dark
+              color="amber-1"
+              v-model="localRow[column.field]"
+              :placeholder="`Digitar ${column.label.toLowerCase()}`"
+              :rules="getRulesFor(column)"
+              lazy-rules
+              debounce="500"
+              dense
+              rounded
             />
-            <q-btn
-              v-if="mode === 'create'"
-              label="Cadastrar"
-              color="green"
-              @click="save()"
-              :loading="isLoading"
-              :disable="isLoading"
+            <q-select
+              v-if="column.name === 'role'"
+              dark
+              color="amber-1"
+              v-model="localRow[column.field]"
+              :options="roleOptions"
+              :rules="getRulesFor(column)"
+              lazy-rules
+              option-value="value"
+              option-label="label"
+              emit-value
+              map-options
+              dense
+              rounded
             />
-            <q-btn
-              v-if="mode === 'edit'"
-              label="Atualizar"
-              color="blue"
-              @click="edit()"
-              :loading="isLoading"
-              :disable="isLoading"
-            />
-          </q-card-actions>
+          </div>
         </div>
+      </q-card-section>
 
-        <!-- DELETE confirmation -->
-        <div v-else-if="mode === 'delete'">
-          <q-item>
-            <q-item-section>
-              <q-item-label class="text-h5">Confirma exclusão?</q-item-label>
-              <q-item-label>{{ row?.name || row?.id }}</q-item-label>
-            </q-item-section>
-          </q-item>
-          <q-card-actions align="right">
-            <q-btn
-              flat
-              label="Cancelar"
-              color="white"
-              @click="$emit('close-modal')"
-              :disable="isLoading"
-            />
-            <q-btn
-              label="Excluir"
-              color="negative"
-              @click="remove"
-              :loading="isLoading"
-              :disable="isLoading"
-            />
-          </q-card-actions>
-        </div>
-      </q-list>
-    </q-card-section>
+      <q-card-actions align="right" class="q-pa-md">
+        <q-btn
+          flat
+          label="Cancelar"
+          color="white"
+          @click="$emit('close-modal')"
+          :disable="isLoading"
+        />
+        <q-btn
+          v-if="mode === 'create'"
+          label="Cadastrar"
+          color="green"
+          type="submit"
+          :loading="isLoading"
+          :disable="isLoading"
+        />
+        <q-btn
+          v-if="mode === 'edit'"
+          label="Atualizar"
+          color="blue"
+          type="submit"
+          :loading="isLoading"
+          :disable="isLoading"
+        />
+      </q-card-actions>
+    </q-form>
+
+    <div v-else-if="mode === 'delete'">
+      <q-card-section>
+        <div class="text-h5">Confirma exclusão?</div>
+        <div>{{ row?.name || row?.id }}</div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="q-pa-md">
+        <q-btn
+          flat
+          label="Cancelar"
+          color="white"
+          @click="$emit('close-modal')"
+          :disable="isLoading"
+        />
+        <q-btn
+          label="Excluir"
+          color="negative"
+          @click="remove"
+          :loading="isLoading"
+          :disable="isLoading"
+        />
+      </q-card-actions>
+    </div>
   </q-card>
 </template>
 
@@ -113,8 +113,12 @@ import { useRentsStore } from 'src/stores/rents-store'
 
 const emit = defineEmits(['close-modal'])
 
+const myForm = ref(null)
+const localRow = ref({})
+
 const props = defineProps({
   row: { type: Object, default: null },
+  existingItems: { type: Array, default: () => [] },
   mode: { type: String, default: 'create' },
   area: { type: String, default: '' },
   columns: { type: Array },
@@ -124,8 +128,6 @@ const roleOptions = [
   { value: 'USER', label: 'Leitor' },
   { value: 'ADMIN', label: 'Editor' },
 ]
-
-const localRow = ref({})
 
 watch(
   () => props.row,
@@ -150,7 +152,7 @@ watch(
           rentDate: '',
           devolutionDate: '',
           status: '',
-        } // inicializa campos
+        }
   },
   { immediate: true },
 )
@@ -235,5 +237,80 @@ const remove = async () => {
   else console.log('ERRO!!')
 
   emit('close-modal')
+}
+
+const requiredRule = [(val) => (val && String(val).length > 0) || 'Este campo é obrigatório']
+
+function isUnique(value, field, items, mode, currentRow) {
+  if (!value) return true
+
+  const inputValue = typeof value === 'string' ? value.toLowerCase().trim() : value
+
+  const isTaken = items.some((item) => {
+    const itemValue = item[field]
+
+    if (itemValue === null || itemValue === undefined) return false
+
+    const formattedItemValue =
+      typeof itemValue === 'string' ? itemValue.toLowerCase().trim() : itemValue
+
+    if (formattedItemValue === inputValue) {
+      if (mode === 'edit') {
+        return item.id !== currentRow.id
+      }
+      return true
+    }
+
+    return false
+  })
+
+  return !isTaken
+}
+
+const nameRules = [
+  (val) => (val && val.length > 0) || 'O campo nome é obrigatório',
+  (val) => val.length >= 3 || 'O nome precisa ter no mínimo 3 caracteres',
+  (val) => !/\d/.test(val) || 'O nome não pode conter números',
+  (val) =>
+    isUnique(val, 'name', props.existingItems, props.mode, props.row) ||
+    'Este nome de usuário já está em uso.',
+]
+
+const emailRules = [
+  (val) => (val && val.length > 0) || 'O campo email é obrigatório',
+  (val) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(val || '').trim()) || 'O formato do email é inválido',
+  (val) =>
+    isUnique(val, 'email', props.existingItems, props.mode, props.row) ||
+    'Este email já está em uso.',
+]
+
+function getRulesFor(column) {
+  switch (column.field) {
+    case 'name':
+      return nameRules
+    case 'email':
+      return emailRules
+    // case 'password':
+    //   return passwordRules;
+    // Para todos os outros, podemos exigir que sejam preenchidos
+    default:
+      return requiredRule
+  }
+}
+
+const handleSubmit = async () => {
+  const success = await myForm.value.validate()
+
+  if (success) {
+    if (props.mode === 'create') {
+      await save()
+    } else if (props.mode === 'edit') {
+      await edit()
+    }
+  } else {
+    // A UI do Quasar já mostrou os erros nos campos
+    console.log('Formulário inválido. Por favor, corrija os erros.')
+  }
 }
 </script>
