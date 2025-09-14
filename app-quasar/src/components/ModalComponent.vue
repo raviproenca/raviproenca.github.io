@@ -267,30 +267,30 @@ function isUnique(value, field, items, mode, currentRow) {
   return !isTaken
 }
 
-const nameRules = [
+const nameRules = computed(() => [
   (val) => (val && val.length > 0) || 'O campo nome é obrigatório',
   (val) => val.length >= 3 || 'O nome precisa ter no mínimo 3 caracteres',
   (val) => !/\d/.test(val) || 'O nome não pode conter números',
   (val) =>
     isUnique(val, 'name', props.existingItems, props.mode, props.row) ||
     'Este nome de usuário já está em uso.',
-]
+])
 
-const emailRules = [
+const emailRules = computed(() => [
   (val) => (val && val.length > 0) || 'O campo email é obrigatório',
   (val) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(val || '').trim()) || 'O formato do email é inválido',
   (val) =>
     isUnique(val, 'email', props.existingItems, props.mode, props.row) ||
     'Este email já está em uso.',
-]
+])
 
 function getRulesFor(column) {
   switch (column.field) {
     case 'name':
-      return nameRules
+      return nameRules.value
     case 'email':
-      return emailRules
+      return emailRules.value
     // case 'password':
     //   return passwordRules;
     // Para todos os outros, podemos exigir que sejam preenchidos
