@@ -3,7 +3,14 @@
     <q-card-section>
       <q-list>
         <q-card-actions align="right">
-          <q-btn flat dense label="X" color="white" @click="$emit('close-modal')" />
+          <q-btn
+            flat
+            dense
+            label="X"
+            color="white"
+            @click="$emit('close-modal')"
+            :disable="isLoading"
+          />
         </q-card-actions>
 
         <!-- CREATE mode -->
@@ -38,9 +45,29 @@
 
           <!-- botões salvar/cancelar -->
           <q-card-actions align="right" class="q-pa-md q-mt-lg">
-            <q-btn flat label="Cancelar" color="white" @click="$emit('close-modal')" />
-            <q-btn v-if="mode === 'create'" label="Cadastrar" color="green" @click="save()" />
-            <q-btn v-if="mode === 'edit'" label="Atualizar" color="blue" @click="edit()" />
+            <q-btn
+              flat
+              label="Cancelar"
+              color="white"
+              @click="$emit('close-modal')"
+              :disable="isLoading"
+            />
+            <q-btn
+              v-if="mode === 'create'"
+              label="Cadastrar"
+              color="green"
+              @click="save()"
+              :loading="isLoading"
+              :disable="isLoading"
+            />
+            <q-btn
+              v-if="mode === 'edit'"
+              label="Atualizar"
+              color="blue"
+              @click="edit()"
+              :loading="isLoading"
+              :disable="isLoading"
+            />
           </q-card-actions>
         </div>
 
@@ -53,8 +80,20 @@
             </q-item-section>
           </q-item>
           <q-card-actions align="right">
-            <q-btn flat label="Cancelar" color="white" @click="$emit('close-modal')" />
-            <q-btn label="Excluir" color="negative" @click="remove" />
+            <q-btn
+              flat
+              label="Cancelar"
+              color="white"
+              @click="$emit('close-modal')"
+              :disable="isLoading"
+            />
+            <q-btn
+              label="Excluir"
+              color="negative"
+              @click="remove"
+              :loading="isLoading"
+              :disable="isLoading"
+            />
           </q-card-actions>
         </div>
       </q-list>
@@ -63,7 +102,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+import { storeToRefs } from 'pinia'
+
 import { useUsersStore } from 'src/stores/users-store'
 import { usePublishersStore } from 'src/stores/publishers-store'
 import { useBooksStore } from 'src/stores/books-store'
@@ -114,6 +155,30 @@ watch(
   { immediate: true },
 )
 
+const activeStore = computed(() => {
+  switch (props.area) {
+    case 'users':
+      return useUsersStore()
+    case 'publishers':
+      return usePublishersStore()
+    case 'books':
+      return useBooksStore()
+    case 'renters':
+      return useRentersStore()
+    case 'rents':
+      return useRentsStore()
+    default:
+      return null
+  }
+})
+
+const isLoading = computed(() => {
+  if (!activeStore.value) return false
+
+  const { loading } = storeToRefs(activeStore.value)
+  return loading.value
+})
+
 const save = async () => {
   const payload = {}
 
@@ -123,24 +188,16 @@ const save = async () => {
     }
   })
 
-  if (props.area === 'users') {
-    const userStore = useUsersStore()
-    await userStore.registerUser(payload)
-  } else if (props.area === 'publishers') {
-    const publisherStore = usePublishersStore()
-    await publisherStore.registerPublisher(payload)
-  } else if (props.area === 'books') {
-    const bookStore = useBooksStore()
-    await bookStore.registerBook(payload)
-  } else if (props.area === 'renters') {
-    const renterStore = useRentersStore()
-    await renterStore.registerRenter(payload)
-  } else if (props.area === 'rents') {
-    const rentStore = useRentsStore()
-    await rentStore.registerRent(payload)
-  } else {
-    console.log('ERRO!!')
-  }
+  const store = activeStore.value
+  if (!store) return console.error('Store não encontrada para a área:', props.area)
+
+  if (props.area === 'users') await store.registerUser(payload)
+  else if (props.area === 'publishers') await store.registerPublisher(payload)
+  else if (props.area === 'books') await store.registerBook(payload)
+  else if (props.area === 'renters') await store.registerRenter(payload)
+  else if (props.area === 'rents') await store.registerRent(payload)
+  else console.log('ERRO!!')
+
   emit('close-modal')
 }
 
@@ -153,44 +210,30 @@ const edit = async () => {
     }
   })
 
-  if (props.area === 'users') {
-    const userStore = useUsersStore()
-    await userStore.editUser(props.row.id, payload)
-  } else if (props.area === 'publishers') {
-    const publisherStore = usePublishersStore()
-    await publisherStore.editPublisher(props.row.id, payload)
-  } else if (props.area === 'books') {
-    const bookStore = useBooksStore()
-    await bookStore.editBook(props.row.id, payload)
-  } else if (props.area === 'renters') {
-    const renterStore = useRentersStore()
-    await renterStore.editRenter(props.row.id, payload)
-  } else if (props.area === 'rents') {
-    const rentStore = useRentsStore()
-    await rentStore.editRent(props.row.id, payload)
-  } else {
-    console.log('ERRO!!')
-  }
+  const store = activeStore.value
+  if (!store) return console.error('Store não encontrada para a área:', props.area)
+
+  if (props.area === 'users') await store.editUser(props.row.id, payload)
+  else if (props.area === 'publishers') await store.editPublisher(props.row.id, payload)
+  else if (props.area === 'books') await store.editBook(props.row.id, payload)
+  else if (props.area === 'renters') await store.editRenter(props.row.id, payload)
+  else if (props.area === 'rents') await store.editRent(props.row.id, payload)
+  else console.log('ERRO!!')
+
+  emit('close-modal')
 }
 
 const remove = async () => {
-  if (props.area === 'users') {
-    const userStore = useUsersStore()
-    await userStore.deleteUser(props.row.id)
-  } else if (props.area === 'publishers') {
-    const publisherStore = usePublishersStore()
-    await publisherStore.deletePublisher(props.row.id)
-  } else if (props.area === 'books') {
-    const bookStore = useBooksStore()
-    await bookStore.deleteBook(props.row.id)
-  } else if (props.area === 'renters') {
-    const renterStore = useRentersStore()
-    await renterStore.deleteRenter(props.row.id)
-  } else if (props.area === 'rents') {
-    const rentStore = useRentsStore()
-    await rentStore.deleteRent(props.row.id)
-  } else {
-    console.log('ERRO!!')
-  }
+  const store = activeStore.value
+  if (!store) return console.error('Store não encontrada para a área:', props.area)
+
+  if (props.area === 'users') await store.deleteUser(props.row.id)
+  else if (props.area === 'publishers') await store.deletePublisher(props.row.id)
+  else if (props.area === 'books') await store.deleteBook(props.row.id)
+  else if (props.area === 'renters') await store.deleteRenter(props.row.id)
+  else if (props.area === 'rents') await store.deleteRent(props.row.id)
+  else console.log('ERRO!!')
+
+  emit('close-modal')
 }
 </script>

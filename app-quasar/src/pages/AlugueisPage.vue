@@ -1,7 +1,7 @@
 <template>
   <TableComponent
     :columns="rentsth"
-    :rows="rentstd"
+    :rows="rents"
     :placeholder="'Pesquisar aluguéis'"
     area-type="rents"
     >Aluguéis</TableComponent
@@ -9,9 +9,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted} from 'vue'
 import { useRentsStore } from 'src/stores/rents-store'
 import TableComponent from 'src/components/TableComponent.vue'
+import { storeToRefs } from 'pinia'
 
 const rentsth = [
   { name: 'name', label: 'Nome do Livro', field: 'name' },
@@ -21,11 +22,10 @@ const rentsth = [
   { name: 'status', label: 'Status', field: 'status' },
 ]
 
-const rentstd = ref([])
-const rentsStore = useRentsStore()
+const rentStore = useRentsStore()
+const { rents } = storeToRefs(rentStore)
 
 onMounted(async () => {
-  await rentsStore.fetchRents()
-  rentstd.value = rentsStore.rents
+  rentStore.fetchRents()
 })
 </script>

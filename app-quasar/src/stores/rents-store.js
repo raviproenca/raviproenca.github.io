@@ -7,7 +7,7 @@ export const useRentsStore = defineStore('rents', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  const fetchRent = async () => {
+  const fetchRents = async () => {
     loading.value = true
     error.value = null
     try {
@@ -26,6 +26,7 @@ export const useRentsStore = defineStore('rents', () => {
     error.value = null
     try {
       await api.post('/rent', rentData)
+      await fetchRents()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -39,6 +40,7 @@ export const useRentsStore = defineStore('rents', () => {
     error.value = null
     try {
       await api.put(`/rent/${rentId}`, rentData)
+      await fetchRents()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -52,6 +54,7 @@ export const useRentsStore = defineStore('rents', () => {
     error.value = null
     try {
       await api.delete(`/rent/${rentId}`)
+      await fetchRents()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -64,7 +67,7 @@ export const useRentsStore = defineStore('rents', () => {
     rents,
     loading,
     error,
-    fetchRent,
+    fetchRents,
     registerRent,
     editRent,
     deleteRent,

@@ -26,6 +26,7 @@ export const usePublishersStore = defineStore('publishers', () => {
     error.value = null
     try {
       await api.post('/publisher', publisherData)
+      await fetchPublishers()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -39,6 +40,7 @@ export const usePublishersStore = defineStore('publishers', () => {
     error.value = null
     try {
       await api.put(`/publisher/${publisherId}`, publisherData)
+      await fetchPublishers()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -52,6 +54,7 @@ export const usePublishersStore = defineStore('publishers', () => {
     error.value = null
     try {
       await api.delete(`/publisher/${publisherId}`)
+      await fetchPublishers()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err

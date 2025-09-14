@@ -1,7 +1,7 @@
 <template>
   <TableComponent
     :columns="usersth"
-    :rows="userstd"
+    :rows="users"
     :placeholder="'Pesquisar usuários'"
     :area-type="'users'"
     >Usuários</TableComponent
@@ -9,8 +9,9 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { useUsersStore } from 'src/stores/users-store'
+import { storeToRefs } from 'pinia'
 import TableComponent from 'src/components/TableComponent.vue'
 
 const usersth = [
@@ -20,11 +21,11 @@ const usersth = [
   { name: 'role', label: 'Permissão', field: 'role' },
 ]
 
-const userstd = ref([])
 const userStore = useUsersStore()
 
+const { users } = storeToRefs(userStore)
+
 onMounted(async () => {
-  await userStore.fetchUsers()
-  userstd.value = userStore.users
+  userStore.fetchUsers()
 })
 </script>

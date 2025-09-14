@@ -26,6 +26,7 @@ export const useBooksStore = defineStore('books', () => {
     error.value = null
     try {
       await api.post('/book', bookData)
+      await fetchBooks()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -39,6 +40,7 @@ export const useBooksStore = defineStore('books', () => {
     error.value = null
     try {
       await api.put(`/book/${bookId}`, bookData)
+      await fetchBooks()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -52,6 +54,7 @@ export const useBooksStore = defineStore('books', () => {
     error.value = null
     try {
       await api.delete(`/book/${bookId}`)
+      await fetchBooks()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err

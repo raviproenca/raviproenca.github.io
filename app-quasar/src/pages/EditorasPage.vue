@@ -1,7 +1,7 @@
 <template>
   <TableComponent
     :columns="publishersth"
-    :rows="publisherstd"
+    :rows="publishers"
     :placeholder="'Pesquisar editoras'"
     :area-type="'publishers'"
     >Editoras</TableComponent
@@ -9,8 +9,9 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted} from 'vue'
 import { usePublishersStore } from 'src/stores/publishers-store'
+import { storeToRefs } from 'pinia'
 import TableComponent from 'src/components/TableComponent.vue'
 
 const publishersth = [
@@ -20,11 +21,10 @@ const publishersth = [
   { name: 'site', label: 'Site', field: 'site' },
 ]
 
-const publisherstd = ref([])
-const publishersStore = usePublishersStore()
+const publisherStore = usePublishersStore()
+const { publishers } = storeToRefs(publisherStore)
 
 onMounted(async () => {
-  await publishersStore.fetchPublishers()
-  publisherstd.value = publishersStore.publishers
+  publisherStore.fetchPublishers()
 })
 </script>

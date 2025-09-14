@@ -26,6 +26,7 @@ export const useRentersStore = defineStore('renters', () => {
     error.value = null
     try {
       await api.post('/renter', renterData)
+      await fetchRenters()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -39,6 +40,7 @@ export const useRentersStore = defineStore('renters', () => {
     error.value = null
     try {
       await api.put(`/renter/${renterId}`, renterData)
+      await fetchRenters()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
@@ -52,6 +54,7 @@ export const useRentersStore = defineStore('renters', () => {
     error.value = null
     try {
       await api.delete(`/renter/${renterId}`)
+      await fetchRenters()
     } catch (err) {
       error.value = err.response ? err.response.data.message : 'Erro ao buscar usuários.'
       throw err
