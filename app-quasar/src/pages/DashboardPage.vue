@@ -1,3 +1,7 @@
 <template>
-  <h1>Dashboard</h1>
+  <DashboardComponent></DashboardComponent>
 </template>
+
+<script setup>
+import DashboardComponent from 'src/components/DashboardComponent.vue'
+</script>
