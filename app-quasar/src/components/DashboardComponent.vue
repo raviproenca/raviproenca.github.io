@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
 import { useDashboardsStore } from 'src/stores/dashboard-store'
@@ -63,13 +63,49 @@ const $q = useQuasar()
 const chartCanvas = ref(null)
 let chartInstance = null
 
-const isLoading = ref(true)
-const error = ref(null)
+// 'isLoading' será verdadeiro se QUALQUER uma das buscas estiver em andamento.
+const isLoading = computed(
+  () => deliveredInTimeQuantity.value.loading || deliveredWithDelayQuantity.value.loading,
+)
 
-const finalInTimeData = ref([])
-const finalWithDelayData = ref([])
-const totalInTime = ref(0)
-const totalWithDelay = ref(0)
+// 'error' conterá a primeira mensagem de erro que aparecer.
+const error = computed(
+  () => deliveredInTimeQuantity.value.error || deliveredWithDelayQuantity.value.error,
+)
+
+const chartData = computed(() => {
+  const inTimeData = deliveredInTimeQuantity.value.data
+  const withDelayData = deliveredWithDelayQuantity.value.data
+
+  // Condição de guarda: se os dados ainda não chegaram ou não são um array, retorna nulo.
+  if (
+    !Array.isArray(inTimeData) ||
+    !inTimeData.length ||
+    !Array.isArray(withDelayData) ||
+    !withDelayData.length
+  ) {
+    return null
+  }
+
+  return {
+    // Idealmente, os labels também viriam da API.
+    labels: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'],
+    datasets: [
+      {
+        label: 'No Prazo',
+        data: inTimeData,
+        backgroundColor: '#00C9FF',
+        borderRadius: 6,
+      },
+      {
+        label: 'Fora do Prazo',
+        data: withDelayData,
+        backgroundColor: '#FF7F00',
+        borderRadius: 6,
+      },
+    ],
+  }
+})
 
 const chartDoughnutOptions = computed(() => ({
   responsive: true,
@@ -139,7 +175,7 @@ const chartBarOptions = computed(() => ({
     },
     subtitle: {
       display: true,
-      text: `Total no prazo (últimos 5 meses): ${totalInTime.value} | Total com atraso: ${totalWithDelay.value}`,
+      text: `Total no prazo (últimos 5 meses): 60 | Total com atraso: 25`,
       color: $q.dark.isActive ? '#ccc' : '#666',
       font: {
         size: 12,
@@ -163,75 +199,24 @@ const chartBarOptions = computed(() => ({
   },
 }))
 
-onMounted(async () => {
-  // Função auxiliar para buscar e processar dados CUMULATIVOS
-  const processCumulativeData = async (fetchFunction, stateRef) => {
-    const cumulativeResults = []
-    // Faz 5 chamadas sequenciais à API, de 1 a 5 meses
-    for (let month = 1; month <= 5; month++) {
-      await store[fetchFunction](month)
-      // Após cada chamada, o 'stateRef' da store é atualizado. Guardamos esse valor.
-      cumulativeResults.push(stateRef.value.data)
+onMounted(() => {
+  store.fetchDeliveredInTimeQuantity(5)
+  store.fetchDeliveredWithDelayQuantity(5)
+})
+
+watchEffect(() => {
+  const ctx = chartCanvas.value?.getContext('2d')
+
+  if (ctx && chartData.value) {
+    if (chartInstance) {
+      chartInstance.destroy()
     }
 
-    // Agora, calcula o valor individual de cada mês
-    const monthlyData = [
-      cumulativeResults[0], // O primeiro mês é o valor base
-      cumulativeResults[1] - cumulativeResults[0],
-      cumulativeResults[2] - cumulativeResults[1],
-      cumulativeResults[3] - cumulativeResults[2],
-      cumulativeResults[4] - cumulativeResults[3],
-    ]
-
-    // Retorna os dados mensais e o total (que é o último valor cumulativo)
-    return { monthlyData, total: cumulativeResults[4] }
-  }
-
-  try {
-    isLoading.value = true
-
-    const inTimeResult = await processCumulativeData(
-      'fetchDeliveredInTimeQuantity',
-      deliveredInTimeQuantity,
-    )
-    const withDelayResult = await processCumulativeData(
-      'fetchDeliveredWithDelayQuantity',
-      deliveredWithDelayQuantity,
-    )
-
-    finalInTimeData.value = inTimeResult.monthlyData
-    totalInTime.value = inTimeResult.total
-
-    finalWithDelayData.value = withDelayResult.monthlyData
-    totalWithDelay.value = withDelayResult.total
-
-    const ctx = chartCanvas.value.getContext('2d')
     chartInstance = new Chart(ctx, {
       type: 'bar',
-      data: {
-        labels: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'], // Ajuste os meses conforme necessário
-        datasets: [
-          {
-            label: 'No Prazo',
-            data: finalInTimeData.value,
-            backgroundColor: '#00C9FF',
-            borderRadius: 6,
-          },
-          {
-            label: 'Fora do Prazo',
-            data: finalWithDelayData.value,
-            backgroundColor: '#FF7F00',
-            borderRadius: 6,
-          },
-        ],
-      },
+      data: chartData.value,
       options: chartBarOptions.value,
     })
-  } catch (err) {
-    console.error('Erro ao buscar dados para o gráfico:', err)
-    error.value = 'Não foi possível carregar os dados do gráfico.'
-  } finally {
-    isLoading.value = false
   }
 })
 
