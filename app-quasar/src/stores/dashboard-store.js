@@ -9,7 +9,6 @@ const createWidgetState = () => ({
 })
 
 export const useDashboardsStore = defineStore('dashboards', () => {
-  // 1. O ESTADO É AGRUPADO
   const bookMoreRented = ref(createWidgetState())
   const deliveredInTimeQuantity = ref(createWidgetState())
   const deliveredWithDelayQuantity = ref(createWidgetState())
