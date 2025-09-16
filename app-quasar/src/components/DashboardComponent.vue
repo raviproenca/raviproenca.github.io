@@ -4,19 +4,9 @@
       <div class="col-12 col-md">
         <q-card class="dashboard-cards border-radius">
           <q-card-section>
-            <h5>Teste1</h5>
-            <h5>Teste2</h5>
-            <h5>Teste3</h5>
-          </q-card-section>
-        </q-card>
-      </div>
-
-      <div class="col-12 col-md">
-        <q-card class="dashboard-cards border-radius">
-          <q-card-section>
-            <h5>Teste4</h5>
-            <h5>Teste5</h5>
-            <h5>Teste6</h5>
+            <h5>{{ firstBook?.name || 'Carregando...' }}</h5>
+            <h5>{{ secondBook?.name || 'Carregando...' }}</h5>
+            <h5>{{ thirdBook?.name || 'Carregando...' }}</h5>
           </q-card-section>
         </q-card>
       </div>
@@ -36,7 +26,30 @@
 
               <canvas
                 v-show="!isLoading && !error"
-                ref="chartCanvas"
+                ref="chartDoughnutCanvas"
+                style="width: 100%; height: 100%; display: block"
+              ></canvas>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="col-12 col-md">
+        <q-card class="dashboard-cards border-radius">
+          <q-card-section style="padding: 8px 16px">
+            <div style="height: 400px; position: relative">
+              <q-inner-loading :showing="isLoading" label="Calculando dados do gráfico..." />
+
+              <div v-if="error" class="fullscreen text-center flex flex-center">
+                <div class="text-negative">
+                  <q-icon name="error" size="lg" />
+                  <p>{{ error }}</p>
+                </div>
+              </div>
+
+              <canvas
+                v-show="!isLoading && !error"
+                ref="chartBarCanvas"
                 style="width: 100%; height: 100%; display: block"
               ></canvas>
             </div>
@@ -57,49 +70,63 @@ import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
 
 const store = useDashboardsStore()
-const { deliveredInTimeQuantity, deliveredWithDelayQuantity } = storeToRefs(store)
+const { bookMoreRented, deliveredInTimeQuantity, deliveredWithDelayQuantity } = storeToRefs(store)
+
+const firstBook = computed(() => bookMoreRented.value.data?.[0])
+const secondBook = computed(() => bookMoreRented.value.data?.[1])
+const thirdBook = computed(() => bookMoreRented.value.data?.[2])
 
 const $q = useQuasar()
-const chartCanvas = ref(null)
+const chartBarCanvas = ref(null)
+const chartDoughnutCanvas = ref(null)
+
 let chartInstance = null
 
-// 'isLoading' será verdadeiro se QUALQUER uma das buscas estiver em andamento.
 const isLoading = computed(
-  () => deliveredInTimeQuantity.value.loading || deliveredWithDelayQuantity.value.loading,
+  () =>
+    bookMoreRented.value.loading ||
+    deliveredInTimeQuantity.value.loading ||
+    deliveredWithDelayQuantity.value.loading,
 )
 
-// 'error' conterá a primeira mensagem de erro que aparecer.
 const error = computed(
-  () => deliveredInTimeQuantity.value.error || deliveredWithDelayQuantity.value.error,
+  () =>
+    bookMoreRented.value.error ||
+    deliveredInTimeQuantity.value.error ||
+    deliveredWithDelayQuantity.value.error,
 )
 
-const chartData = computed(() => {
-  const inTimeData = deliveredInTimeQuantity.value.data
-  const withDelayData = deliveredWithDelayQuantity.value.data
-
-  // Condição de guarda: se os dados ainda não chegaram ou não são um array, retorna nulo.
-  if (
-    !Array.isArray(inTimeData) ||
-    !inTimeData.length ||
-    !Array.isArray(withDelayData) ||
-    !withDelayData.length
-  ) {
-    return null
-  }
+const chartDoughnutData = computed(() => {
+  const limeGreen = '#A7ED4A'
+  const purple = '#9B59B6'
 
   return {
-    // Idealmente, os labels também viriam da API.
+    labels: ['Livros alugados no momento', 'Total de aluguéis realizados'],
+    datasets: [
+      {
+        label: 'Status dos Livros',
+        data: [1, 1],
+        backgroundColor: [limeGreen, purple],
+        borderColor: [limeGreen, purple],
+        borderWidth: 1,
+      },
+    ],
+  }
+})
+
+const chartBarData = computed(() => {
+  return {
     labels: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'],
     datasets: [
       {
         label: 'No Prazo',
-        data: inTimeData,
+        data: [10, 15, 25, 35, 50],
         backgroundColor: '#00C9FF',
         borderRadius: 6,
       },
       {
         label: 'Fora do Prazo',
-        data: withDelayData,
+        data: [5, 10, 15, 20, 35],
         backgroundColor: '#FF7F00',
         borderRadius: 6,
       },
@@ -200,22 +227,36 @@ const chartBarOptions = computed(() => ({
 }))
 
 onMounted(() => {
+  store.fetchBookMoreRented(3)
   store.fetchDeliveredInTimeQuantity(5)
   store.fetchDeliveredWithDelayQuantity(5)
 })
 
 watchEffect(() => {
-  const ctx = chartCanvas.value?.getContext('2d')
+  const ctxDoughnut = chartDoughnutCanvas.value?.getContext('2d')
+  const ctxBar = chartBarCanvas.value?.getContext('2d')
 
-  if (ctx && chartData.value) {
+  if (ctxBar && chartBarData.value) {
     if (chartInstance) {
       chartInstance.destroy()
     }
 
-    chartInstance = new Chart(ctx, {
+    chartInstance = new Chart(ctxBar, {
       type: 'bar',
-      data: chartData.value,
+      data: chartBarData.value,
       options: chartBarOptions.value,
+    })
+  }
+
+  if (ctxDoughnut && chartDoughnutData.value) {
+    if (chartInstance) {
+      chartInstance.destroy()
+    }
+
+    chartInstance = new Chart(ctxDoughnut, {
+      type: 'doughnut',
+      data: chartDoughnutData.value,
+      options: chartDoughnutOptions.value,
     })
   }
 })
