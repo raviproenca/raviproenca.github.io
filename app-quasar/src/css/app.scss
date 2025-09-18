@@ -29,3 +29,24 @@
 .border-radius {
   border-radius: 15px;
 }
+
+.primeiro-mais-alugado {
+  background: linear-gradient(145deg, #b38728, #fbf5b7, #d4af37);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.segundo-mais-alugado {
+  background: linear-gradient(145deg, #a0a0a0, #ffffff, #c0c0c0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.terceiro-mais-alugado {
+  background: linear-gradient(145deg, #8c480e, #e0a467, #cd7f32);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

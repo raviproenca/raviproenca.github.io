@@ -4,9 +4,49 @@
       <div class="col-12 col-md">
         <q-card class="dashboard-cards border-radius">
           <q-card-section>
-            <h5>{{ firstBook?.name || 'Carregando...' }}</h5>
-            <h5>{{ secondBook?.name || 'Carregando...' }}</h5>
-            <h5>{{ thirdBook?.name || 'Carregando...' }}</h5>
+            <div class="row items-center justify-center q-gutter-x-lg">
+              <q-icon name="emoji_events" class="primeiro-mais-alugado" size="xl"></q-icon>
+              <h2 class="text-h5 text-white text-weight-bolder text-with-shadow">
+                {{ firstBook?.name || 'Carregando...' }}
+              </h2>
+              <h2 class="text-h5 text-white text-weight-bolder">
+                {{ firstBook?.totalRents }}
+              </h2>
+            </div>
+
+            <div class="row items-center justify-center q-gutter-x-lg">
+              <q-icon name="workspace_premium" class="segundo-mais-alugado" size="lg"></q-icon>
+              <h2 class="text-h6 text-white text-weight-bolder text-with-shadow">
+                {{ secondBook?.name || 'Carregando...' }}
+              </h2>
+              <h2 class="text-h6 text-white text-weight-bolder">
+                {{ secondBook?.totalRents }}
+              </h2>
+            </div>
+
+            <div class="row items-center justify-center q-gutter-x-lg">
+              <q-icon name="military_tech" class="terceiro-mais-alugado" size="md"></q-icon>
+              <h2 class="text-subtitle1 text-white text-weight-bolder text-with-shadow">
+                {{ thirdBook?.name || 'Carregando...' }}
+              </h2>
+              <h2 class="text-subtitle1 text-white text-weight-bolder">
+                {{ thirdBook?.totalRents }}
+              </h2>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="row col-12 col-md justify-center">
+        <q-card class="dashboard-cards border-radius col-grow">
+          <q-card-section>
+            <p>test</p>
+          </q-card-section>
+        </q-card>
+
+        <q-card class="dashboard-cards border-radius col-grow">
+          <q-card-section>
+            <p>test</p>
           </q-card-section>
         </q-card>
       </div>
