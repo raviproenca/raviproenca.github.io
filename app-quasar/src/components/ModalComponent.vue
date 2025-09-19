@@ -15,8 +15,10 @@
     <q-form v-if="mode === 'create' || mode === 'edit'" ref="myForm" @submit.prevent="handleSubmit">
       <q-card-section class="q-gutter-y-sm">
         <div v-for="column in columns" :key="column.name">
-          <div v-if="column.name !== 'actions'">
-            <q-item-label caption>{{ column.label }}</q-item-label>
+          <div v-if="column.name !== 'actions' && column.form !== false">
+            <q-item-label v-if="column.name !== 'totalInUse'" caption>{{
+              column.label
+            }}</q-item-label>
             <q-select
               v-if="column.name === 'role'"
               dark
@@ -48,7 +50,39 @@
               rounded
             />
             <q-input
-              v-else
+              v-else-if="column.name === 'launchDate'"
+              filled
+              v-model="formattedLaunchDate"
+              mask="##-##-####"
+              :rules="[isValidDate]"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date mask="DD-MM-YYYY" v-model="formattedLaunchDate">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Fechar" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+            <q-input
+              v-else-if="column.name === 'totalQuantity'"
+              type="number"
+              dark
+              color="amber-1"
+              v-model.number="localRow[column.field]"
+              :placeholder="`Digitar ${column.label.toLowerCase()}`"
+              :rules="getRulesFor(column)"
+              lazy-rules
+              debounce="500"
+              dense
+              rounded
+            />
+            <q-input
+              v-else-if="column.name !== 'totalInUse'"
               dark
               color="amber-1"
               v-model="localRow[column.field]"
@@ -117,7 +151,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useUsersStore } from 'src/stores/users-store'
@@ -146,7 +180,14 @@ const roleOptions = [
 
 const publishersStore = usePublishersStore()
 const { publishers } = storeToRefs(publishersStore)
-console.log(publishers)
+
+onMounted(() => {
+  if (props.area === 'books') {
+    if (publishers.value.length === 0) {
+      publishersStore.fetchPublishers()
+    }
+  }
+})
 
 watch(
   () => props.row,
@@ -156,25 +197,71 @@ watch(
       : {
           name: '',
           email: '',
-          role: '',
+          role: null,
           telephone: '',
           site: '',
           author: '',
-          publisher: '',
-          launchDate: '',
-          totalQuantity: '',
-          totalInUse: '',
+          publisher: null,
+          launchDate: null,
+          totalQuantity: 0,
+          totalInUse: 0,
           address: '',
           cpf: '',
           book: '',
           renter: '',
-          rentDate: '',
-          devolutionDate: '',
+          rentDate: null,
+          devolutionDate: null,
           status: '',
         }
   },
-  { immediate: true },
+  { immediate: true, deep: true },
 )
+
+const isValidDate = (val) => {
+  const datePattern = /^\d{2}-\d{2}-\d{4}$/
+  if (!datePattern.test(val)) {
+    return 'O formato da data deve ser DD-MM-AAAA.'
+  }
+
+  const parts = val.split('-')
+  const day = parseInt(parts[0], 10)
+  const month = parseInt(parts[1], 10)
+  const year = parseInt(parts[2], 10)
+
+  if (year < 1000 || year > 3000 || month === 0 || month > 12) {
+    return 'Data inválida.'
+  }
+
+  const monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+  if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) {
+    monthLength[1] = 29
+  }
+
+  if (day > 0 && day <= monthLength[month - 1]) {
+    return true
+  } else {
+    return 'Data inválida.'
+  }
+}
+
+const formattedLaunchDate = computed({
+  get() {
+    if (!localRow.value.launchDate) return ''
+    const [year, month, day] = localRow.value.launchDate.split('-')
+
+    return `${day}-${month}-${year}`
+  },
+  set(newValue) {
+    if (!newValue) {
+      localRow.value.launchDate = null
+      return
+    }
+
+    const [day, month, year] = newValue.split('-')
+    localRow.value.launchDate = `${year}-${month}-${day}`
+  },
+})
 
 const activeStore = computed(() => {
   switch (props.area) {
@@ -204,8 +291,14 @@ const save = async () => {
   const payload = {}
 
   props.columns.forEach((column) => {
-    if (column.field && Object.prototype.hasOwnProperty.call(localRow.value, column.field)) {
-      payload[column.field] = localRow.value[column.field]
+    if (
+      column.field &&
+      column.form !== false &&
+      Object.prototype.hasOwnProperty.call(localRow.value, column.field)
+    ) {
+      const key = column.apiKey || column.field
+
+      payload[key] = localRow.value[column.field]
     }
   })
 
@@ -214,11 +307,8 @@ const save = async () => {
 
   if (props.area === 'users') await store.registerUser(payload)
   else if (props.area === 'publishers') await store.registerPublisher(payload)
-  else if (props.area === 'books') {
-    const storeAux = usePublishersStore()
-    await storeAux.fetchPublishers()
-    await store.registerBook(payload)
-  } else if (props.area === 'renters') await store.registerRenter(payload)
+  else if (props.area === 'books') await store.registerBook(payload)
+  else if (props.area === 'renters') await store.registerRenter(payload)
   else if (props.area === 'rents') await store.registerRent(payload)
   else console.log('ERRO!!')
 
@@ -229,8 +319,14 @@ const edit = async () => {
   const payload = {}
 
   props.columns.forEach((column) => {
-    if (column.field && Object.prototype.hasOwnProperty.call(localRow.value, column.field)) {
-      payload[column.field] = localRow.value[column.field]
+    if (
+      column.field &&
+      column.form !== false &&
+      Object.prototype.hasOwnProperty.call(localRow.value, column.field)
+    ) {
+      const key = column.apiKey || column.field
+
+      payload[key] = localRow.value[column.field]
     }
   })
 
