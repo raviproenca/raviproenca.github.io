@@ -17,18 +17,6 @@
         <div v-for="column in columns" :key="column.name">
           <div v-if="column.name !== 'actions'">
             <q-item-label caption>{{ column.label }}</q-item-label>
-            <q-input
-              v-if="column.name !== 'role'"
-              dark
-              color="amber-1"
-              v-model="localRow[column.field]"
-              :placeholder="`Digitar ${column.label.toLowerCase()}`"
-              :rules="getRulesFor(column)"
-              lazy-rules
-              debounce="500"
-              dense
-              rounded
-            />
             <q-select
               v-if="column.name === 'role'"
               dark
@@ -41,6 +29,33 @@
               option-label="label"
               emit-value
               map-options
+              dense
+              rounded
+            />
+            <q-select
+              v-else-if="column.name === 'publisher'"
+              dark
+              color="amber-1"
+              v-model="localRow[column.field]"
+              :options="publishers"
+              :rules="getRulesFor(column)"
+              lazy-rules
+              option-value="id"
+              option-label="name"
+              emit-value
+              map-options
+              dense
+              rounded
+            />
+            <q-input
+              v-else
+              dark
+              color="amber-1"
+              v-model="localRow[column.field]"
+              :placeholder="`Digitar ${column.label.toLowerCase()}`"
+              :rules="getRulesFor(column)"
+              lazy-rules
+              debounce="500"
               dense
               rounded
             />
@@ -129,6 +144,10 @@ const roleOptions = [
   { value: 'ADMIN', label: 'Editor' },
 ]
 
+const publishersStore = usePublishersStore()
+const { publishers } = storeToRefs(publishersStore)
+console.log(publishers)
+
 watch(
   () => props.row,
   (r) => {
@@ -195,8 +214,11 @@ const save = async () => {
 
   if (props.area === 'users') await store.registerUser(payload)
   else if (props.area === 'publishers') await store.registerPublisher(payload)
-  else if (props.area === 'books') await store.registerBook(payload)
-  else if (props.area === 'renters') await store.registerRenter(payload)
+  else if (props.area === 'books') {
+    const storeAux = usePublishersStore()
+    await storeAux.fetchPublishers()
+    await store.registerBook(payload)
+  } else if (props.area === 'renters') await store.registerRenter(payload)
   else if (props.area === 'rents') await store.registerRent(payload)
   else console.log('ERRO!!')
 
