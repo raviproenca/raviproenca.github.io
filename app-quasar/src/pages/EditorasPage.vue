@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { onMounted} from 'vue'
+import { onMounted } from 'vue'
 import { usePublishersStore } from 'src/stores/publishers-store'
 import { storeToRefs } from 'pinia'
 import TableComponent from 'src/components/TableComponent.vue'
@@ -19,6 +19,7 @@ const publishersth = [
   { name: 'email', label: 'Email', field: 'email' },
   { name: 'telephone', label: 'Telefone', field: 'telephone' },
   { name: 'site', label: 'Site', field: 'site' },
+  { name: 'actions', label: 'Ações', align: 'right' },
 ]
 
 const publisherStore = usePublishersStore()

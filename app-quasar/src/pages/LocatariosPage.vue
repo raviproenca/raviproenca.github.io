@@ -20,6 +20,7 @@ const rentersth = [
   { name: 'telephone', label: 'Telefone', field: 'telephone' },
   { name: 'address', label: 'Endereço', field: 'address' },
   { name: 'cpf', label: 'CPF', field: 'cpf' },
+  { name: 'actions', label: 'Ações', align: 'right' },
 ]
 
 const renterStore = useRentersStore()

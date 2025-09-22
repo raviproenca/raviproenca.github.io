@@ -21,6 +21,7 @@ const booksth = [
   { name: 'launchDate', label: 'Data de Lançamento', field: 'launchDate' },
   { name: 'totalQuantity', label: 'Estoque', field: 'totalQuantity' },
   { name: 'totalInUse', label: 'Alugados', field: 'totalInUse', form: false },
+  { name: 'actions', label: 'Ações', align: 'right' },
 ]
 
 const bookStore = useBooksStore()

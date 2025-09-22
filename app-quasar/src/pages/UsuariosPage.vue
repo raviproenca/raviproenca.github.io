@@ -19,6 +19,7 @@ const usersth = [
   { name: 'email', label: 'Email', field: 'email' },
   { name: 'password', label: 'Senha', field: 'password' },
   { name: 'role', label: 'Permissão', field: 'role' },
+  { name: 'actions', label: 'Ações', align: 'right' },
 ]
 
 const userStore = useUsersStore()

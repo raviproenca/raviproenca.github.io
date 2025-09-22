@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { onMounted} from 'vue'
+import { onMounted } from 'vue'
 import { useRentsStore } from 'src/stores/rents-store'
 import TableComponent from 'src/components/TableComponent.vue'
 import { storeToRefs } from 'pinia'
@@ -20,6 +20,7 @@ const rentsth = [
   { name: 'rentDate', label: 'Data de Locação', field: 'rentDate' },
   { name: 'devolutionDate', label: 'Data de Devolução', field: 'devolutionDate' },
   { name: 'status', label: 'Status', field: 'status' },
+  { name: 'actions', label: 'Ações', align: 'right' },
 ]
 
 const rentStore = useRentsStore()

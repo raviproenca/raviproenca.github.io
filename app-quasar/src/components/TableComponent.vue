@@ -23,7 +23,8 @@
       </div>
 
       <q-table
-        class="col"
+        class="col border-radius"
+        table-header-class="table-header"
         :rows="filteredRows"
         :columns="columns"
         row-key="id"
@@ -192,6 +193,26 @@
               </q-card-actions>
             </q-card>
           </div>
+        </template>
+
+        <template v-slot:body-cell-actions="props">
+          <q-td :props="props">
+            <q-btn flat round dense icon="o_edit" color="green" @click="openEditModal(props.row)" />
+            <q-btn
+              flat
+              round
+              dense
+              icon="o_delete"
+              color="red"
+              @click="openDeleteModal(props.row)"
+            />
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-role="props">
+          <q-td :props="props">
+            {{ props.row.role === 'USER' ? 'Leitor' : 'Editor' }}
+          </q-td>
         </template>
 
         <template v-slot:bottom>

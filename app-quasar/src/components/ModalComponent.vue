@@ -159,6 +159,7 @@ import { usePublishersStore } from 'src/stores/publishers-store'
 import { useBooksStore } from 'src/stores/books-store'
 import { useRentersStore } from 'src/stores/renters-store'
 import { useRentsStore } from 'src/stores/rents-store'
+import { useAuthStore } from 'src/stores/auth-store'
 
 const emit = defineEmits(['close-modal'])
 
@@ -262,6 +263,9 @@ const formattedLaunchDate = computed({
     localRow.value.launchDate = `${year}-${month}-${day}`
   },
 })
+
+const store = useAuthStore()
+store.login()
 
 const activeStore = computed(() => {
   switch (props.area) {
