@@ -1,17 +1,20 @@
 <template>
-  <q-page padding class="column items-center">
+  <q-page padding class="column items-center justify-center">
     <div class="q-pa-md" style="width: 100%; max-width: 1200px">
-      <h4 class="text-white text-center text-weight-bold text-with-shadow q-mt-md q-mb-lg">
+      <h4 class="text-white text-center text-weight-bold text-with-shadow q-mt-md q-mb-lg lt-md">
         <slot></slot>
       </h4>
 
-      <div class="row q-mb-lg">
+      <div class="row q-mb-lg q-gutter-x-md">
+        <p class="text-white text-h4 text-center text-weight-bold text-with-shadow gt-sm">
+          <slot></slot>
+        </p>
         <q-input
           v-model="filter"
           outlined
           :placeholder="placeholder"
           bg-color="white"
-          class="input-style col-grow q-mr-md"
+          class="input-style col-grow"
           rounded
           dense
         >
@@ -26,7 +29,7 @@
         class="col border-radius"
         table-header-class="table-header"
         :rows="filteredRows"
-        :columns="columns"
+        :columns="visibleColumns"
         row-key="id"
         :grid="$q.screen.lt.md"
         :rows-per-page-options="[5, 10, 20]"
@@ -273,6 +276,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+})
+
+const visibleColumns = computed(() => {
+  // Retorna todas as colunas, exceto a que tem o nome 'password'
+  return props.columns.filter((col) => col.name !== 'password')
 })
 
 // Filtro
