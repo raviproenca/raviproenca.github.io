@@ -15,11 +15,11 @@ import { storeToRefs } from 'pinia'
 import TableComponent from 'src/components/TableComponent.vue'
 
 const publishersth = [
-  { name: 'name', label: 'Nome', field: 'name' },
-  { name: 'email', label: 'Email', field: 'email' },
-  { name: 'telephone', label: 'Telefone', field: 'telephone' },
-  { name: 'site', label: 'Site', field: 'site' },
-  { name: 'actions', label: 'Ações', align: 'right' },
+  { name: 'name', label: 'Nome', field: 'name', align: 'center' },
+  { name: 'email', label: 'Email', field: 'email', align: 'center' },
+  { name: 'telephone', label: 'Telefone', field: 'telephone', align: 'center' },
+  { name: 'site', label: 'Site', field: 'site', align: 'center' },
+  { name: 'actions', label: 'Ações', align: 'center' },
 ]
 
 const publisherStore = usePublishersStore()

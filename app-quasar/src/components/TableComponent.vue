@@ -5,8 +5,8 @@
         <slot></slot>
       </h4>
 
-      <div class="row q-mb-lg q-gutter-x-md">
-        <p class="text-white text-h4 text-center text-weight-bold text-with-shadow gt-sm">
+      <div class="row q-mb-lg q-gutter-x-md items-center q-pa-none">
+        <p class="text-white text-h4 text-weight-bold text-with-shadow gt-sm q-mb-none">
           <slot></slot>
         </p>
         <q-input

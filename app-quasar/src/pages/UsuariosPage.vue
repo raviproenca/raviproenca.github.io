@@ -15,11 +15,11 @@ import { storeToRefs } from 'pinia'
 import TableComponent from 'src/components/TableComponent.vue'
 
 const usersth = [
-  { name: 'name', label: 'Nome', field: 'name' },
-  { name: 'email', label: 'Email', field: 'email' },
+  { name: 'name', label: 'Nome', field: 'name', align: 'center' },
+  { name: 'email', label: 'Email', field: 'email', align: 'center' },
   { name: 'password', label: 'Senha', field: 'password' },
-  { name: 'role', label: 'Permissão', field: 'role' },
-  { name: 'actions', label: 'Ações', align: 'right' },
+  { name: 'role', label: 'Permissão', field: 'role', align: 'center' },
+  { name: 'actions', label: 'Ações', align: 'center' },
 ]
 
 const userStore = useUsersStore()

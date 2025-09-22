@@ -15,13 +15,19 @@ import TableComponent from 'src/components/TableComponent.vue'
 import { storeToRefs } from 'pinia'
 
 const booksth = [
-  { name: 'name', label: 'Nome', field: 'name' },
-  { name: 'author', label: 'Autor', field: 'author' },
-  { name: 'publisher', label: 'Editora', field: 'publisher', apiKey: 'publisherId' },
-  { name: 'launchDate', label: 'Data de Lançamento', field: 'launchDate' },
-  { name: 'totalQuantity', label: 'Estoque', field: 'totalQuantity' },
-  { name: 'totalInUse', label: 'Alugados', field: 'totalInUse', form: false },
-  { name: 'actions', label: 'Ações', align: 'right' },
+  { name: 'name', label: 'Nome', field: 'name', align: 'center' },
+  { name: 'author', label: 'Autor', field: 'author', align: 'center' },
+  {
+    name: 'publisher',
+    label: 'Editora',
+    field: 'publisher',
+    apiKey: 'publisherId',
+    align: 'center',
+  },
+  { name: 'launchDate', label: 'Data de Lançamento', field: 'launchDate', align: 'center' },
+  { name: 'totalQuantity', label: 'Estoque', field: 'totalQuantity', align: 'center' },
+  { name: 'totalInUse', label: 'Alugados', field: 'totalInUse', form: false, align: 'center' },
+  { name: 'actions', label: 'Ações', align: 'center' },
 ]
 
 const bookStore = useBooksStore()
