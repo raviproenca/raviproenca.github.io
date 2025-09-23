@@ -218,6 +218,12 @@
           </q-td>
         </template>
 
+        <template v-slot:body-cell-publisher="props">
+          <q-td :props="props">
+            {{ props.row.publisher?.name || 'N/A' }}
+          </q-td>
+        </template>
+
         <template v-slot:bottom>
           <div class="row justify-center q-mt-md" style="width: 100%">
             <q-pagination
@@ -279,7 +285,6 @@ const props = defineProps({
 })
 
 const visibleColumns = computed(() => {
-  // Retorna todas as colunas, exceto a que tem o nome 'password'
   return props.columns.filter((col) => col.name !== 'password')
 })
 
