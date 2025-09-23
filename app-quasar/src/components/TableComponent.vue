@@ -148,7 +148,14 @@
                     </q-item-section>
                   </q-item>
 
-                  <q-item v-if="'devolutionDate' in props.row">
+                  <q-item v-if="props.row.deadLine">
+                    <q-item-section>
+                      <q-item-label caption>Data de Entrega</q-item-label>
+                      <q-item-label>{{ props.row.deadLine || 'N/A' }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.rentDate">
                     <q-item-section>
                       <q-item-label caption>Data de Devolução</q-item-label>
                       <q-item-label>{{ props.row.devolutionDate || 'N/A' }}</q-item-label>
