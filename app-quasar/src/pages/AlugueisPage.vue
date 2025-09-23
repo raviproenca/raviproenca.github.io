@@ -15,11 +15,18 @@ import TableComponent from 'src/components/TableComponent.vue'
 import { storeToRefs } from 'pinia'
 
 const rentsth = [
-  { name: 'name', label: 'Nome do Livro', field: 'name', align: 'center' },
+  { name: 'book', label: 'Nome do Livro', field: 'book', align: 'center' },
   { name: 'renter', label: 'Locatário', field: 'renter', align: 'center' },
-  { name: 'rentDate', label: 'Data de Locação', field: 'rentDate', align: 'center' },
-  { name: 'devolutionDate', label: 'Data de Devolução', field: 'devolutionDate', align: 'center' },
-  { name: 'status', label: 'Status', field: 'status', align: 'center' },
+  { name: 'rentDate', label: 'Data de Locação', field: 'rentDate', align: 'center', form: false },
+  { name: 'deadLine', label: 'Data de Entrega', field: 'deadLine', align: 'center' },
+  {
+    name: 'devolutionDate',
+    label: 'Data de Devolução',
+    field: 'devolutionDate',
+    align: 'center',
+    form: false,
+  },
+  { name: 'status', label: 'Status', field: 'status', align: 'center', form: false },
   { name: 'actions', label: 'Ações', align: 'center' },
 ]
 

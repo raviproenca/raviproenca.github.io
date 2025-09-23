@@ -158,17 +158,7 @@
                   <q-item v-if="props.row.status">
                     <q-item-section>
                       <q-item-label caption>Status</q-item-label>
-                      <q-item-label>{{
-                        props.row.status === 'RENTED'
-                          ? 'Alugado'
-                          : props.row.status === 'IN_TIME'
-                            ? 'Devolvido no prazo'
-                            : props.row.status === 'LATE'
-                              ? 'Atrasado'
-                              : props.row.status === 'DELIVERED_WITH_DELAY'
-                                ? 'Devolvido com atraso'
-                                : ''
-                      }}</q-item-label>
+                      <q-item-label>{{ translateStatus(props.row.status) }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -221,6 +211,36 @@
         <template v-slot:body-cell-publisher="props">
           <q-td :props="props">
             {{ props.row.publisher?.name || 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-book="props">
+          <q-td :props="props">
+            {{ props.row.book?.name || 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-renter="props">
+          <q-td :props="props">
+            {{ props.row.renter?.name || 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-status="props">
+          <q-td :props="props">
+            {{ translateStatus(props.row.status) }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-site="props">
+          <q-td :props="props">
+            {{ props.row.site ? props.row.site : 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-devolutionDate="props">
+          <q-td :props="props">
+            {{ props.row.devolutionDate ? props.row.devolutionDate : 'N/A' }}
           </q-td>
         </template>
 
@@ -312,6 +332,7 @@ const filteredRows = computed(() => {
       row.book?.name,
       row.renter?.name,
       row.rentDate,
+      row.deadLine,
       row.devolutionDate,
       row.status === 'RENTED'
         ? 'Alugado'
@@ -368,5 +389,20 @@ function closeModal() {
   showModal.value = false
   selectedRow.value = null
   modalMode.value = 'create'
+}
+
+function translateStatus(status) {
+  switch (status) {
+    case 'RENTED':
+      return 'Alugado'
+    case 'IN_TIME':
+      return 'Devolvido no prazo'
+    case 'LATE':
+      return 'Atrasado'
+    case 'DELIVERED_WITH_DELAY':
+      return 'Devolvido com atraso'
+    default:
+      ''
+  }
 }
 </script>

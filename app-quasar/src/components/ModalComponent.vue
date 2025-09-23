@@ -16,9 +16,13 @@
       <q-card-section class="q-gutter-y-sm">
         <div v-for="column in columns" :key="column.name">
           <div v-if="column.name !== 'actions' && column.form !== false">
-            <q-item-label v-if="column.name !== 'totalInUse'" caption>{{
-              column.label
-            }}</q-item-label>
+            <q-item-label
+              v-if="column.name !== 'totalInUse'"
+              style="color: #fff; font-size: medium"
+              class="text-weight-bold text-subtitle1"
+              caption
+              >{{ column.label }}</q-item-label
+            >
             <q-select
               v-if="column.name === 'role'"
               dark
@@ -49,8 +53,38 @@
               dense
               rounded
             />
+            <q-select
+              v-else-if="column.name === 'book'"
+              dark
+              color="amber-1"
+              v-model="localRow[column.field]"
+              :options="books"
+              :rules="getRulesFor(column)"
+              lazy-rules
+              option-value="id"
+              option-label="name"
+              emit-value
+              map-options
+              dense
+              rounded
+            />
+            <q-select
+              v-else-if="column.name === 'renter'"
+              dark
+              color="amber-1"
+              v-model="localRow[column.field]"
+              :options="renters"
+              :rules="getRulesFor(column)"
+              lazy-rules
+              option-value="id"
+              option-label="name"
+              emit-value
+              map-options
+              dense
+              rounded
+            />
             <q-input
-              v-else-if="column.name === 'launchDate'"
+              v-else-if="column.name === 'launchDate' || column.name === 'deadLine'"
               filled
               v-model="formattedLaunchDate"
               mask="##-##-####"
@@ -159,7 +193,6 @@ import { usePublishersStore } from 'src/stores/publishers-store'
 import { useBooksStore } from 'src/stores/books-store'
 import { useRentersStore } from 'src/stores/renters-store'
 import { useRentsStore } from 'src/stores/rents-store'
-import { useAuthStore } from 'src/stores/auth-store'
 
 const emit = defineEmits(['close-modal'])
 
@@ -181,6 +214,12 @@ const roleOptions = [
 
 const publishersStore = usePublishersStore()
 const { publishers } = storeToRefs(publishersStore)
+
+const booksStore = useBooksStore()
+const { books } = storeToRefs(booksStore)
+
+const rentersStore = useRentersStore()
+const { renters } = storeToRefs(rentersStore)
 
 onMounted(() => {
   if (props.area === 'books') {
@@ -208,9 +247,10 @@ watch(
           totalInUse: 0,
           address: '',
           cpf: '',
-          book: '',
-          renter: '',
+          book: null,
+          renter: null,
           rentDate: null,
+          deadLine: null,
           devolutionDate: null,
           status: '',
         }
@@ -263,9 +303,6 @@ const formattedLaunchDate = computed({
     localRow.value.launchDate = `${year}-${month}-${day}`
   },
 })
-
-const store = useAuthStore()
-store.login()
 
 const activeStore = computed(() => {
   switch (props.area) {
