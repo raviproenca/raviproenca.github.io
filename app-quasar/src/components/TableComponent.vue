@@ -193,11 +193,12 @@
                 />
                 <q-btn
                   v-if="props.row.status"
-                  v-model="rentDevolutedBtn"
                   flat
                   round
                   dense
-                  style="opacity: 50%"
+                  :style="{
+                    opacity: props.row.status === 'RENTED' || props.row.status === 'LATE' ? 0.5 : 1,
+                  }"
                   icon="o_check_box"
                   color="black"
                   @click="openRentModal(props.row)"
@@ -414,12 +415,6 @@ function closeModal() {
   showModal.value = false
   selectedRow.value = null
   modalMode.value = 'create'
-}
-
-const rentDevolutedBtn = ref(null)
-
-function rentDevoluted() {
-  rentDevolutedBtn.value.style.opacity = '100%'
 }
 
 function translateStatus(status) {
