@@ -158,7 +158,7 @@
                   <q-item v-if="props.row.rentDate">
                     <q-item-section>
                       <q-item-label caption>Data de Devolução</q-item-label>
-                      <q-item-label>{{ props.row.devolutionDate || 'N/A' }}</q-item-label>
+                      <q-item-label>{{ props.row.devolutionDate || 'Não Entregue' }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
@@ -183,12 +183,24 @@
                   @click="openEditModal(props.row)"
                 />
                 <q-btn
+                  v-if="!props.row.status"
                   flat
                   round
                   dense
                   icon="o_delete"
                   color="red"
                   @click="openDeleteModal(props.row)"
+                />
+                <q-btn
+                  v-if="props.row.status"
+                  v-model="rentDevolutedBtn"
+                  flat
+                  round
+                  dense
+                  style="opacity: 50%"
+                  icon="o_check_box"
+                  color="black"
+                  @click="openRentModal(props.row)"
                 />
               </q-card-actions>
             </q-card>
@@ -392,10 +404,22 @@ function openDeleteModal(row) {
   showModal.value = true
 }
 
+function openRentModal(row) {
+  selectedRow.value = row
+  modalMode.value = 'devolution'
+  showModal.value = true
+}
+
 function closeModal() {
   showModal.value = false
   selectedRow.value = null
   modalMode.value = 'create'
+}
+
+const rentDevolutedBtn = ref(null)
+
+function rentDevoluted() {
+  rentDevolutedBtn.value.style.opacity = '100%'
 }
 
 function translateStatus(status) {

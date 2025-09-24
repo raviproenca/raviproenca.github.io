@@ -24,7 +24,6 @@ const rentsth = [
     label: 'Data de Devolução',
     field: 'devolutionDate',
     align: 'center',
-    form: false,
   },
   { name: 'status', label: 'Status', field: 'status', align: 'center', form: false },
   { name: 'actions', label: 'Ações', align: 'center' },

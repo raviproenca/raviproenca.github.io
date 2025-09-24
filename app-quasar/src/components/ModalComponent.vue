@@ -17,7 +17,14 @@
         <div v-for="column in columns" :key="column.name">
           <div v-if="column.name !== 'actions' && column.form !== false">
             <q-item-label
-              v-if="column.name !== 'totalInUse'"
+              v-if="column.name !== 'totalInUse' && column.name !== 'devolutionDate'"
+              style="color: #fff; font-size: medium"
+              class="text-weight-bold text-subtitle1"
+              caption
+              >{{ column.label }}</q-item-label
+            >
+            <q-item-label
+              v-if="column.name === 'devolutionDate' && mode !== 'create'"
               style="color: #fff; font-size: medium"
               class="text-weight-bold text-subtitle1"
               caption
@@ -84,16 +91,20 @@
               rounded
             />
             <q-input
-              v-else-if="column.name === 'launchDate' || column.name === 'deadLine'"
+              v-else-if="
+                column.name === 'launchDate' ||
+                column.name === 'deadLine' ||
+                (column.name === 'devolutionDate' && mode !== 'create')
+              "
               filled
-              v-model="formattedLaunchDate"
+              v-model="formattedDates[column.name]"
               mask="##-##-####"
               :rules="[isValidDate]"
             >
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date mask="DD-MM-YYYY" v-model="formattedLaunchDate">
+                    <q-date mask="DD-MM-YYYY" v-model="formattedDates[column.name]">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Fechar" color="primary" flat />
                       </div>
@@ -116,7 +127,7 @@
               rounded
             />
             <q-input
-              v-else-if="column.name !== 'totalInUse'"
+              v-else-if="column.name !== 'totalInUse' && column.name !== 'devolutionDate'"
               dark
               color="amber-1"
               v-model="localRow[column.field]"
@@ -160,7 +171,7 @@
 
     <div v-else-if="mode === 'delete'">
       <q-card-section>
-        <div class="text-h5">Confirma exclusão?</div>
+        <div class="text-h5 text-white">Confirma exclusão?</div>
         <div>{{ row?.name || row?.id }}</div>
       </q-card-section>
 
@@ -181,11 +192,35 @@
         />
       </q-card-actions>
     </div>
+
+    <div v-else-if="mode === 'devolution'">
+      <q-card-section>
+        <div class="text-h5 text-white">Você confirma a devolução deste livro?</div>
+        <div>{{ row?.name || row.book?.name || row?.id }}</div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="q-pa-md">
+        <q-btn
+          flat
+          label="Cancelar"
+          color="white"
+          @click="$emit('close-modal')"
+          :disable="isLoading"
+        />
+        <q-btn
+          label="Confirmar"
+          color="blue"
+          @click="confirm"
+          :loading="isLoading"
+          :disable="isLoading"
+        />
+      </q-card-actions>
+    </div>
   </q-card>
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted } from 'vue'
+import { ref, watch, computed, onMounted, reactive } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useUsersStore } from 'src/stores/users-store'
@@ -225,6 +260,15 @@ onMounted(() => {
   if (props.area === 'books') {
     if (publishers.value.length === 0) {
       publishersStore.fetchPublishers()
+    }
+  }
+
+  if (props.area === 'rents') {
+    if (books.value.length === 0) {
+      booksStore.fetchBooks()
+    }
+    if (renters.value.length === 0) {
+      rentersStore.fetchRenters()
     }
   }
 })
@@ -286,22 +330,30 @@ const isValidDate = (val) => {
   }
 }
 
-const formattedLaunchDate = computed({
-  get() {
-    if (!localRow.value.launchDate) return ''
-    const [year, month, day] = localRow.value.launchDate.split('-')
+const formattedDates = reactive({})
+const dateFields = ['launchDate', 'deadLine', 'devolutionDate']
 
-    return `${day}-${month}-${year}`
-  },
-  set(newValue) {
-    if (!newValue) {
-      localRow.value.launchDate = null
-      return
-    }
+dateFields.forEach((field) => {
+  formattedDates[field] = computed({
+    get() {
+      const dateValue = localRow.value[field]
+      if (!dateValue) return ''
 
-    const [day, month, year] = newValue.split('-')
-    localRow.value.launchDate = `${year}-${month}-${day}`
-  },
+      const datePart = dateValue.split('T')[0]
+      const [year, month, day] = datePart.split('-')
+
+      return `${day}-${month}-${year}`
+    },
+    set(newValue) {
+      if (!newValue || !/^\d{2}-\d{2}-\d{4}$/.test(newValue)) {
+        localRow.value[field] = null
+        return
+      }
+
+      const [day, month, year] = newValue.split('-')
+      localRow.value[field] = `${year}-${month}-${day}`
+    },
+  })
 })
 
 const activeStore = computed(() => {
@@ -392,7 +444,16 @@ const remove = async () => {
   else if (props.area === 'publishers') await store.deletePublisher(props.row.id)
   else if (props.area === 'books') await store.deleteBook(props.row.id)
   else if (props.area === 'renters') await store.deleteRenter(props.row.id)
-  else if (props.area === 'rents') await store.deleteRent(props.row.id)
+  else console.log('ERRO!!')
+
+  emit('close-modal')
+}
+
+const confirm = async () => {
+  const store = activeStore.value
+  if (!store) return console.error('Store não encontrada para a área:', props.area)
+
+  if (props.area === 'rents') await store.confirmRent(props.row.id)
   else console.log('ERRO!!')
 
   emit('close-modal')
