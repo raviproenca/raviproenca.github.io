@@ -212,12 +212,25 @@
           <q-td :props="props">
             <q-btn flat round dense icon="o_edit" color="green" @click="openEditModal(props.row)" />
             <q-btn
+              v-if="!props.row.status"
               flat
               round
               dense
               icon="o_delete"
               color="red"
               @click="openDeleteModal(props.row)"
+            />
+            <q-btn
+              v-if="props.row.status"
+              flat
+              round
+              dense
+              :style="{
+                opacity: props.row.status === 'RENTED' || props.row.status === 'LATE' ? 0.5 : 1,
+              }"
+              icon="o_check_box"
+              color="black"
+              @click="openRentModal(props.row)"
             />
           </q-td>
         </template>

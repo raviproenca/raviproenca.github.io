@@ -4,33 +4,29 @@
       <div class="col-12 col-md">
         <q-card class="dashboard-cards border-radius">
           <q-card-section>
-            <div class="row items-center justify-center q-gutter-x-lg">
+            <div class="row items-center justify-start q-gutter-x-lg">
               <q-icon name="emoji_events" class="primeiro-mais-alugado" size="xl"></q-icon>
               <h2 class="text-h5 text-white text-weight-bolder text-with-shadow">
                 {{ firstBook?.name || 'Carregando...' }}
               </h2>
-              <h2 class="text-h5 text-white text-weight-bolder">
-                {{ firstBook?.totalRents }}
-              </h2>
+              <h2 class="text-h5 text-white text-weight-bolder">{{ firstBook?.totalRents }}x</h2>
             </div>
 
-            <div class="row items-center justify-center q-gutter-x-lg">
+            <div class="row items-center justify-start q-gutter-x-lg">
               <q-icon name="workspace_premium" class="segundo-mais-alugado" size="lg"></q-icon>
               <h2 class="text-h6 text-white text-weight-bolder text-with-shadow">
                 {{ secondBook?.name || 'Carregando...' }}
               </h2>
-              <h2 class="text-h6 text-white text-weight-bolder">
-                {{ secondBook?.totalRents }}
-              </h2>
+              <h2 class="text-h6 text-white text-weight-bolder">{{ secondBook?.totalRents }}x</h2>
             </div>
 
-            <div class="row items-center justify-center q-gutter-x-lg">
+            <div class="row items-center justify-start q-gutter-x-lg">
               <q-icon name="military_tech" class="terceiro-mais-alugado" size="md"></q-icon>
               <h2 class="text-subtitle1 text-white text-weight-bolder text-with-shadow">
                 {{ thirdBook?.name || 'Carregando...' }}
               </h2>
               <h2 class="text-subtitle1 text-white text-weight-bolder">
-                {{ thirdBook?.totalRents }}
+                {{ thirdBook?.totalRents }}x
               </h2>
             </div>
           </q-card-section>
@@ -38,23 +34,42 @@
       </div>
 
       <div class="row col-12 col-md justify-center">
-        <q-card class="dashboard-cards border-radius col-grow">
-          <q-card-section>
-            <p>test</p>
+        <q-card class="dashboard-cards border-radius col-grow q-mr-sm">
+          <q-card-section class="q-gutter-y-sm">
+            <div class="row justify-between">
+              <q-icon name="o_library_add_check" size="sm" color="white" />
+              <p class="text-white text-weight-bold">{{ rentedBooks }}</p>
+            </div>
+            <p class="text-white text-weight-bold">Livros alugados no último mês</p>
           </q-card-section>
         </q-card>
 
-        <q-card class="dashboard-cards border-radius col-grow">
-          <q-card-section>
-            <p>test</p>
+        <q-card class="dashboard-cards border-radius col-grow q-ml-sm">
+          <q-card-section class="q-gutter-y-sm">
+            <div class="row justify-between">
+              <q-icon name="schedule" size="sm" color="white" />
+              <p class="text-white text-weight-bold">{{ rentedLateBooks }}</p>
+            </div>
+            <p class="text-white text-weight-bold">Livros atrasados no momento</p>
           </q-card-section>
         </q-card>
       </div>
 
       <div class="col-12 col-md">
         <q-card class="dashboard-cards border-radius">
-          <q-card-section style="padding: 8px 16px">
-            <div style="height: 400px; position: relative">
+          <q-card-section>
+            <q-select
+              v-model="selectedRenter"
+              dark
+              dense
+              rounded
+              :options="renters"
+              map-options
+              emit-value
+              option-value="id"
+              option-label="name"
+            />
+            <div style="height: 300px; position: relative" class="q-mt-md">
               <q-inner-loading :showing="isLoading" label="Calculando dados do gráfico..." />
 
               <div v-if="error" class="fullscreen text-center flex flex-center">
@@ -106,15 +121,30 @@ import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
 import { useDashboardsStore } from 'src/stores/dashboard-store'
 import { Chart, registerables } from 'chart.js'
+import { useRentersStore } from 'src/stores/renters-store'
 
 Chart.register(...registerables)
 
 const store = useDashboardsStore()
-const { bookMoreRented, deliveredInTimeQuantity, deliveredWithDelayQuantity } = storeToRefs(store)
+const {
+  bookMoreRented,
+  deliveredInTimeQuantity,
+  deliveredWithDelayQuantity,
+  rentsQuantity,
+  rentsLateQuantity,
+} = storeToRefs(store)
 
 const firstBook = computed(() => bookMoreRented.value.data?.[0])
 const secondBook = computed(() => bookMoreRented.value.data?.[1])
 const thirdBook = computed(() => bookMoreRented.value.data?.[2])
+
+const rentedBooks = computed(() => rentsQuantity.value.data)
+const rentedLateBooks = computed(() => rentsLateQuantity.value.data)
+
+const rentersStore = useRentersStore()
+const { renters } = storeToRefs(rentersStore)
+
+const selectedRenter = ref('')
 
 const $q = useQuasar()
 const chartBarCanvas = ref(null)
@@ -270,6 +300,9 @@ onMounted(() => {
   store.fetchBookMoreRented(3)
   store.fetchDeliveredInTimeQuantity(5)
   store.fetchDeliveredWithDelayQuantity(5)
+  store.fetchRentsQuantity(1)
+  store.fetchRentsLateQuantity(1)
+  rentersStore.fetchRenters()
 })
 
 watchEffect(() => {
