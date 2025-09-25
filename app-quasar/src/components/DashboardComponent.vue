@@ -1,61 +1,79 @@
 <template>
   <q-page padding>
-    <div class="row q-gutter-lg q-pa-md" style="width: 100%; max-width: 1200px">
-      <div class="col-12 col-md">
-        <q-card class="dashboard-cards border-radius">
+    <div class="row q-mx-auto" style="width: 100%; max-width: 1400px">
+      <div class="col-12 col-md-6 q-pa-sm">
+        <q-card class="dashboard-cards border-radius q-mb-md">
           <q-card-section>
-            <div class="row items-center justify-start q-gutter-x-lg">
-              <q-icon name="emoji_events" class="primeiro-mais-alugado" size="xl"></q-icon>
-              <h2 class="text-h5 text-white text-weight-bolder text-with-shadow">
+            <h1
+              :class="[
+                'text-white',
+                'text-center',
+                'text-weight-bolder',
+                $q.screen.lt.md ? 'text-h6' : 'text-h5',
+              ]"
+              style="opacity: 60%;"
+            >
+              Livros mais alugados
+            </h1>
+            <div class="row items-center justify-center q-gutter-x-sm">
+              <q-icon
+                name="emoji_events"
+                class="primeiro-mais-alugado"
+                :size="$q.screen.lt.md ? 'md' : 'xl'"
+              ></q-icon>
+              <h2 :class="['text-white', 'text-weight-bolder', h2Sizes()]">
                 {{ firstBook?.name || 'Carregando...' }}
               </h2>
-              <h2 class="text-h5 text-white text-weight-bolder">{{ firstBook?.totalRents }}x</h2>
             </div>
 
-            <div class="row items-center justify-start q-gutter-x-lg">
-              <q-icon name="workspace_premium" class="segundo-mais-alugado" size="lg"></q-icon>
-              <h2 class="text-h6 text-white text-weight-bolder text-with-shadow">
+            <div class="row items-center justify-center q-gutter-x-sm">
+              <q-icon
+                name="workspace_premium"
+                class="segundo-mais-alugado"
+                :size="$q.screen.lt.md ? 'sm' : 'lg'"
+              ></q-icon>
+              <h2 :class="['text-white', 'text-weight-bolder', h2Sizes()]">
                 {{ secondBook?.name || 'Carregando...' }}
               </h2>
-              <h2 class="text-h6 text-white text-weight-bolder">{{ secondBook?.totalRents }}x</h2>
             </div>
 
-            <div class="row items-center justify-start q-gutter-x-lg">
-              <q-icon name="military_tech" class="terceiro-mais-alugado" size="md"></q-icon>
-              <h2 class="text-subtitle1 text-white text-weight-bolder text-with-shadow">
+            <div class="row items-center justify-center q-gutter-x-sm">
+              <q-icon
+                name="military_tech"
+                class="terceiro-mais-alugado"
+                :size="$q.screen.lt.md ? 'sm' : 'md'"
+              ></q-icon>
+              <h2 :class="['text-white', 'text-weight-bolder', h2Sizes()]">
                 {{ thirdBook?.name || 'Carregando...' }}
               </h2>
-              <h2 class="text-subtitle1 text-white text-weight-bolder">
-                {{ thirdBook?.totalRents }}x
-              </h2>
             </div>
           </q-card-section>
         </q-card>
+
+        <div class="row justify-center">
+          <q-card class="dashboard-cards border-radius col-grow q-mr-sm">
+            <q-card-section class="q-gutter-y-sm">
+              <div class="row justify-between">
+                <q-icon name="o_library_add_check" size="sm" color="white" />
+                <p class="text-white text-weight-bold">{{ rentedBooks }}</p>
+              </div>
+              <p class="text-white text-weight-bold">Livros alugados no último mês</p>
+            </q-card-section>
+          </q-card>
+
+          <q-card class="dashboard-cards border-radius col-grow q-ml-sm">
+            <q-card-section class="q-gutter-y-sm">
+              <div class="row justify-between">
+                <q-icon name="schedule" size="sm" color="white" />
+                <p class="text-white text-weight-bold">{{ rentedLateBooks }}</p>
+              </div>
+              <p class="text-white text-weight-bold">Livros atrasados no momento</p>
+            </q-card-section>
+          </q-card>
+        </div>
       </div>
 
-      <div class="row col-12 col-md justify-center">
-        <q-card class="dashboard-cards border-radius col-grow q-mr-sm">
-          <q-card-section class="q-gutter-y-sm">
-            <div class="row justify-between">
-              <q-icon name="o_library_add_check" size="sm" color="white" />
-              <p class="text-white text-weight-bold">{{ rentedBooks }}</p>
-            </div>
-            <p class="text-white text-weight-bold">Livros alugados no último mês</p>
-          </q-card-section>
-        </q-card>
-
-        <q-card class="dashboard-cards border-radius col-grow q-ml-sm">
-          <q-card-section class="q-gutter-y-sm">
-            <div class="row justify-between">
-              <q-icon name="schedule" size="sm" color="white" />
-              <p class="text-white text-weight-bold">{{ rentedLateBooks }}</p>
-            </div>
-            <p class="text-white text-weight-bold">Livros atrasados no momento</p>
-          </q-card-section>
-        </q-card>
-      </div>
-
-      <div class="col-12 col-md">
+      <div class="col-12 col-md-6 q-pa-sm">
         <q-card class="dashboard-cards border-radius">
           <q-card-section>
             <q-select
@@ -89,7 +107,7 @@
         </q-card>
       </div>
 
-      <div class="col-12 col-md">
+      <div class="col-12 col-md-12 q-pa-sm">
         <q-card class="dashboard-cards border-radius">
           <q-card-section style="padding: 8px 16px">
             <div style="height: 400px; position: relative">
@@ -144,11 +162,15 @@ const rentedLateBooks = computed(() => rentsLateQuantity.value.data)
 const rentersStore = useRentersStore()
 const { renters } = storeToRefs(rentersStore)
 
-const selectedRenter = ref('')
+const selectedRenter = ref(null)
 
 const $q = useQuasar()
 const chartBarCanvas = ref(null)
 const chartDoughnutCanvas = ref(null)
+
+const h2Sizes = () => {
+  return $q.screen.lt.md ? 'text-subtitle1' : 'text-h6'
+}
 
 let chartInstance = null
 
@@ -166,6 +188,12 @@ const error = computed(
     deliveredWithDelayQuantity.value.error,
 )
 
+const doughnutData = () => {
+  const rent = renters.filter((element) => element === selectedRenter.value)
+  console.log(rent)
+  return rent
+}
+
 const chartDoughnutData = computed(() => {
   const limeGreen = '#A7ED4A'
   const purple = '#9B59B6'
@@ -175,7 +203,7 @@ const chartDoughnutData = computed(() => {
     datasets: [
       {
         label: 'Status dos Livros',
-        data: [1, 1],
+        data: doughnutData(),
         backgroundColor: [limeGreen, purple],
         borderColor: [limeGreen, purple],
         borderWidth: 1,
@@ -189,13 +217,13 @@ const chartBarData = computed(() => {
     labels: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'],
     datasets: [
       {
-        label: 'No Prazo',
+        label: 'Entregue no prazo',
         data: [10, 15, 25, 35, 50],
         backgroundColor: '#00C9FF',
         borderRadius: 6,
       },
       {
-        label: 'Fora do Prazo',
+        label: 'Entregue com atraso',
         data: [5, 10, 15, 20, 35],
         backgroundColor: '#FF7F00',
         borderRadius: 6,
@@ -258,7 +286,7 @@ const chartBarOptions = computed(() => ({
     legend: {
       position: 'top',
       labels: {
-        color: $q.dark.isActive ? 'white' : 'black',
+        color: 'white',
       },
     },
     tooltip: {
@@ -273,24 +301,25 @@ const chartBarOptions = computed(() => ({
     subtitle: {
       display: true,
       text: `Total no prazo (últimos 5 meses): 60 | Total com atraso: 25`,
-      color: $q.dark.isActive ? '#ccc' : '#666',
+      color: '#fff',
       font: {
         size: 12,
         weight: 'normal',
       },
       padding: {
-        bottom: 25,
+        bottom: 15,
+        top: 5,
       },
     },
   },
   scales: {
     y: {
       beginAtZero: true,
-      ticks: { color: $q.dark.isActive ? 'white' : 'black' },
+      ticks: { color: 'white' },
       grid: { color: $q.dark.isActive ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' },
     },
     x: {
-      ticks: { color: $q.dark.isActive ? 'white' : 'black' },
+      ticks: { color: 'white' },
       grid: { color: $q.dark.isActive ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
     },
   },
