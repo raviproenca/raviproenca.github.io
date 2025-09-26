@@ -1,20 +1,37 @@
 <template>
-  <q-card class="shadow-4 bg-white q-pa-md">
-    <q-card-section>
-      <p>{{ userData.name }}</p>
-      <p>{{ userData.email }}</p>
-      <p>{{ userData.role }}</p>
-    </q-card-section>
+  <q-card bordered class="shadow-4 bg-white q-pa-sm">
+    <q-card-section class="q-gutter-y-xs">
+      <p
+        style="border-bottom: 1px solid #ccc; padding-bottom: 7px"
+        class="text-weight-bold text-grey-9"
+      >
+        {{ userData.name }}
+      </p>
 
-    <q-btn
-      :to="'/login'"
-      color="primary"
-      dense
-      flat
-      rounded
-      label="Log out"
-      class="full-width"
-    ></q-btn>
+      <p
+        style="border-bottom: 1px solid #ccc; padding-bottom: 7px"
+        class="text-weight-bold text-grey-9"
+      >
+        {{ userData.email }}
+      </p>
+
+      <p
+        style="border-bottom: 1px solid #ccc; padding-bottom: 7px"
+        class="text-weight-bold text-grey-9"
+      >
+        {{ userData.role === 'ADMIN' ? 'Editor' : 'Leitor' }}
+      </p>
+
+      <q-btn
+        :to="'/login'"
+        color="primary"
+        dense
+        flat
+        rounded
+        label="Log out"
+        class="full-width"
+      ></q-btn>
+    </q-card-section>
   </q-card>
 </template>
 
