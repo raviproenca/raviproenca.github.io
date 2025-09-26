@@ -1,29 +1,29 @@
 <template>
-  <q-page padding>
+  <q-page padding class="flex flex-center">
     <div class="row q-mx-auto" style="width: 100%; max-width: 1400px">
       <div class="col-12 col-md-6 q-pa-sm">
         <q-card class="dashboard-cards border-radius q-mb-md">
           <q-card-section>
-            <h1
+            <p
               :class="[
                 'text-white',
                 'text-center',
                 'text-weight-bolder',
                 $q.screen.lt.md ? 'text-h6' : 'text-h5',
               ]"
-              style="opacity: 60%;"
+              style="opacity: 60%"
             >
               Livros mais alugados
-            </h1>
+            </p>
             <div class="row items-center justify-center q-gutter-x-sm">
               <q-icon
                 name="emoji_events"
                 class="primeiro-mais-alugado"
                 :size="$q.screen.lt.md ? 'md' : 'xl'"
               ></q-icon>
-              <h2 :class="['text-white', 'text-weight-bolder', h2Sizes()]">
+              <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
                 {{ firstBook?.name || 'Carregando...' }}
-              </h2>
+              </p>
             </div>
 
             <div class="row items-center justify-center q-gutter-x-sm">
@@ -32,9 +32,9 @@
                 class="segundo-mais-alugado"
                 :size="$q.screen.lt.md ? 'sm' : 'lg'"
               ></q-icon>
-              <h2 :class="['text-white', 'text-weight-bolder', h2Sizes()]">
+              <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
                 {{ secondBook?.name || 'Carregando...' }}
-              </h2>
+              </p>
             </div>
 
             <div class="row items-center justify-center q-gutter-x-sm">
@@ -43,9 +43,9 @@
                 class="terceiro-mais-alugado"
                 :size="$q.screen.lt.md ? 'sm' : 'md'"
               ></q-icon>
-              <h2 :class="['text-white', 'text-weight-bolder', h2Sizes()]">
+              <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
                 {{ thirdBook?.name || 'Carregando...' }}
-              </h2>
+              </p>
             </div>
           </q-card-section>
         </q-card>
@@ -73,35 +73,35 @@
         </div>
       </div>
 
-      <div class="col-12 col-md-6 q-pa-sm">
-        <q-card class="dashboard-cards border-radius">
-          <q-card-section>
+      <div class="col-12 col-md-6 q-pa-sm column">
+        <q-card class="dashboard-cards border-radius col-grow">
+          <q-card-section class="column full-height">
             <q-select
               v-model="selectedRenter"
               dark
               dense
               rounded
-              :options="renters"
+              :options="perRenter"
+              option-value="name"
+              option-label="name"
               map-options
               emit-value
-              option-value="id"
-              option-label="name"
+              label="Selecione um locatário"
+              clearable
             />
-            <div style="height: 300px; position: relative" class="q-mt-md">
-              <q-inner-loading :showing="isLoading" label="Calculando dados do gráfico..." />
+            <div class="q-mt-md col-grow">
+              <div style="position: relative; height: 98%; width: 100%">
+                <q-inner-loading :showing="isLoading" label="Calculando dados do gráfico..." />
 
-              <div v-if="error" class="fullscreen text-center flex flex-center">
-                <div class="text-negative">
-                  <q-icon name="error" size="lg" />
-                  <p>{{ error }}</p>
+                <div v-if="error" class="fullscreen text-center flex-center">
+                  <div class="text-negative">
+                    <q-icon name="error" size="lg" />
+                    <p>{{ error }}</p>
+                  </div>
                 </div>
-              </div>
 
-              <canvas
-                v-show="!isLoading && !error"
-                ref="chartDoughnutCanvas"
-                style="width: 100%; height: 100%; display: block"
-              ></canvas>
+                <canvas v-show="!isLoading && !error" ref="chartDoughnutCanvas"></canvas>
+              </div>
             </div>
           </q-card-section>
         </q-card>
@@ -110,21 +110,17 @@
       <div class="col-12 col-md-12 q-pa-sm">
         <q-card class="dashboard-cards border-radius">
           <q-card-section style="padding: 8px 16px">
-            <div style="height: 400px; position: relative">
+            <div style="position: relative; height: 350px">
               <q-inner-loading :showing="isLoading" label="Calculando dados do gráfico..." />
 
-              <div v-if="error" class="fullscreen text-center flex flex-center">
+              <div v-if="error" class="fullscreen text-center flex-flex-center">
                 <div class="text-negative">
                   <q-icon name="error" size="lg" />
                   <p>{{ error }}</p>
                 </div>
               </div>
 
-              <canvas
-                v-show="!isLoading && !error"
-                ref="chartBarCanvas"
-                style="width: 100%; height: 100%; display: block"
-              ></canvas>
+              <canvas v-show="!isLoading && !error" ref="chartBarCanvas"></canvas>
             </div>
           </q-card-section>
         </q-card>
@@ -133,13 +129,18 @@
   </q-page>
 </template>
 
+<style>
+.book-title-align {
+  transform: translateY(10px);
+}
+</style>
+
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
 import { useDashboardsStore } from 'src/stores/dashboard-store'
 import { Chart, registerables } from 'chart.js'
-import { useRentersStore } from 'src/stores/renters-store'
 
 Chart.register(...registerables)
 
@@ -150,6 +151,7 @@ const {
   deliveredWithDelayQuantity,
   rentsQuantity,
   rentsLateQuantity,
+  rentsPerRenter,
 } = storeToRefs(store)
 
 const firstBook = computed(() => bookMoreRented.value.data?.[0])
@@ -159,8 +161,7 @@ const thirdBook = computed(() => bookMoreRented.value.data?.[2])
 const rentedBooks = computed(() => rentsQuantity.value.data)
 const rentedLateBooks = computed(() => rentsLateQuantity.value.data)
 
-const rentersStore = useRentersStore()
-const { renters } = storeToRefs(rentersStore)
+const perRenter = computed(() => rentsPerRenter.value.data?.content)
 
 const selectedRenter = ref(null)
 
@@ -168,11 +169,12 @@ const $q = useQuasar()
 const chartBarCanvas = ref(null)
 const chartDoughnutCanvas = ref(null)
 
-const h2Sizes = () => {
+const pSizes = () => {
   return $q.screen.lt.md ? 'text-subtitle1' : 'text-h6'
 }
 
-let chartInstance = null
+let chartDoughnutInstance = null
+let chartBarInstance = null
 
 const isLoading = computed(
   () =>
@@ -188,22 +190,21 @@ const error = computed(
     deliveredWithDelayQuantity.value.error,
 )
 
-const doughnutData = () => {
-  const rent = renters.filter((element) => element === selectedRenter.value)
-  console.log(rent)
-  return rent
-}
-
 const chartDoughnutData = computed(() => {
   const limeGreen = '#A7ED4A'
   const purple = '#9B59B6'
+
+  const renterData = perRenter.value.find((renter) => renter.name === selectedRenter.value)
+
+  const activeRents = renterData?.rentsActive
+  const totalRents = renterData?.rentsQuantity
 
   return {
     labels: ['Livros alugados no momento', 'Total de aluguéis realizados'],
     datasets: [
       {
         label: 'Status dos Livros',
-        data: doughnutData(),
+        data: [activeRents, totalRents],
         backgroundColor: [limeGreen, purple],
         borderColor: [limeGreen, purple],
         borderWidth: 1,
@@ -331,7 +332,7 @@ onMounted(() => {
   store.fetchDeliveredWithDelayQuantity(5)
   store.fetchRentsQuantity(1)
   store.fetchRentsLateQuantity(1)
-  rentersStore.fetchRenters()
+  store.fetchRentsPerRenter()
 })
 
 watchEffect(() => {
@@ -339,11 +340,10 @@ watchEffect(() => {
   const ctxBar = chartBarCanvas.value?.getContext('2d')
 
   if (ctxBar && chartBarData.value) {
-    if (chartInstance) {
-      chartInstance.destroy()
+    if (chartBarInstance) {
+      chartBarInstance.destroy()
     }
-
-    chartInstance = new Chart(ctxBar, {
+    chartBarInstance = new Chart(ctxBar, {
       type: 'bar',
       data: chartBarData.value,
       options: chartBarOptions.value,
@@ -351,11 +351,10 @@ watchEffect(() => {
   }
 
   if (ctxDoughnut && chartDoughnutData.value) {
-    if (chartInstance) {
-      chartInstance.destroy()
+    if (chartDoughnutInstance) {
+      chartDoughnutInstance.destroy()
     }
-
-    chartInstance = new Chart(ctxDoughnut, {
+    chartDoughnutInstance = new Chart(ctxDoughnut, {
       type: 'doughnut',
       data: chartDoughnutData.value,
       options: chartDoughnutOptions.value,
@@ -364,9 +363,13 @@ watchEffect(() => {
 })
 
 onBeforeUnmount(() => {
-  if (chartInstance) {
-    chartInstance.destroy()
-    chartInstance = null
+  if (chartBarInstance) {
+    chartBarInstance.destroy()
+    chartBarInstance = null
+  }
+  if (chartDoughnutInstance) {
+    chartDoughnutInstance.destroy()
+    chartDoughnutInstance = null
   }
 })
 </script>
