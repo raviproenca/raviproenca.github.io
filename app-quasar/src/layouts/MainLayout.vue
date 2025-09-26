@@ -20,7 +20,19 @@
           Locadora de Livros
         </q-toolbar-title>
 
-        <q-btn dense round size="lg" icon="o_person" color="white" text-color="black" />
+        <q-btn
+          dense
+          round
+          size="lg"
+          icon="o_person"
+          color="white"
+          text-color="black"
+          @click="openUserModal()"
+        >
+          <q-menu class="border-radius">
+            <UserModalComponent />
+          </q-menu>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
@@ -47,7 +59,7 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container >
+    <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
@@ -61,6 +73,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import UserModalComponent from 'src/components/UserModalComponent.vue'
 
 const linksList = [
   {
@@ -99,5 +112,11 @@ const leftDrawerOpen = ref(false)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+const showModal = ref(false)
+
+function openUserModal() {
+  showModal.value = !showModal.value
 }
 </script>
