@@ -34,14 +34,26 @@ export default {
     actions: 'Ações',
     searchPlaceholder: 'Pesquisar...',
   },
-  status: {
-    rented: 'Alugado',
-    inTime: 'Devolvido no prazo',
-    late: 'Atrasado',
-    deliveredWithDelay: 'Devolvido com atraso',
-  },
-  roles: {
-    user: 'Leitor',
-    editor: 'Editor',
+  pages: {
+    users: {
+      searchPlaceholder: 'Buscar usuários',
+      title: 'Usuários',
+    },
+    publishers: {
+      searchPlaceholder: 'Buscar editoras',
+      title: 'Editoras',
+    },
+    books: {
+      searchPlaceholder: 'Buscar livros',
+      title: 'Livros',
+    },
+    renters: {
+      searchPlaceholder: 'Buscar locatários',
+      title: 'Locatários',
+    },
+    rents: {
+      searchPlaceholder: 'Buscar aluguéis',
+      title: 'Aluguéis',
+    },
   },
 }

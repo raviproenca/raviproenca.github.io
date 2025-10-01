@@ -34,14 +34,27 @@ export default {
     actions: 'Actions',
     searchPlaceholder: 'Search...',
   },
-  status: {
-    rented: 'Rented',
-    inTime: 'Returned on time',
-    late: 'Late',
-    deliveredWithDelay: 'Returned with delay',
+  pages: {
+    users: {
+      searchPlaceholder: 'Search users',
+      title: 'Users',
+    },
+    publishers: {
+      searchPlaceholder: 'Search publishers',
+      title: 'Publishers',
+    },
+    books: {
+      searchPlaceholder: 'Search books',
+      title: 'Books',
+    },
+    renters: {
+      searchPlaceholder: 'Search renters',
+      title: 'Renters',
+    },
+    rents: {
+      searchPlaceholder: 'Search rents',
+      title: 'Rents',
+    },
   },
-  roles: {
-    user: 'Reader',
-    editor: 'Editor',
-  },
+
 }
