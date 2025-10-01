@@ -14,6 +14,7 @@ export default {
     name: 'Nome',
     email: 'Email',
     role: 'Permissão',
+    password: 'Senha',
     telephone: 'Telefone',
     site: 'Site',
     author: 'Autor',

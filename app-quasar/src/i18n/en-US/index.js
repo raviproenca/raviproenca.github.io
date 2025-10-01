@@ -13,6 +13,7 @@ export default {
   common: {
     name: 'Name',
     email: 'Email',
+    password: 'Password',
     role: 'Role',
     telephone: 'Telephone',
     site: 'Website',
