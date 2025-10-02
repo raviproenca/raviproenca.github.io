@@ -13,7 +13,7 @@
               ]"
               style="opacity: 60%"
             >
-              Livros mais alugados
+              {{ t('dashboard.moreRented') }}
             </p>
 
             <div class="row justify-center items-center q-gutter-x-lg q-mt-sm">
@@ -57,7 +57,7 @@
                 <q-icon name="o_library_add_check" size="sm" color="white" />
                 <p class="text-white text-weight-bold">{{ rentedBooks }}</p>
               </div>
-              <p class="text-white text-weight-bold">Livros alugados no último mês</p>
+              <p class="text-white text-weight-bold">{{ t('dashboard.lastMonth') }}</p>
             </q-card-section>
           </q-card>
 
@@ -67,7 +67,7 @@
                 <q-icon name="schedule" size="sm" color="white" />
                 <p class="text-white text-weight-bold">{{ rentedLateBooks }}</p>
               </div>
-              <p class="text-white text-weight-bold">Livros atrasados no momento</p>
+              <p class="text-white text-weight-bold">{{ t('dashboard.late') }}</p>
             </q-card-section>
           </q-card>
         </div>
@@ -86,12 +86,12 @@
               option-label="name"
               map-options
               emit-value
-              label="Selecione um locatário"
+              :label="t('dashboard.selectRenter')"
               clearable
             />
             <div class="q-mt-md col-grow">
               <div style="position: relative; height: 98%; width: 100%">
-                <q-inner-loading :showing="isLoading" label="Calculando dados do gráfico..." />
+                <q-inner-loading :showing="isLoading" :label="t('dashboard.loading')" />
 
                 <div v-if="error" class="fullscreen text-center flex-center">
                   <div class="text-negative">
@@ -111,7 +111,7 @@
         <q-card class="dashboard-cards border-radius">
           <q-card-section style="padding: 8px 16px">
             <div style="position: relative; height: 350px">
-              <q-inner-loading :showing="isLoading" label="Calculando dados do gráfico..." />
+              <q-inner-loading :showing="isLoading" :label="t('dashboard.loading')" />
 
               <div v-if="error" class="fullscreen text-center flex-flex-center">
                 <div class="text-negative">
@@ -141,6 +141,9 @@ import { storeToRefs } from 'pinia'
 import { useQuasar } from 'quasar'
 import { useDashboardsStore } from 'src/stores/dashboard-store'
 import { Chart, registerables } from 'chart.js'
+import { useI18n } from 'vue-i18n'
+
+const { t, tm } = useI18n()
 
 Chart.register(...registerables)
 
@@ -200,10 +203,10 @@ const chartDoughnutData = computed(() => {
   const totalRents = renterData?.rentsQuantity
 
   return {
-    labels: ['Livros alugados no momento', 'Total de aluguéis realizados'],
+    labels: [t('dashboard.atMoment'), t('dashboard.totalRents')],
     datasets: [
       {
-        label: 'Status dos Livros',
+        label: t('dashboard.status'),
         data: [activeRents, totalRents],
         backgroundColor: [limeGreen, purple],
         borderColor: [limeGreen, purple],
@@ -215,16 +218,17 @@ const chartDoughnutData = computed(() => {
 
 const chartBarData = computed(() => {
   return {
-    labels: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'],
+    labels: tm('dashboard.months'),
+
     datasets: [
       {
-        label: 'Entregue no prazo',
+        label: t('dashboard.in_time'),
         data: [10, 15, 25, 35, 50],
         backgroundColor: '#00C9FF',
         borderRadius: 6,
       },
       {
-        label: 'Entregue com atraso',
+        label: t('dashboard.with_delay'),
         data: [5, 10, 15, 20, 35],
         backgroundColor: '#FF7F00',
         borderRadius: 6,
@@ -301,7 +305,7 @@ const chartBarOptions = computed(() => ({
     },
     subtitle: {
       display: true,
-      text: `Total no prazo (últimos 5 meses): 60 | Total com atraso: 25`,
+      text: t('dashboard.total'),
       color: '#fff',
       font: {
         size: 12,

@@ -171,7 +171,7 @@
 
     <div v-else-if="mode === 'delete'">
       <q-card-section>
-        <div class="text-h5 text-white">Confirma exclusão?</div>
+        <div class="text-h5 text-white">{{ t('common.exclusion') }}</div>
         <div>{{ row?.name || row?.id }}</div>
       </q-card-section>
 
@@ -195,7 +195,7 @@
 
     <div v-else-if="mode === 'devolution'">
       <q-card-section>
-        <div class="text-h5 text-white">Você confirma a devolução deste livro?</div>
+        <div class="text-h5 text-white">{{ t('common.devolution') }}</div>
         <div>{{ row?.name || row.book?.name || row?.id }}</div>
       </q-card-section>
 
@@ -245,8 +245,8 @@ const props = defineProps({
 })
 
 const roleOptions = [
-  { value: 'USER', label: 'Leitor' },
-  { value: 'ADMIN', label: 'Editor' },
+  { value: 'USER', label: t('common.roles.reader') },
+  { value: 'ADMIN', label: t('common.roles.editor') },
 ]
 
 const publishersStore = usePublishersStore()

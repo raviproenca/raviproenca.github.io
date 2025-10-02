@@ -23,7 +23,7 @@ export default {
     totalQuantity: 'Existencias',
     totalInUse: 'Alquilados',
     address: 'Dirección',
-    cpf: 'CPF', // Mantido como CPF por ser um documento específico
+    cpf: 'CPF',
     book: 'Libro',
     renter: 'Arrendatario',
     rentDate: 'Fecha de Alquiler',
@@ -33,6 +33,8 @@ export default {
     actions: 'Acciones',
     searchPlaceholder: 'Buscar...',
     enter: 'Ingresar',
+    exclusion: '¿Confirmar la exclusión?',
+    devolution: '¿Confirma la devolución de este libro?',
     roles: {
       reader: 'Lector',
       editor: 'Editor',
@@ -65,5 +67,19 @@ export default {
       searchPlaceholder: 'Buscar alquileres',
       title: 'Alquileres',
     },
+  },
+  dashboard: {
+    moreRented: 'Libros más alquilados',
+    lastMonth: 'Libros alquilados en el último mes',
+    late: 'Libros que están atrasados actualmente',
+    selectRenter: 'Seleccionar un inquilino',
+    loading: 'Cálculo de datos a partir del gráfico...',
+    atMoment: 'Libros actualmente alquilados',
+    totalRents: 'Total de alquileres realizados',
+    status: 'Estado del libro',
+    months: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre'],
+    in_time: 'Entregado a tiempo',
+    with_delay: 'Entregado tarde',
+    total: 'Total a tiempo (últimos 5 meses): 60 | Total retrasado: 25',
   },
 }

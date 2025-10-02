@@ -18,21 +18,29 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const booksth = computed(() => [
-  { name: 'name', label: t('common.name'), field: 'name', align: 'center' },
-  { name: 'author', label: t('common.author'), field: 'author', align: 'center' },
+  { name: 'name', label: t('common.name'), field: 'name', align: 'center', sortable: true },
+  { name: 'author', label: t('common.author'), field: 'author', align: 'center', sortable: true },
   {
     name: 'publisher',
     label: t('common.publisher'),
     field: 'publisher',
     apiKey: 'publisherId',
     align: 'center',
+    sortable: true,
   },
-  { name: 'launchDate', label: t('common.launchDate'), field: 'launchDate', align: 'center' },
+  {
+    name: 'launchDate',
+    label: t('common.launchDate'),
+    field: 'launchDate',
+    align: 'center',
+    sortable: true,
+  },
   {
     name: 'totalQuantity',
     label: t('common.totalQuantity'),
     field: 'totalQuantity',
     align: 'center',
+    sortable: true,
   },
   {
     name: 'totalInUse',
@@ -40,6 +48,7 @@ const booksth = computed(() => [
     field: 'totalInUse',
     form: false,
     align: 'center',
+    sortable: true,
   },
   { name: 'actions', label: t('common.actions'), align: 'center' },
 ])

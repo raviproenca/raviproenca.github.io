@@ -22,7 +22,7 @@
         {{ userData.role === 'ADMIN' ? 'Editor' : 'Leitor' }}
       </p>
 
-      <div class="row justify-center q-gutter-x-md">
+      <div class="row justify-center q-gutter-x-sm">
         <q-btn dense flat @click="changeLang('en-US')">
           <img src="../assets/us.png" alt="us" />
         </q-btn>

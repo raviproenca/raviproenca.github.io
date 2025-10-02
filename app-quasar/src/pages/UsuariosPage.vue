@@ -18,10 +18,10 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const usersth = computed(() => [
-  { name: 'name', label: t('common.name'), field: 'name', align: 'center' },
-  { name: 'email', label: t('common.email'), field: 'email', align: 'center' },
+  { name: 'name', label: t('common.name'), field: 'name', align: 'center', sortable: true },
+  { name: 'email', label: t('common.email'), field: 'email', align: 'center', sortable: true },
   { name: 'password', label: t('common.password'), field: 'password' },
-  { name: 'role', label: t('common.role'), field: 'role', align: 'center' },
+  { name: 'role', label: t('common.role'), field: 'role', align: 'center', sortable: true },
   { name: 'actions', label: t('common.actions'), align: 'center' },
 ])
 

@@ -18,11 +18,17 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const rentersth = computed(() => [
-  { name: 'name', label: t('common.name'), field: 'name', align: 'center' },
-  { name: 'email', label: t('common.email'), field: 'email', align: 'center' },
+  { name: 'name', label: t('common.name'), field: 'name', align: 'center', sortable: true },
+  { name: 'email', label: t('common.email'), field: 'email', align: 'center', sortable: true },
   { name: 'telephone', label: t('common.telephone'), field: 'telephone', align: 'center' },
-  { name: 'address', label: t('common.address'), field: 'address', align: 'center' },
-  { name: 'cpf', label: t('common.cpf'), field: 'cpf', align: 'center' },
+  {
+    name: 'address',
+    label: t('common.address'),
+    field: 'address',
+    align: 'center',
+    sortable: true,
+  },
+  { name: 'cpf', label: t('common.cpf'), field: 'cpf', align: 'center', sortable: true },
   { name: 'actions', label: t('common.actions'), align: 'center' },
 ])
 

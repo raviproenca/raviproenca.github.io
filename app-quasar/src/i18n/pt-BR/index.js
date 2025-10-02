@@ -33,6 +33,8 @@ export default {
     actions: 'Ações',
     searchPlaceholder: 'Pesquisar...',
     enter: 'Digitar',
+    exclusion: 'Confirma exclusão?',
+    devolution: 'Você confirma a devolução deste livro?',
     roles: {
       reader: 'Leitor',
       editor: 'Editor',
@@ -65,5 +67,19 @@ export default {
       searchPlaceholder: 'Buscar aluguéis',
       title: 'Aluguéis',
     },
+  },
+  dashboard: {
+    moreRented: 'Livros mais alugados',
+    lastMonth: 'Livros alugados no último mês',
+    late: 'Livros atrasados no momento',
+    selectRenter: 'Selecione um locatário',
+    loading: 'Calculando dados do gráfico...',
+    atMoment: 'Livros alugados no momento',
+    totalRents: 'Total de aluguéis realizados',
+    status: 'Status dos Livros',
+    months: ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro'],
+    in_time: 'Entregue no prazo',
+    with_delay: 'Entregue com atraso',
+    total: 'Total no prazo (últimos 5 meses): 60 | Total com atraso: 25',
   },
 }

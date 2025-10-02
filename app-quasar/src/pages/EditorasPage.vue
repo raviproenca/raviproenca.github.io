@@ -18,10 +18,10 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const publishersth = computed(() => [
-  { name: 'name', label: t('common.name'), field: 'name', align: 'center' },
-  { name: 'email', label: t('common.email'), field: 'email', align: 'center' },
+  { name: 'name', label: t('common.name'), field: 'name', align: 'center', sortable: true },
+  { name: 'email', label: t('common.email'), field: 'email', align: 'center', sortable: true },
   { name: 'telephone', label: t('common.telephone'), field: 'telephone', align: 'center' },
-  { name: 'site', label: t('common.site'), field: 'site', align: 'center' },
+  { name: 'site', label: t('common.site'), field: 'site', align: 'center', sortable: true },
   { name: 'actions', label: t('common.actions'), align: 'center' },
 ])
 

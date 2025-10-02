@@ -33,6 +33,8 @@ export default {
     actions: 'Actions',
     searchPlaceholder: 'Search...',
     enter: 'Enter',
+    exclusion: 'Confirm exclusion?',
+    devolution: 'Do you confirm the devolution of this book?',
     roles: {
       reader: 'Reader',
       editor: 'Editor',
@@ -65,5 +67,19 @@ export default {
       searchPlaceholder: 'Search rents',
       title: 'Rents',
     },
+  },
+  dashboard: {
+    moreRented: 'Most rented books',
+    lastMonth: "Last month's rented books",
+    late: 'Currently Overdue Books',
+    selectRenter: 'Select a renter',
+    loading: 'Calculating graphics data...',
+    atMoment: 'Rented books at the moment',
+    totalRents: 'Total rentals',
+    status: 'Books status',
+    months: ['May', 'June', 'July', 'August', 'September'],
+    in_time: 'Delivered on time',
+    with_delay: 'Delivered late',
+    total: 'Total on time (last 5 months): 60 | Total late: 25',
   },
 }

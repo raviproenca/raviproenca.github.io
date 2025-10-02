@@ -18,23 +18,38 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const rentsth = computed(() => [
-  { name: 'book', label: t('common.book'), field: 'book', align: 'center' },
-  { name: 'renter', label: t('common.renter'), field: 'renter', align: 'center' },
+  { name: 'book', label: t('common.book'), field: 'book', align: 'center', sortable: true },
+  { name: 'renter', label: t('common.renter'), field: 'renter', align: 'center', sortable: true },
   {
     name: 'rentDate',
     label: t('common.rentDate'),
     field: 'rentDate',
     align: 'center',
     form: false,
+    sortable: true,
   },
-  { name: 'deadLine', label: t('common.deadLine'), field: 'deadLine', align: 'center' },
+  {
+    name: 'deadLine',
+    label: t('common.deadLine'),
+    field: 'deadLine',
+    align: 'center',
+    sortable: true,
+  },
   {
     name: 'devolutionDate',
     label: t('common.devolutionDate'),
     field: 'devolutionDate',
     align: 'center',
+    sortable: true,
   },
-  { name: 'status', label: 'Status', field: 'status', align: 'center', form: false },
+  {
+    name: 'status',
+    label: 'Status',
+    field: 'status',
+    align: 'center',
+    form: false,
+    sortable: true,
+  },
   { name: 'actions', label: t('common.actions'), align: 'center' },
 ])
 

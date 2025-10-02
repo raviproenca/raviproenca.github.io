@@ -35,6 +35,7 @@
         :rows-per-page-options="[5, 10, 20]"
         v-model:pagination="pagination"
         hide-pagination
+        binary-state-sort="true"
       >
         <template v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-6">
