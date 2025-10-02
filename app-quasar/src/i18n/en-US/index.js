@@ -29,11 +29,20 @@ export default {
     rentDate: 'Rent Date',
     deadLine: 'Deadline',
     devolutionDate: 'Devolution Date',
-    status: 'Status',
-    notAvailable: 'N/A',
     notDelivered: 'Not Delivered',
     actions: 'Actions',
     searchPlaceholder: 'Search...',
+    enter: 'Enter',
+    roles: {
+      reader: 'Reader',
+      editor: 'Editor',
+    },
+    status: {
+      rented: 'Rented',
+      in_time: 'Delivered in time',
+      late: 'Late',
+      delivered_with_delay: 'Delivered with delay',
+    },
   },
   pages: {
     users: {
@@ -57,5 +66,4 @@ export default {
       title: 'Rents',
     },
   },
-
 }

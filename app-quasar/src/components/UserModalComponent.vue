@@ -29,10 +29,13 @@
         <q-btn dense flat @click="changeLang('pt-BR')">
           <img src="../assets/br.png" alt="br" />
         </q-btn>
+        <q-btn dense flat @click="changeLang('es-ES')">
+          <img src="../assets/es.png" alt="es" />
+        </q-btn>
       </div>
 
       <q-btn
-        :to="'/login'"
+        @click="logout()"
         color="primary"
         dense
         rounded
@@ -48,6 +51,7 @@ import { ref, computed } from 'vue'
 import { useUsersStore } from 'src/stores/users-store'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const userString = localStorage.getItem('user')
 const loginUser = ref(userString ? JSON.parse(userString) : null)
@@ -63,5 +67,12 @@ const { locale } = useI18n({ useScope: 'global' })
 
 function changeLang(lang) {
   locale.value = lang
+}
+
+const router = useRouter()
+
+function logout() {
+  localStorage.removeItem('token')
+  router.push('/login')
 }
 </script>

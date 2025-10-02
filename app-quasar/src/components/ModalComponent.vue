@@ -119,7 +119,7 @@
               dark
               color="amber-1"
               v-model.number="localRow[column.field]"
-              :placeholder="`Digitar ${column.label.toLowerCase()}`"
+              :placeholder="`${t('common.enter')} ${column.label.toLowerCase()}`"
               :rules="getRulesFor(column)"
               lazy-rules
               debounce="500"
@@ -131,7 +131,7 @@
               dark
               color="amber-1"
               v-model="localRow[column.field]"
-              :placeholder="`Digitar ${column.label.toLowerCase()}`"
+              :placeholder="`${t('common.enter')} ${column.label.toLowerCase()}`"
               :rules="getRulesFor(column)"
               lazy-rules
               debounce="500"
@@ -228,8 +228,10 @@ import { usePublishersStore } from 'src/stores/publishers-store'
 import { useBooksStore } from 'src/stores/books-store'
 import { useRentersStore } from 'src/stores/renters-store'
 import { useRentsStore } from 'src/stores/rents-store'
+import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(['close-modal'])
+const { t } = useI18n()
 
 const myForm = ref(null)
 const localRow = ref({})

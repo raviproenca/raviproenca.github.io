@@ -15,37 +15,37 @@
             >
               Livros mais alugados
             </p>
-            <div class="row items-center justify-center q-gutter-x-sm">
-              <q-icon
-                name="emoji_events"
-                class="primeiro-mais-alugado"
-                :size="$q.screen.lt.md ? 'md' : 'xl'"
-              ></q-icon>
-              <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
-                {{ firstBook?.name || 'Carregando...' }}
-              </p>
-            </div>
 
-            <div class="row items-center justify-center q-gutter-x-sm">
-              <q-icon
-                name="workspace_premium"
-                class="segundo-mais-alugado"
-                :size="$q.screen.lt.md ? 'sm' : 'lg'"
-              ></q-icon>
-              <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
-                {{ secondBook?.name || 'Carregando...' }}
-              </p>
-            </div>
+            <div class="row justify-center items-center q-gutter-x-lg q-mt-sm">
+              <div class="column items-center q-gutter-y-md">
+                <q-icon
+                  name="emoji_events"
+                  class="primeiro-mais-alugado"
+                  :size="$q.screen.lt.md ? 'md' : 'xl'"
+                ></q-icon>
+                <q-icon
+                  name="workspace_premium"
+                  class="segundo-mais-alugado"
+                  :size="$q.screen.lt.md ? 'sm' : 'lg'"
+                ></q-icon>
+                <q-icon
+                  name="military_tech"
+                  class="terceiro-mais-alugado"
+                  :size="$q.screen.lt.md ? 'sm' : 'lg'"
+                ></q-icon>
+              </div>
 
-            <div class="row items-center justify-center q-gutter-x-sm">
-              <q-icon
-                name="military_tech"
-                class="terceiro-mais-alugado"
-                :size="$q.screen.lt.md ? 'sm' : 'md'"
-              ></q-icon>
-              <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
-                {{ thirdBook?.name || 'Carregando...' }}
-              </p>
+              <div class="column q-gutter-y-sm">
+                <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
+                  {{ firstBook?.name || 'Carregando...' }}
+                </p>
+                <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
+                  {{ secondBook?.name || 'Carregando...' }}
+                </p>
+                <p :class="['text-white', 'text-weight-bolder', pSizes(), 'book-title-align']">
+                  {{ thirdBook?.name || 'Carregando...' }}
+                </p>
+              </div>
             </div>
           </q-card-section>
         </q-card>

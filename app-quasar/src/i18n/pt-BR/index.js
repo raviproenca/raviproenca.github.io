@@ -29,11 +29,20 @@ export default {
     rentDate: 'Data de Locação',
     deadLine: 'Data de Entrega',
     devolutionDate: 'Data de Devolução',
-    status: 'Status',
-    notAvailable: 'N/A',
     notDelivered: 'Não Entregue',
     actions: 'Ações',
     searchPlaceholder: 'Pesquisar...',
+    enter: 'Digitar',
+    roles: {
+      reader: 'Leitor',
+      editor: 'Editor',
+    },
+    status: {
+      rented: 'Alugado',
+      in_time: 'Devolvido no prazo',
+      late: 'Atrasado',
+      delivered_with_delay: 'Devolvido com atraso',
+    },
   },
   pages: {
     users: {

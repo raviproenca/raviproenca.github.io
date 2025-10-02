@@ -41,131 +41,33 @@
             <q-card class="q-mb-md shadow-4 border-radius">
               <q-card-section>
                 <q-list dense>
-                  <q-item v-if="props.row.name">
-                    <q-item-section>
-                      <q-item-label caption>Nome</q-item-label>
-                      <q-item-label>{{ props.row.name }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.email">
-                    <q-item-section>
-                      <q-item-label caption>Email</q-item-label>
-                      <q-item-label>{{ props.row.email }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.role">
-                    <q-item-section>
-                      <q-item-label caption>Permissão</q-item-label>
-                      <q-item-label>{{
-                        props.row.role === 'USER' ? 'Leitor' : 'Editor'
-                      }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.telephone">
-                    <q-item-section>
-                      <q-item-label caption>Telefone</q-item-label>
-                      <q-item-label>{{ props.row.telephone }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.site || props.row.site === ''">
-                    <q-item-section>
-                      <q-item-label caption>Site</q-item-label>
-                      <q-item-label>{{ props.row.site || 'N/A' }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.author">
-                    <q-item-section>
-                      <q-item-label caption>Autor</q-item-label>
-                      <q-item-label>{{ props.row.author }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.publisher">
-                    <q-item-section>
-                      <q-item-label caption>Editora</q-item-label>
-                      <q-item-label>{{ props.row.publisher.name }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
                   <q-item v-if="props.row.launchDate">
                     <q-item-section>
                       <q-item-label caption>Data de Lançamento</q-item-label>
-                      <q-item-label>{{ props.row.launchDate }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.totalQuantity">
-                    <q-item-section>
-                      <q-item-label caption>Estoque</q-item-label>
-                      <q-item-label>{{ props.row.totalQuantity }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.totalInUse >= 0">
-                    <q-item-section>
-                      <q-item-label caption>Alugados</q-item-label>
-                      <q-item-label>{{ props.row.totalInUse }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.address">
-                    <q-item-section>
-                      <q-item-label caption>Endereço</q-item-label>
-                      <q-item-label>{{ props.row.address }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.cpf">
-                    <q-item-section>
-                      <q-item-label caption>CPF</q-item-label>
-                      <q-item-label>{{ props.row.cpf }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.book">
-                    <q-item-section>
-                      <q-item-label caption>Livro</q-item-label>
-                      <q-item-label>{{ props.row.book.name }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.renter">
-                    <q-item-section>
-                      <q-item-label caption>Locatário</q-item-label>
-                      <q-item-label>{{ props.row.renter.name }}</q-item-label>
+                      <q-item-label>{{ formatDateToBR(props.row.launchDate) }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.rentDate">
                     <q-item-section>
                       <q-item-label caption>Data de Locação</q-item-label>
-                      <q-item-label>{{ props.row.rentDate }}</q-item-label>
+                      <q-item-label>{{ formatDateToBR(props.row.rentDate) }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.deadLine">
                     <q-item-section>
                       <q-item-label caption>Data de Entrega</q-item-label>
-                      <q-item-label>{{ props.row.deadLine || 'N/A' }}</q-item-label>
+                      <q-item-label>{{ formatDateToBR(props.row.deadLine) || 'N/A' }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.rentDate">
                     <q-item-section>
                       <q-item-label caption>Data de Devolução</q-item-label>
-                      <q-item-label>{{ props.row.devolutionDate || 'Não Entregue' }}</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item v-if="props.row.status">
-                    <q-item-section>
-                      <q-item-label caption>Status</q-item-label>
-                      <q-item-label>{{ translateStatus(props.row.status) }}</q-item-label>
+                      <q-item-label>{{
+                        formatDateToBR(props.row.devolutionDate) || t('common.notDelivered')
+                      }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -237,7 +139,7 @@
 
         <template v-slot:body-cell-role="props">
           <q-td :props="props">
-            {{ props.row.role === 'USER' ? 'Leitor' : 'Editor' }}
+            {{ props.row.role === 'USER' ? t('common.roles.reader') : t('common.roles.editor') }}
           </q-td>
         </template>
 
@@ -259,6 +161,30 @@
           </q-td>
         </template>
 
+        <template v-slot:body-cell-launchDate="props">
+          <q-td :props="props">
+            {{ formatDateToBR(props.row.launchDate) }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-rentDate="props">
+          <q-td :props="props">
+            {{ formatDateToBR(props.row.rentDate) }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-deadLine="props">
+          <q-td :props="props">
+            {{ formatDateToBR(props.row.deadLine) || 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-devolutionDate="props">
+          <q-td :props="props">
+            {{ formatDateToBR(props.row.devolutionDate) || t('common.notDelivered') }}
+          </q-td>
+        </template>
+
         <template v-slot:body-cell-status="props">
           <q-td :props="props">
             {{ translateStatus(props.row.status) }}
@@ -271,14 +197,8 @@
           </q-td>
         </template>
 
-        <template v-slot:body-cell-devolutionDate="props">
-          <q-td :props="props">
-            {{ props.row.devolutionDate ? props.row.devolutionDate : 'N/A' }}
-          </q-td>
-        </template>
-
         <template v-slot:bottom>
-          <div class="row justify-center " style="width: 100%;">
+          <div class="row justify-center" style="width: 100%">
             <q-pagination
               v-model="pagination.page"
               color="teal-10"
@@ -317,6 +237,19 @@
 <script setup>
 import { ref, computed } from 'vue'
 import ModalComponent from './ModalComponent.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+function formatDateToBR(dateString) {
+  if (!dateString) {
+    return null
+  }
+  const parts = dateString.split('-')
+  if (parts.length !== 3) return dateString
+  const [year, month, day] = parts
+  return `${day}/${month}/${year}`
+}
 
 const props = defineProps({
   rows: {
@@ -357,24 +290,24 @@ const filteredRows = computed(() => {
       row.site,
       row.author,
       row.publisher?.name,
-      row.launchDate,
+      formatDateToBR(row.launchDate),
       row.totalQuantity,
       row.totalInUse,
       row.address,
       row.cpf,
       row.book?.name,
       row.renter?.name,
-      row.rentDate,
-      row.deadLine,
-      row.devolutionDate,
+      formatDateToBR(row.rentDate),
+      formatDateToBR(row.deadLine),
+      formatDateToBR(row.devolutionDate),
       row.status === 'RENTED'
-        ? 'Alugado'
+        ? t('common.status.rented')
         : row.status === 'IN_TIME'
-          ? 'Devolvido no prazo'
+          ? t('common.status.in_time')
           : row.status === 'LATE'
-            ? 'Atrasado'
+            ? t('common.status.late')
             : row.status === 'DELIVERED_WITH_DELAY'
-              ? 'Devolvido com atraso'
+              ? t('common.status.delivered_with_delay')
               : '',
     ]
       .join(' ')
@@ -433,13 +366,13 @@ function closeModal() {
 function translateStatus(status) {
   switch (status) {
     case 'RENTED':
-      return 'Alugado'
+      return t('common.status.rented')
     case 'IN_TIME':
-      return 'Devolvido no prazo'
+      return t('common.status.in_time')
     case 'LATE':
-      return 'Atrasado'
+      return t('common.status.late')
     case 'DELIVERED_WITH_DELAY':
-      return 'Devolvido com atraso'
+      return t('common.status.delivered_with_delay')
     default:
       ''
   }
