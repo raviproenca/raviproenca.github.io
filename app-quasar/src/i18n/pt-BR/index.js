@@ -3,7 +3,7 @@ export default {
     title: 'Locadora de Livros',
   },
   menu: {
-    dashboard: 'Dashboard',
+    dashboard: 'Painel',
     users: 'Usuários',
     publishers: 'Editoras',
     books: 'Livros',

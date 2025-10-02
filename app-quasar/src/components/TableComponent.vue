@@ -41,33 +41,153 @@
             <q-card class="q-mb-md shadow-4 border-radius">
               <q-card-section>
                 <q-list dense>
+                  <q-item v-if="props.row.name">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.name') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.name }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.email">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.email') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.email }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.role">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.role') }}</q-item-label>
+
+                      <q-item-label>{{
+                        props.row.role === 'USER'
+                          ? t('common.roles.reader')
+                          : t('common.roles.editor')
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.telephone">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.telephone') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.telephone }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.site || props.row.site === ''">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.site') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.site || 'N/A' }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.author">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.author') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.author }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.publisher">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.publisher') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.publisher.name }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
                   <q-item v-if="props.row.launchDate">
                     <q-item-section>
-                      <q-item-label caption>Data de Lançamento</q-item-label>
+                      <q-item-label caption>{{ t('common.launchDate') }}</q-item-label>
+
                       <q-item-label>{{ formatDateToBR(props.row.launchDate) }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.totalQuantity">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.totalQuantity') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.totalQuantity }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.totalInUse >= 0">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.totalInUse') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.totalInUse }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.address">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.address') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.address }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.cpf">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.cpf') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.cpf }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.book">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.book') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.book.name }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.renter">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.renter') }}</q-item-label>
+
+                      <q-item-label>{{ props.row.renter.name }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.rentDate">
                     <q-item-section>
-                      <q-item-label caption>Data de Locação</q-item-label>
+                      <q-item-label caption>{{ t('common.rentDate') }}</q-item-label>
+
                       <q-item-label>{{ formatDateToBR(props.row.rentDate) }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.deadLine">
                     <q-item-section>
-                      <q-item-label caption>Data de Entrega</q-item-label>
-                      <q-item-label>{{ formatDateToBR(props.row.deadLine) || 'N/A' }}</q-item-label>
+                      <q-item-label caption>{{ t('common.deadLine') }}</q-item-label>
+
+                      <q-item-label>{{ formatDateToBR(props.row.deadLine) }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.rentDate">
                     <q-item-section>
-                      <q-item-label caption>Data de Devolução</q-item-label>
+                      <q-item-label caption>{{ t('common.rentDate') }}</q-item-label>
+
                       <q-item-label>{{
                         formatDateToBR(props.row.devolutionDate) || t('common.notDelivered')
                       }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.status">
+                    <q-item-section>
+                      <q-item-label caption>Status</q-item-label>
+
+                      <q-item-label>{{ translateStatus(props.row.status) }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
