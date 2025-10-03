@@ -35,6 +35,12 @@ export default {
     enter: 'Enter',
     exclusion: 'Confirm exclusion?',
     devolution: 'Do you confirm the devolution of this book?',
+    close: 'Close',
+    cancel: 'Cancel',
+    register: 'Register',
+    update: 'Update',
+    exclude: 'Delete',
+    confirm: 'Confirm',
     roles: {
       reader: 'Reader',
       editor: 'Editor',
@@ -67,6 +73,12 @@ export default {
       searchPlaceholder: 'Search rents',
       title: 'Rents',
     },
+    login: {
+      forgotPassword: 'I forgot my password',
+      typeEmail: 'Enter your email',
+      typePassword: 'Enter your password',
+      enter: 'Enter',
+    },
   },
   dashboard: {
     moreRented: 'Most rented books',
@@ -81,5 +93,38 @@ export default {
     in_time: 'Delivered on time',
     with_delay: 'Delivered late',
     total: 'Total on time (last 5 months): 60 | Total late: 25',
+  },
+  rules: {
+    required: 'This field is required',
+    name: {
+      min: 'The name must be at least 3 characters long',
+      noNumbers: 'The name cannot contain numbers',
+      unique: 'This name is already in use.',
+    },
+    email: {
+      invalid: 'The email format is invalid',
+      unique: 'This email is already in use.',
+    },
+    password: {
+      min: 'The password must be at least 8 digits long',
+    },
+    telephone: {
+      invalid: 'Please, enter a valid telephone number',
+    },
+    address: {
+      min: 'Please, enter a valid address',
+    },
+    cpf: {
+      invalid: 'Please, enter a valid CPF',
+    },
+    quantity: {
+      min: 'The stock must be a positive number',
+    },
+    date: {
+      invalidFormat: 'The date format must be DD-MM-AAAA.',
+      invalid: 'Invalid date.',
+      pastDeadline: 'The devolution date cannot be in the past.',
+      futureLaunch: 'The launch date cannot be in the future.',
+    },
   },
 }

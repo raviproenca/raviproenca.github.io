@@ -35,6 +35,12 @@ export default {
     enter: 'Digitar',
     exclusion: 'Confirma exclusão?',
     devolution: 'Você confirma a devolução deste livro?',
+    close: 'Fechar',
+    cancel: 'Cancelar',
+    register: 'Cadastrar',
+    update: 'Atualizar',
+    exclude: 'Excluir',
+    confirm: 'Confirmar',
     roles: {
       reader: 'Leitor',
       editor: 'Editor',
@@ -67,6 +73,12 @@ export default {
       searchPlaceholder: 'Buscar aluguéis',
       title: 'Aluguéis',
     },
+    login: {
+      forgotPassword: 'Esqueci minha senha',
+      typeEmail: 'Digite seu email',
+      typePassword: 'Digite sua senha',
+      enter: 'Entrar',
+    },
   },
   dashboard: {
     moreRented: 'Livros mais alugados',
@@ -81,5 +93,38 @@ export default {
     in_time: 'Entregue no prazo',
     with_delay: 'Entregue com atraso',
     total: 'Total no prazo (últimos 5 meses): 60 | Total com atraso: 25',
+  },
+  rules: {
+    required: 'Este campo é obrigatório',
+    name: {
+      min: 'O nome precisa ter no mínimo 3 caracteres',
+      noNumbers: 'O nome não pode conter números',
+      unique: 'Este nome já está em uso.',
+    },
+    email: {
+      invalid: 'O formato do email é inválido',
+      unique: 'Este email já está em uso.',
+    },
+    password: {
+      min: 'A senha deve possuir no mínimo 8 dígitos',
+    },
+    telephone: {
+      invalid: 'Por favor, insira um telefone válido',
+    },
+    address: {
+      min: 'Por favor, insira um endereço válido',
+    },
+    cpf: {
+      invalid: 'Por favor, insira um CPF válido',
+    },
+    quantity: {
+      min: 'O estoque deve ser um número positivo',
+    },
+    date: {
+      invalidFormat: 'O formato da data deve ser DD-MM-AAAA.',
+      invalid: 'Data inválida.',
+      pastDeadline: 'A data de devolução não pode ser no passado.',
+      futureLaunch: 'A data de lançamento não pode ser no futuro.',
+    },
   },
 }
