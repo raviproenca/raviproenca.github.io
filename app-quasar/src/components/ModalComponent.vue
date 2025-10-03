@@ -490,7 +490,6 @@ function isUnique(value, field, items, mode, currentRow) {
 }
 
 const nameRules = computed(() => [
-  (val) => (val && val.length > 0) || 'O campo nome é obrigatório',
   (val) => val.length >= 3 || 'O nome precisa ter no mínimo 3 caracteres',
   (val) => !/\d/.test(val) || 'O nome não pode conter números',
   (val) =>
@@ -499,12 +498,38 @@ const nameRules = computed(() => [
 ])
 
 const emailRules = computed(() => [
-  (val) => (val && val.length > 0) || 'O campo email é obrigatório',
   (val) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(val || '').trim()) || 'O formato do email é inválido',
   (val) =>
     isUnique(val, 'email', props.existingItems, props.mode, props.row) ||
     'Este email já está em uso.',
+])
+
+const passwordRules = computed(() => [
+  (val) => val.length >= 8 || 'A senha deve possuir no mínimo 8 dígitos',
+])
+
+const telephoneRules = computed(() => [
+  (val) => val.length >= 11 || 'Por favor, insira um telefone válido',
+  (val) => val.length <= 16 || 'Por favor, insira um telefone válido',
+  (val) => /^\d+$/.test(val) || 'Por favor, insira um telefone válido',
+])
+
+const authorRules = computed(() => [
+  (val) => val.length >= 3 || 'O nome precisa ter no mínimo 3 caracteres',
+  (val) => !/\d/.test(val) || 'O nome não pode conter números',
+])
+
+const totalQuantityRules = computed(() => [
+  (val) => val.length > 0 || 'O estoque deve ser um número positivo',
+])
+
+const addressRules = computed(() => [
+  (val) => val.length > 3 || 'Por favor, insira um endereço válido',
+])
+
+const cpfRules = computed(() => [
+  
 ])
 
 function getRulesFor(column) {
@@ -513,9 +538,8 @@ function getRulesFor(column) {
       return nameRules.value
     case 'email':
       return emailRules.value
-    // case 'password':
-    //   return passwordRules;
-    // Para todos os outros, podemos exigir que sejam preenchidos
+    case 'password':
+      return passwordRules.value
     default:
       return requiredRule
   }
