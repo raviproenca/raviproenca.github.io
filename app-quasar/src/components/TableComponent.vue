@@ -1,17 +1,20 @@
 <template>
-  <q-page padding class="column items-center">
+  <q-page padding class="column items-center justify-center">
     <div class="q-pa-md" style="width: 100%; max-width: 1200px">
-      <h4 class="text-white text-center text-weight-bold text-with-shadow q-mt-md q-mb-lg">
+      <h4 class="text-white text-center text-weight-bold text-with-shadow q-mt-md q-mb-lg lt-md">
         <slot></slot>
       </h4>
 
-      <div class="row q-mb-lg">
+      <div class="row q-mb-lg q-gutter-x-md items-center q-pa-none">
+        <p class="text-white text-h4 text-weight-bold text-with-shadow gt-sm q-mb-none">
+          <slot></slot>
+        </p>
         <q-input
           v-model="filter"
           outlined
           :placeholder="placeholder"
           bg-color="white"
-          class="input-style col-grow q-mr-md"
+          class="input-style col-grow"
           rounded
           dense
         >
@@ -23,14 +26,16 @@
       </div>
 
       <q-table
-        class="col"
+        class="col border-radius"
+        table-header-class="table-header"
         :rows="filteredRows"
-        :columns="columns"
+        :columns="visibleColumns"
         row-key="id"
         :grid="$q.screen.lt.md"
         :rows-per-page-options="[5, 10, 20]"
         v-model:pagination="pagination"
         hide-pagination
+        binary-state-sort="true"
       >
         <template v-slot:item="props">
           <div class="q-pa-xs col-xs-12 col-sm-6">
@@ -39,132 +44,151 @@
                 <q-list dense>
                   <q-item v-if="props.row.name">
                     <q-item-section>
-                      <q-item-label caption>Nome</q-item-label>
+                      <q-item-label caption>{{ t('common.name') }}</q-item-label>
+
                       <q-item-label>{{ props.row.name }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.email">
                     <q-item-section>
-                      <q-item-label caption>Email</q-item-label>
+                      <q-item-label caption>{{ t('common.email') }}</q-item-label>
+
                       <q-item-label>{{ props.row.email }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.role">
                     <q-item-section>
-                      <q-item-label caption>Permissão</q-item-label>
+                      <q-item-label caption>{{ t('common.role') }}</q-item-label>
+
                       <q-item-label>{{
-                        props.row.role === 'USER' ? 'Leitor' : 'Editor'
+                        props.row.role === 'USER'
+                          ? t('common.roles.reader')
+                          : t('common.roles.editor')
                       }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.telephone">
                     <q-item-section>
-                      <q-item-label caption>Telefone</q-item-label>
+                      <q-item-label caption>{{ t('common.telephone') }}</q-item-label>
+
                       <q-item-label>{{ props.row.telephone }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.site || props.row.site === ''">
                     <q-item-section>
-                      <q-item-label caption>Site</q-item-label>
+                      <q-item-label caption>{{ t('common.site') }}</q-item-label>
+
                       <q-item-label>{{ props.row.site || 'N/A' }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.author">
                     <q-item-section>
-                      <q-item-label caption>Autor</q-item-label>
+                      <q-item-label caption>{{ t('common.author') }}</q-item-label>
+
                       <q-item-label>{{ props.row.author }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.publisher">
                     <q-item-section>
-                      <q-item-label caption>Editora</q-item-label>
+                      <q-item-label caption>{{ t('common.publisher') }}</q-item-label>
+
                       <q-item-label>{{ props.row.publisher.name }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.launchDate">
                     <q-item-section>
-                      <q-item-label caption>Data de Lançamento</q-item-label>
-                      <q-item-label>{{ props.row.launchDate }}</q-item-label>
+                      <q-item-label caption>{{ t('common.launchDate') }}</q-item-label>
+
+                      <q-item-label>{{ formatDateToBR(props.row.launchDate) }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.totalQuantity">
                     <q-item-section>
-                      <q-item-label caption>Estoque</q-item-label>
+                      <q-item-label caption>{{ t('common.totalQuantity') }}</q-item-label>
+
                       <q-item-label>{{ props.row.totalQuantity }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.totalInUse >= 0">
                     <q-item-section>
-                      <q-item-label caption>Alugados</q-item-label>
+                      <q-item-label caption>{{ t('common.totalInUse') }}</q-item-label>
+
                       <q-item-label>{{ props.row.totalInUse }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.address">
                     <q-item-section>
-                      <q-item-label caption>Endereço</q-item-label>
+                      <q-item-label caption>{{ t('common.address') }}</q-item-label>
+
                       <q-item-label>{{ props.row.address }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.cpf">
                     <q-item-section>
-                      <q-item-label caption>CPF</q-item-label>
+                      <q-item-label caption>{{ t('common.cpf') }}</q-item-label>
+
                       <q-item-label>{{ props.row.cpf }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.book">
                     <q-item-section>
-                      <q-item-label caption>Livro</q-item-label>
+                      <q-item-label caption>{{ t('common.book') }}</q-item-label>
+
                       <q-item-label>{{ props.row.book.name }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.renter">
                     <q-item-section>
-                      <q-item-label caption>Locatário</q-item-label>
+                      <q-item-label caption>{{ t('common.renter') }}</q-item-label>
+
                       <q-item-label>{{ props.row.renter.name }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.rentDate">
                     <q-item-section>
-                      <q-item-label caption>Data de Locação</q-item-label>
-                      <q-item-label>{{ props.row.rentDate }}</q-item-label>
+                      <q-item-label caption>{{ t('common.rentDate') }}</q-item-label>
+
+                      <q-item-label>{{ formatDateToBR(props.row.rentDate) }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
-                  <q-item v-if="'devolutionDate' in props.row">
+                  <q-item v-if="props.row.deadLine">
                     <q-item-section>
-                      <q-item-label caption>Data de Devolução</q-item-label>
-                      <q-item-label>{{ props.row.devolutionDate || 'N/A' }}</q-item-label>
+                      <q-item-label caption>{{ t('common.deadLine') }}</q-item-label>
+
+                      <q-item-label>{{ formatDateToBR(props.row.deadLine) }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item v-if="props.row.rentDate">
+                    <q-item-section>
+                      <q-item-label caption>{{ t('common.rentDate') }}</q-item-label>
+
+                      <q-item-label>{{
+                        formatDateToBR(props.row.devolutionDate) || t('common.notDelivered')
+                      }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
                   <q-item v-if="props.row.status">
                     <q-item-section>
                       <q-item-label caption>Status</q-item-label>
-                      <q-item-label>{{
-                        props.row.status === 'RENTED'
-                          ? 'Alugado'
-                          : props.row.status === 'IN_TIME'
-                            ? 'Devolvido no prazo'
-                            : props.row.status === 'LATE'
-                              ? 'Atrasado'
-                              : props.row.status === 'DELIVERED_WITH_DELAY'
-                                ? 'Devolvido com atraso'
-                                : ''
-                      }}</q-item-label>
+
+                      <q-item-label>{{ translateStatus(props.row.status) }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -182,6 +206,7 @@
                   @click="openEditModal(props.row)"
                 />
                 <q-btn
+                  v-if="!props.row.status"
                   flat
                   round
                   dense
@@ -189,13 +214,112 @@
                   color="red"
                   @click="openDeleteModal(props.row)"
                 />
+                <q-btn
+                  v-if="props.row.status"
+                  flat
+                  round
+                  dense
+                  :style="{
+                    opacity: props.row.status === 'RENTED' || props.row.status === 'LATE' ? 0.5 : 1,
+                  }"
+                  icon="o_check_box"
+                  color="black"
+                  @click="openRentModal(props.row)"
+                />
               </q-card-actions>
             </q-card>
           </div>
         </template>
 
+        <template v-slot:body-cell-actions="props">
+          <q-td :props="props">
+            <q-btn flat round dense icon="o_edit" color="green" @click="openEditModal(props.row)" />
+            <q-btn
+              v-if="!props.row.status"
+              flat
+              round
+              dense
+              icon="o_delete"
+              color="red"
+              @click="openDeleteModal(props.row)"
+            />
+            <q-btn
+              v-if="props.row.status"
+              flat
+              round
+              dense
+              :style="{
+                opacity: props.row.status === 'RENTED' || props.row.status === 'LATE' ? 0.5 : 1,
+              }"
+              icon="o_check_box"
+              color="black"
+              @click="openRentModal(props.row)"
+            />
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-role="props">
+          <q-td :props="props">
+            {{ props.row.role === 'USER' ? t('common.roles.reader') : t('common.roles.editor') }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-publisher="props">
+          <q-td :props="props">
+            {{ props.row.publisher?.name || 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-book="props">
+          <q-td :props="props">
+            {{ props.row.book?.name || 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-renter="props">
+          <q-td :props="props">
+            {{ props.row.renter?.name || 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-launchDate="props">
+          <q-td :props="props">
+            {{ formatDateToBR(props.row.launchDate) }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-rentDate="props">
+          <q-td :props="props">
+            {{ formatDateToBR(props.row.rentDate) }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-deadLine="props">
+          <q-td :props="props">
+            {{ formatDateToBR(props.row.deadLine) || 'N/A' }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-devolutionDate="props">
+          <q-td :props="props">
+            {{ formatDateToBR(props.row.devolutionDate) || t('common.notDelivered') }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-status="props">
+          <q-td :props="props">
+            {{ translateStatus(props.row.status) }}
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-site="props">
+          <q-td :props="props">
+            {{ props.row.site ? props.row.site : 'N/A' }}
+          </q-td>
+        </template>
+
         <template v-slot:bottom>
-          <div class="row justify-center q-mt-md" style="width: 100%">
+          <div class="row justify-center" style="width: 100%">
             <q-pagination
               v-model="pagination.page"
               color="teal-10"
@@ -234,6 +358,19 @@
 <script setup>
 import { ref, computed } from 'vue'
 import ModalComponent from './ModalComponent.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+function formatDateToBR(dateString) {
+  if (!dateString) {
+    return null
+  }
+  const parts = dateString.split('-')
+  if (parts.length !== 3) return dateString
+  const [year, month, day] = parts
+  return `${day}/${month}/${year}`
+}
 
 const props = defineProps({
   rows: {
@@ -254,6 +391,10 @@ const props = defineProps({
   },
 })
 
+const visibleColumns = computed(() => {
+  return props.columns.filter((col) => col.name !== 'password')
+})
+
 // Filtro
 const filter = ref('')
 
@@ -270,23 +411,24 @@ const filteredRows = computed(() => {
       row.site,
       row.author,
       row.publisher?.name,
-      row.launchDate,
+      formatDateToBR(row.launchDate),
       row.totalQuantity,
       row.totalInUse,
       row.address,
       row.cpf,
       row.book?.name,
       row.renter?.name,
-      row.rentDate,
-      row.devolutionDate,
+      formatDateToBR(row.rentDate),
+      formatDateToBR(row.deadLine),
+      formatDateToBR(row.devolutionDate),
       row.status === 'RENTED'
-        ? 'Alugado'
+        ? t('common.status.rented')
         : row.status === 'IN_TIME'
-          ? 'Devolvido no prazo'
+          ? t('common.status.in_time')
           : row.status === 'LATE'
-            ? 'Atrasado'
+            ? t('common.status.late')
             : row.status === 'DELIVERED_WITH_DELAY'
-              ? 'Devolvido com atraso'
+              ? t('common.status.delivered_with_delay')
               : '',
     ]
       .join(' ')
@@ -330,9 +472,30 @@ function openDeleteModal(row) {
   showModal.value = true
 }
 
+function openRentModal(row) {
+  selectedRow.value = row
+  modalMode.value = 'devolution'
+  showModal.value = true
+}
+
 function closeModal() {
   showModal.value = false
   selectedRow.value = null
   modalMode.value = 'create'
+}
+
+function translateStatus(status) {
+  switch (status) {
+    case 'RENTED':
+      return t('common.status.rented')
+    case 'IN_TIME':
+      return t('common.status.in_time')
+    case 'LATE':
+      return t('common.status.late')
+    case 'DELIVERED_WITH_DELAY':
+      return t('common.status.delivered_with_delay')
+    default:
+      ''
+  }
 }
 </script>

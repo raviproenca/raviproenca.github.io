@@ -2,25 +2,35 @@
   <TableComponent
     :columns="rentersth"
     :rows="renters"
-    :placeholder="'Pesquisar locatários'"
+    :placeholder="t('pages.renters.searchPlaceholder')"
     area-type="renters"
-    >Locatários</TableComponent
+    >{{ t('pages.renters.title') }}</TableComponent
   >
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRentersStore } from 'src/stores/renters-store'
 import TableComponent from 'src/components/TableComponent.vue'
 import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n'
 
-const rentersth = [
-  { name: 'name', label: 'Nome', field: 'name' },
-  { name: 'email', label: 'Email', field: 'email' },
-  { name: 'telephone', label: 'Telefone', field: 'telephone' },
-  { name: 'address', label: 'Endereço', field: 'address' },
-  { name: 'cpf', label: 'CPF', field: 'cpf' },
-]
+const { t } = useI18n()
+
+const rentersth = computed(() => [
+  { name: 'name', label: t('common.name'), field: 'name', align: 'center', sortable: true },
+  { name: 'email', label: t('common.email'), field: 'email', align: 'center', sortable: true },
+  { name: 'telephone', label: t('common.telephone'), field: 'telephone', align: 'center' },
+  {
+    name: 'address',
+    label: t('common.address'),
+    field: 'address',
+    align: 'center',
+    sortable: true,
+  },
+  { name: 'cpf', label: t('common.cpf'), field: 'cpf', align: 'center', sortable: true },
+  { name: 'actions', label: t('common.actions'), align: 'center' },
+])
 
 const renterStore = useRentersStore()
 const { renters } = storeToRefs(renterStore)
