@@ -389,12 +389,24 @@ const save = async () => {
   props.columns.forEach((column) => {
     if (
       column.field &&
+      column.field !== 'devolutionDate' &&
       column.form !== false &&
       Object.prototype.hasOwnProperty.call(localRow.value, column.field)
     ) {
       const key = column.apiKey || column.field
+      let value = localRow.value[column.field]
 
-      payload[key] = localRow.value[column.field]
+      if (column.field === 'publisher' && typeof value === 'object' && value !== null) {
+        value = value.id
+      }
+      if (column.field === 'book' && typeof value === 'object' && value !== null) {
+        value = value.id
+      }
+      if (column.field === 'renter' && typeof value === 'object' && value !== null) {
+        value = value.id
+      }
+
+      payload[key] = value
     }
   })
 
@@ -421,8 +433,19 @@ const edit = async () => {
       Object.prototype.hasOwnProperty.call(localRow.value, column.field)
     ) {
       const key = column.apiKey || column.field
+      let value = localRow.value[column.field]
 
-      payload[key] = localRow.value[column.field]
+      if (column.field === 'publisher' && typeof value === 'object' && value !== null) {
+        value = value.id
+      }
+      if (column.field === 'book' && typeof value === 'object' && value !== null) {
+        value = value.id
+      }
+      if (column.field === 'renter' && typeof value === 'object' && value !== null) {
+        value = value.id
+      }
+
+      payload[key] = value
     }
   })
 
@@ -491,39 +514,54 @@ function isUnique(value, field, items, mode, currentRow) {
 }
 
 const nameRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => val.length >= 3 || t('rules.name.min'),
   (val) => !/\d/.test(val) || t('rules.name.noNumbers'),
   (val) => isUnique(val, 'name', props.existingItems, props.mode, props.row),
 ])
 
 const emailRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(val || '').trim()) || t('rules.email.invalid'),
   (val) => isUnique(val, 'email', props.existingItems, props.mode, props.row),
 ])
 
-const passwordRules = computed(() => [(val) => val.length >= 8 || t('rules.password.min')])
+const passwordRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
+  (val) => val.length >= 8 || t('rules.password.min'),
+])
 
 const telephoneRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => val.length >= 11 || t('rules.telephone.invalid'),
   (val) => val.length <= 16 || t('rules.telephone.invalid'),
   (val) => /^\d+$/.test(val) || t('rules.telephone.invalid'),
 ])
 
 const authorRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => val.length >= 3 || t('rules.name.min'),
   (val) => !/\d/.test(val) || t('rules.name.noNumbers'),
 ])
 
-const totalQuantityRules = computed(() => [(val) => val > 0 || t('rules.quantity.min')])
+const totalQuantityRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
+  (val) => val > 0 || t('rules.quantity.min'),
+])
 
-const addressRules = computed(() => [(val) => val.length > 3 || t('rules.address.min')])
+const addressRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
+  (val) => val.length > 3 || t('rules.address.min'),
+])
 
 const cpfRules = computed(() => [
-  (val) => val.length > 11 || t('rules.cpf.invalid'),
+  (val) => (val && String(val).length > 0) || t('rules.required'),
+  (val) => val.length >= 11 || t('rules.cpf.invalid'),
   (val) => /^\d+$/.test(val) || t('rules.cpf.invalid'),
 ])
 
 const deadLineRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => {
     const formatValidation = isValidDate(val)
     if (formatValidation !== true) {
@@ -548,6 +586,7 @@ const deadLineRules = computed(() => [
 ])
 
 const launchDateRules = computed(() => [
+  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => {
     const formatValidation = isValidDate(val)
     if (formatValidation !== true) {
