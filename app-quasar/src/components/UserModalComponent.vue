@@ -36,6 +36,7 @@
 
       <q-btn
         @click="logout()"
+        :loading="isLoggingOut"
         color="primary"
         dense
         rounded
@@ -70,9 +71,15 @@ function changeLang(lang) {
 }
 
 const router = useRouter()
+const isLoggingOut = ref(false)
 
 function logout() {
-  localStorage.removeItem('token')
-  router.push('/login')
+  isLoggingOut.value = true
+
+  setTimeout(() => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    router.push('/login')
+  }, 700)
 }
 </script>

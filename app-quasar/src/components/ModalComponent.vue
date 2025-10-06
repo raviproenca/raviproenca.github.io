@@ -230,9 +230,11 @@ import { useBooksStore } from 'src/stores/books-store'
 import { useRentersStore } from 'src/stores/renters-store'
 import { useRentsStore } from 'src/stores/rents-store'
 import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
 
 const emit = defineEmits(['close-modal'])
 const { t } = useI18n()
+const $q = useQuasar()
 
 const myForm = ref(null)
 const localRow = ref({})
@@ -464,15 +466,34 @@ const edit = async () => {
 
 const remove = async () => {
   const store = activeStore.value
-  if (!store) return console.error('Store não encontrada para a área:', props.area)
+  if (!store) {
+    console.error('Store não encontrada para a área:', props.area)
+    return
+  }
 
-  if (props.area === 'users') await store.deleteUser(props.row.id)
-  else if (props.area === 'publishers') await store.deletePublisher(props.row.id)
-  else if (props.area === 'books') await store.deleteBook(props.row.id)
-  else if (props.area === 'renters') await store.deleteRenter(props.row.id)
-  else console.log('ERRO!!')
+  try {
+    if (props.area === 'users') await store.deleteUser(props.row.id)
+    else if (props.area === 'publishers') await store.deletePublisher(props.row.id)
+    else if (props.area === 'books') await store.deleteBook(props.row.id)
+    else if (props.area === 'renters') await store.deleteRenter(props.row.id)
+    else {
+      console.log('ERRO: Área de exclusão desconhecida!')
+      return
+    }
 
-  emit('close-modal')
+    emit('close-modal')
+    $q.notify({
+      type: 'positive',
+      message: t('common.deleteSuccess'),
+    })
+  } catch {
+    if (store.error) {
+      $q.notify({
+        type: 'negative',
+        message: store.error,
+      })
+    }
+  }
 }
 
 const confirm = async () => {
@@ -514,54 +535,54 @@ function isUnique(value, field, items, mode, currentRow) {
 }
 
 const nameRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => val.length >= 3 || t('rules.name.min'),
   (val) => !/\d/.test(val) || t('rules.name.noNumbers'),
   (val) => isUnique(val, 'name', props.existingItems, props.mode, props.row),
 ])
 
 const emailRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(val || '').trim()) || t('rules.email.invalid'),
   (val) => isUnique(val, 'email', props.existingItems, props.mode, props.row),
 ])
 
-const passwordRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
-  (val) => val.length >= 8 || t('rules.password.min'),
-])
+const passwordRules = computed(() => [(val) => val.length >= 8 || t('rules.password.min')])
+
+const siteRules = computed(() => {
+  return [
+    (val) => {
+      if (!val) {
+        return true
+      }
+
+      return (
+        /^https:\/\/[^\s$.?#].[^\s]*$/.test(String(val || '').trim()) ||
+        t('rules.site.invalidFormat')
+      )
+    },
+  ]
+})
 
 const telephoneRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => val.length >= 11 || t('rules.telephone.invalid'),
   (val) => val.length <= 16 || t('rules.telephone.invalid'),
   (val) => /^\d+$/.test(val) || t('rules.telephone.invalid'),
 ])
 
 const authorRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => val.length >= 3 || t('rules.name.min'),
   (val) => !/\d/.test(val) || t('rules.name.noNumbers'),
 ])
 
-const totalQuantityRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
-  (val) => val > 0 || t('rules.quantity.min'),
-])
+const totalQuantityRules = computed(() => [(val) => val > 0 || t('rules.quantity.min')])
 
-const addressRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
-  (val) => val.length > 3 || t('rules.address.min'),
-])
+const addressRules = computed(() => [(val) => val.length > 3 || t('rules.address.min')])
 
 const cpfRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => val.length >= 11 || t('rules.cpf.invalid'),
   (val) => /^\d+$/.test(val) || t('rules.cpf.invalid'),
 ])
 
 const deadLineRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => {
     const formatValidation = isValidDate(val)
     if (formatValidation !== true) {
@@ -586,7 +607,6 @@ const deadLineRules = computed(() => [
 ])
 
 const launchDateRules = computed(() => [
-  (val) => (val && String(val).length > 0) || t('rules.required'),
   (val) => {
     const formatValidation = isValidDate(val)
     if (formatValidation !== true) {
@@ -610,6 +630,36 @@ const launchDateRules = computed(() => [
   },
 ])
 
+const devolutionDateRules = computed(() => {
+  return [
+    (val) => {
+      if (!val) {
+        return true
+      }
+
+      const formatValidation = isValidDate(val)
+      if (formatValidation !== true) {
+        return formatValidation
+      }
+
+      const parts = val.split('-')
+      const day = parseInt(parts[0], 10)
+      const month = parseInt(parts[1], 10) - 1
+      const year = parseInt(parts[2], 10)
+      const selectedDate = new Date(year, month, day)
+
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+
+      if (selectedDate < today) {
+        return t('rules.date.pastDeadline')
+      }
+
+      return true
+    },
+  ]
+})
+
 function getRulesFor(column) {
   switch (column.field) {
     case 'name':
@@ -618,6 +668,8 @@ function getRulesFor(column) {
       return emailRules.value
     case 'password':
       return passwordRules.value
+    case 'site':
+      return siteRules.value
     case 'telephone':
       return telephoneRules.value
     case 'author':
@@ -632,6 +684,8 @@ function getRulesFor(column) {
       return launchDateRules.value
     case 'deadLine':
       return deadLineRules.value
+    case 'devolutionDate':
+      return devolutionDateRules.value
     default:
       return requiredRule
   }

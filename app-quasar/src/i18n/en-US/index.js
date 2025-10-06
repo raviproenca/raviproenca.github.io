@@ -108,6 +108,9 @@ export default {
     password: {
       min: 'The password must be at least 8 digits long',
     },
+    site: {
+      invalid: 'The site must have "https://"',
+    },
     telephone: {
       invalid: 'Please, enter a valid telephone number',
     },
