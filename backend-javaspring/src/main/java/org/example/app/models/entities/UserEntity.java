@@ -1,0 +1,15 @@
+package org.example.app.models.entities;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Entity
+@Table(name = "users")
+public class UserEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String email;
+    private String password;
+}
